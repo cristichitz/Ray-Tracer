@@ -53,14 +53,14 @@ __kernel void render_kernel(__global int *img_buffer, int width, int height,
                             float cam_x, float cam_y, float cam_z )
 {
     // 1. Get Global ID (1D)
-    int id = get_global_id(0);
+    int x = get_global_id(0);
+    int y = get_global_id(1);
+
     
     // Safety check: Don't write outside the buffer
-    if (id >= width * height) return;
+    if (x >= width || y >= height) return;
 
-    // 2. Calculate X and Y manually
-    int x = id % width;
-    int y = id / width;
+    int id = y * width + x;
 
     // 3. Setup Camera
     float aspect_ratio = (float)width / (float)height;
@@ -110,11 +110,15 @@ __kernel void render_kernel(__global int *img_buffer, int width, int height,
         final_color = (1.0f - t) * white + t * blue;
     }
 
-    // 7. Write to Buffer (Convert to 0-255 int)
-    int ir = (int)(255.99f * final_color.x);
-    int ig = (int)(255.99f * final_color.y);
-    int ib = (int)(255.99f * final_color.z);
+    // 1. Calculate color
+    uchar ir = (uchar)(255.99f * final_color.x);
+    uchar ig = (uchar)(255.99f * final_color.y);
+    uchar ib = (uchar)(255.99f * final_color.z);
+    uchar ia = 255;
 
-    // Force Alpha to 0xFF (Opaque)
-    img_buffer[id] = 0xFF000000 | (ir << 16) | (ig << 8) | ib;
+    // 2. Cast the integer buffer to a vector buffer
+    __global uchar4 *ptr = (__global uchar4 *)img_buffer;
+
+    // 3. Write directly (Order is R, G, B, A)
+    ptr[id] = (uchar4)(ir, ig, ib, ia);
 }

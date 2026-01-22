@@ -1,7 +1,7 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 
-#include "mlx.h"
+#include "MLX42/MLX42.h"
 
 #include "vec3.h"
 
@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <stdio.h>
+#include <limits.h>
+#include <unistd.h>
 
 
 # include "../include/CL/cl.h"  // or just <CL/cl.h> if you add the -I flag
@@ -23,35 +25,31 @@ typedef struct s_gpu {
 } t_gpu;
 
 typedef struct s_data {
-  void  *mlx;
-  void  *win;
-  void  *img;
-  char  *addr;
-  int   bpp;
-  int   line_len;
-  int   endian;
-  int   width;
-  int   height;
+  mlx_t         *mlx;
+  mlx_image_t   *img;
 
-  int     *render_buffer;
-  t_gpu gpu;
+  int           width;
+  int           height;
+
+  t_gpu         gpu;
 
   //FPS
-  struct timeval last_time;
-  int     frame_count;
-  double  delta_time; // Time taken for last frame
+  struct timeval  last_time;
+  int             frame_count;
+  double          delta_time; // Time taken for last frame
 
   //Camera pos
-  float cam_x;
-  float cam_y;
-  float cam_z;
+  float           cam_x;
+  float           cam_y;
+  float           cam_z;
 } t_data;
 
 void  my_mlx_pixel_put(t_data *data, int x, int y, int color);
-int   close_window(int keycode, void *param);
 
 void  init_gpu(t_data *data, char *kernel_file);
 void  render_frame(t_data *data);
 void  clean_gpu(t_data *data);
+
+void  game_loop(void *param);
 
 #endif

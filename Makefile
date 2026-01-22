@@ -7,18 +7,20 @@ OBJ_DIR = obj/
 SRCS = src/main.c src/gpu_setup.c src/math/vec3.c src/math/color.c
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)%.o)
-INCLUDES = -I./include -I../minilibx
+INCLUDES = -I./include -I../MLX42/include
 
-MLX_PATH = ../minilibx/
-MLX_NAME = libmlx.a
-MLX = $(MLX_PATH)$(MLX_NAME)
+MLX_PATH = ../MLX42/
+MLX_BUILD_PATH = $(MLX_PATH)/build
+MLX_LIB = $(MLX_BUILD_PATH)/libmlx42.a
 
-MLX_FLAGS = -L$(MLX_PATH) -L./libs -lmlx -lXext -lX11 -lm -lz -lOpenCL -Wl,-rpath,'$$ORIGIN/libs' -Wl,--disable-new-dtags
+MLX_FLAGS = -L$(MLX_BUILD_PATH) -L./libs -lmlx42 -ldl -lglfw -pthread -lm -lz -lOpenCL -Wl,-rpath,'$$ORIGIN/libs' -Wl,--disable-new-dtags
 
-all: $(MLX) $(NAME)
+all: $(MLX_LIB) $(NAME)
 
-$(MLX):
-		@make -C $(MLX_PATH)
+$(MLX_LIB):
+	@echo "Building MLX42..."
+	@cmake $(MLX_PATH) -B $(MLX_BUILD_PATH)
+	@cmake --build $(MLX_BUILD_PATH) -j4
 
 $(OBJ_DIR)%.o: %.c
 	@mkdir -p $(@D)
@@ -28,8 +30,8 @@ $(NAME): $(OBJS)
 			 $(CC) $(CFLAGS) $(OBJS) $(MLX_FLAGS) -o $(NAME)
 
 clean:
-				rm -rf $(OBJ_DIR)
-				@make -C $(MLX_PATH) clean
+	rm -rf $(OBJ_DIR)
+	@rm -rf $(MLX_BUILD_PATH)	
 
 fclean: clean
 				rm -f $(NAME)
