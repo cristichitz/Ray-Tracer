@@ -2,8 +2,11 @@ NAME = minirt
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
+OBJ_DIR = obj/
+
 SRCS = src/main.c src/gpu_setup.c src/math/vec3.c src/math/color.c
-OBJS = $(SRCS:.c=.o)
+
+OBJS = $(SRCS:%.c=$(OBJ_DIR)%.o)
 INCLUDES = -I./include -I../minilibx
 
 MLX_PATH = ../minilibx/
@@ -17,14 +20,15 @@ all: $(MLX) $(NAME)
 $(MLX):
 		@make -C $(MLX_PATH)
 
-%.o: %.c
+$(OBJ_DIR)%.o: %.c
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(NAME): $(OBJS)
 			 $(CC) $(CFLAGS) $(OBJS) $(MLX_FLAGS) -o $(NAME)
 
 clean:
-				rm -f $(OBJS)
+				rm -rf $(OBJ_DIR)
 				@make -C $(MLX_PATH) clean
 
 fclean: clean
@@ -32,4 +36,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re	
