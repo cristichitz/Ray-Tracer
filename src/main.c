@@ -1,61 +1,83 @@
 #include "minirt.h"
 
-void  my_mlx_pixel_put(t_data *data, int x, int y, int color)
-{
-  char *dst;
-
-  dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-  *(unsigned int*)dst = color;
+void setup_local_opencl() {
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        char vendors_path[PATH_MAX];
+        snprintf(vendors_path, sizeof(vendors_path), "%s/config/vendors", cwd);
+        
+        setenv("OCL_ICD_VENDORS", vendors_path, 1);
+        printf("OCL_ICD_VENDORS set to: %s\n", vendors_path);
+    }
 }
 
-
-int close_window(int keycode, void *param)
+void  game_loop(void *param)
 {
-  (void)param;
-  (void)keycode;
-  exit (0);
+  t_data *data = (t_data *)param;
+  float speed = 0.5f;
+
+  if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
+    mlx_close_window(data->mlx);
+  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) data->cam_z -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam_z += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam_x -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam_x += speed;
+
+  render_frame(data);
+}
+
+void cleanup(void *param)
+{
+    t_data *data = (t_data *)param;
+    clean_gpu(data);
+    
+    printf("Cleaning up and exiting...\n");
 }
 
 int main(void)
 {
-  void    *mlx;
-  void    *win;
-  t_data  img;
-  int     x;
-  int     y;
+  t_data  data;
+  float   aspect_ratio;
 
-  float aspect_ratio = 16.0 / 9.0;
-  int   image_width = 400;
-  int   image_height = (int)(image_width / aspect_ratio);
-  image_height = (image_height < 1) ? 1 : image_height;
+  aspect_ratio = 16.0 / 9.0;
+  data.width = 1920;
+  data.height = (int)(data.width / aspect_ratio);
+  if (data.height < 1)
+    data.height = 1;
 
-  float viewport_heigth = 2.0;
-  float viewport_width = viewport_heigth * ((float)image_width / (float)image_height);
+  data.cam_x = 0.0f;
+  data.cam_y = 0.0f;
+  data.cam_z = 0.0f; 
+  data.frame_count = 0;
+  gettimeofday(&data.last_time, NULL); // Set "start" time to now
 
-  mlx = mlx_init();
-  if (!mlx) 
-    return (1);
-  win = mlx_new_window(mlx, image_width, image_height, "MiniRT Test");
-  img.img = mlx_new_image(mlx, image_width, image_height);
 
-  img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-  y = 0;
-  while (y < image_height)
-  {
-    x = 0;
-    while (x < image_width)
-    {
-      t_color pixel_col = vec3((double)x / (image_width - 1),
-                                (double)y / (image_height - 1),
-                              0.25);
-      int mlx_color = color_to_int(pixel_col);
-      my_mlx_pixel_put(&img, x, y, mlx_color);
-      x++;
-    }
-    y++;
+  setup_local_opencl();
+  
+  // 1. MLX Boilerplate
+  printf("1. Initializing MLX42...\n");
+  data.mlx = mlx_init(data.width, data.height, "GPU RT", true);
+  if (!data.mlx) { puts(mlx_strerror(mlx_errno)); return(EXIT_FAILURE); }
+
+  printf("3. Creating Image...\n");
+  data.img = mlx_new_image(data.mlx, data.width, data.height);
+  if (!data.img) { mlx_close_window(data.mlx); puts(mlx_strerror(mlx_errno)); return(EXIT_FAILURE); }
+
+  if (mlx_image_to_window(data.mlx, data.img, 0, 0) == -1) {
+    mlx_close_window(data.mlx);
+    puts(mlx_strerror(mlx_errno));
+    return(EXIT_FAILURE);
   }
-  mlx_put_image_to_window(mlx, win, img.img, 0, 0);
-  mlx_hook(win, 17, 0, close_window, NULL);
-  mlx_loop(mlx);
-  return (0);
+
+  printf("4. Initializing GPU...\n");
+  init_gpu(&data, "kernels/render.c");
+
+  printf("4. Starting Loop...");
+  mlx_loop_hook(data.mlx, game_loop, &data);
+  mlx_close_hook(data.mlx, cleanup, &data);
+  mlx_loop(data.mlx);
+
+  mlx_terminate(data.mlx);
+
+  return (EXIT_SUCCESS);
 }
