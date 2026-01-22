@@ -49,6 +49,7 @@ float3 ray_color(float3 orig, float3 dir) {
     return (1.0f - a) * color1 + a * color2;
 }
 
+
 __kernel void render_kernel(__global int *img_buffer, int width, int height,
                             float cam_x, float cam_y, float cam_z )
 {
