@@ -1,9 +1,11 @@
 #ifndef MINIRT_H
 # define MINIRT_H
 
+# include "../include/CL/cl.h"  // or just <CL/cl.h> if you add the -I flag
 #include "MLX42/MLX42.h"
 
 #include "vec3.h"
+#include "structs.h"
 
 #include "stdio.h"
 #include "math.h"
@@ -14,7 +16,6 @@
 #include <unistd.h>
 
 
-# include "../include/CL/cl.h"  // or just <CL/cl.h> if you add the -I flag
 
 typedef struct s_gpu {
   cl_context        context;
@@ -22,6 +23,7 @@ typedef struct s_gpu {
   cl_program        program;
   cl_kernel         kernel;
   cl_mem            buffer;
+  cl_mem            sphere_buffer;
 } t_gpu;
 
 typedef struct s_data {
@@ -32,19 +34,21 @@ typedef struct s_data {
   int           height;
 
   t_gpu         gpu;
+  cl_int        err;
 
   //FPS
-  struct timeval  last_time;
+  struct timeval  last_time;  
   int             frame_count;
   double          delta_time; // Time taken for last frame
 
-  //Camera pos
-  float           cam_x;
-  float           cam_y;
-  float           cam_z;
+  // Scene objects
+  t_camera      camera;
+  t_sphere      *spheres;
+  int           sphere_count;
 } t_data;
 
-void  my_mlx_pixel_put(t_data *data, int x, int y, int color);
+void  init_scene(t_data *data); // New helper to create spheres
+void  update_camera_vectors(t_data *data); // Helper to calc vectors
 
 void  init_gpu(t_data *data, char *kernel_file);
 void  render_frame(t_data *data);

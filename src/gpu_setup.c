@@ -70,8 +70,9 @@ void    init_gpu(t_data *data, char *kernel_file)
         printf("Error creating program\n");
         exit(1);
     }
+    char *options = "-I. -I./include";
 
-    err = clBuildProgram(data->gpu.program, 1, &device, NULL, NULL, NULL);
+    err = clBuildProgram(data->gpu.program, 1, &device, options, NULL, NULL);
     if (err != CL_SUCCESS)
     {
         size_t len;
@@ -114,7 +115,7 @@ void render_frame(t_data *data)
     long seconds = current_time.tv_sec - data->last_time.tv_sec;
     long micros = current_time.tv_usec - data->last_time.tv_usec;
     data->delta_time = seconds + micros * 1e-6;
-    data->last_time = current_time; // Reset for next frame
+    data->last_time = current_time;
 
     printf("\rFrame Time: %.3fs | FPS: %.2f   ", data->delta_time, 1.0 / data->delta_time);
     fflush(stdout);
@@ -122,26 +123,13 @@ void render_frame(t_data *data)
     cl_int err;
     size_t total_bytes = data->width * data->height * 4;
 
-    // 1. Set Args (Same as before)
-    clSetKernelArg(data->gpu.kernel, 0, sizeof(cl_mem), &data->gpu.buffer);
-    clSetKernelArg(data->gpu.kernel, 1, sizeof(int), &data->width);
-    clSetKernelArg(data->gpu.kernel, 2, sizeof(int), &data->height);
-    clSetKernelArg(data->gpu.kernel, 3, sizeof(float), &data->cam_x);
-    clSetKernelArg(data->gpu.kernel, 4, sizeof(float), &data->cam_y);
-    clSetKernelArg(data->gpu.kernel, 5, sizeof(float), &data->cam_z);
+    err = clSetKernelArg(data->gpu.kernel, 5, sizeof(t_camera), &data->camera);
+    if (err != CL_SUCCESS) printf("Arg Error: %d\n", err);
 
-    // ====================================================
-    // 2. NEW: Define 2D Block and Grid Size
-    // ====================================================
-    
+
     // BLOCK SIZE: 16x16 = 256 threads per group.
     // This is a standard "sweet spot" for most GPUs.
     size_t local_work[2] = {16, 16};
-
-    // GRID SIZE: Total threads needed.
-    // We must round up width/height to the next multiple of 16 
-    // to ensure the blocks fit perfectly.
-    // Formula: ceil(width / 16) * 16
     size_t global_work[2] = {
         ((data->width + 15) / 16) * 16,  // Global X
         ((data->height + 15) / 16) * 16  // Global Y
@@ -152,10 +140,11 @@ void render_frame(t_data *data)
     // Note we pass 'local_work' instead of NULL
     cl_event event;
     err = clEnqueueNDRangeKernel(data->gpu.queue, data->gpu.kernel, 2, NULL, 
-                                 global_work, local_work, 0, NULL, &event);
-                                 
+                                 global_work, local_work, 0, NULL, &event);                        
     if (err) printf("Kernel Launch Error: %d\n", err);
+
     clWaitForEvents(1, &event);
+
     cl_ulong start, end;
     clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(start), &start, NULL);
     clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(end), &end, NULL);
@@ -165,7 +154,6 @@ void render_frame(t_data *data)
 
     clFinish(data->gpu.queue);
 
-    // 5. Read into MIDDLEMAN (Not MLX directly)
     err = clEnqueueReadBuffer(data->gpu.queue, data->gpu.buffer, CL_TRUE, 0, 
                         total_bytes, data->img->pixels, 0, NULL, NULL);
     
