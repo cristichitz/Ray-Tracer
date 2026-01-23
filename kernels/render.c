@@ -100,30 +100,17 @@ float3 ray_color(float3 orig, float3 dir, __global t_sphere* spheres, int count)
     //     // Map normal (-1 to 1) to color (0 to 1)
     //     return 0.5f * (normal + 1.0f);
     // }
-    // t_hit_record    rec;
 
-    // if (hit_world(spheres, count, orig, dir, &rec))
-    // {
-    //     return 0.5f * (rec.normal + 1.0f);
-    // }
-    // // Inside render_kernel, replace the hit_world call with this:
-    t_sphere debug_sphere;
-    debug_sphere.center = (float3)(0.0f, 0.0f, -2.0f); // Place directly in front of camera
-    debug_sphere.radius = 0.5f;
+    t_hit_record    rec;
 
-    t_hit_record rec;
-    bool hit = hit_sphere(debug_sphere, orig, dir, 0.001f, 1000.0f, &rec);
-
-    float3 final_color;
-    if (hit)
-        final_color = (float3)(1.0f, 0.0f, 0.0f); // RED if hit
-    else
-        final_color = background_gradient(dir);
-
-    return final_color;
+    if (hit_world(spheres, count, orig, dir, &rec))
+    {
+        return 0.5f * (rec.normal + 1.0f);
+    }
+    // Inside render_kernel, replace the hit_world call with this:
 
     // 2. Background (Blue/White Gradient)
-    // return (background_gradient(dir));
+    return (background_gradient(dir));
 }
 
 __kernel void render_kernel(__global int *img_buffer, int width, int height, int sphere_count,

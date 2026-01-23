@@ -47,20 +47,6 @@ void update_camera(t_camera *cam, int width, int height)
     cam->pixel00_loc.x = upper_left.x + 0.5f * (cam->pixel_delta_u.x + cam->pixel_delta_v.x);
     cam->pixel00_loc.y = upper_left.y + 0.5f * (cam->pixel_delta_u.y + cam->pixel_delta_v.y);
     cam->pixel00_loc.z = upper_left.z + 0.5f * (cam->pixel_delta_u.z + cam->pixel_delta_v.z);
-    // bool dir = true;
-    // for (int i = 0; i < sphere_count; i++)
-    // {
-    //   if (spheres[i].center.x < 3.0f && dir)
-    //   {
-    //     dir = true;
-    //     spheres[i].center.x += 0.1f;
-    //   }
-    //   else if ( spheres[i].center.x > -3.0f)
-    //   {
-    //     dir = false;
-    //     spheres[i].center.x += 0.1f;
-    //   }
-    // }
 }
 
 void game_loop(void *param)
@@ -88,13 +74,52 @@ void game_loop(void *param)
         data->camera.origin.x += speed;
         moved = true;
     }
+	static float time = 0.0f;
+    time += 0.002f; // Slower time for better visibility
+
+    // The center point our spheres will orbit around
+    cl_float3 orbit_center = make_float3(0.0f, 0.0f, -5.0f);
+    float sphere_radius_from_center = 3.0f;
+
+    for (int i = 0; i < data->sphere_count; i++) 
+    {
+		sphere_radius_from_center = data->spheres[i].radius * 3;
+        // 1. Calculate angles based on time
+        // Offset each sphere so they don't stack on top of each other
+        float theta = time + (i * 2.0f);       // Horizontal rotation
+        float phi = (time * 0.5f) + (i * 1.0f); // Vertical rotation (slower)
+
+        // 2. Apply Spherical Coordinate Formula
+        // This math guarantees the sphere stays exactly 3.0 units away from center
+        float x = sphere_radius_from_center * sin(phi) * cos(theta);
+        float y = sphere_radius_from_center * cos(phi); 
+        float z = sphere_radius_from_center * sin(phi) * sin(theta);
+
+        // 3. Apply to sphere position (adding the orbit center offset)
+        data->spheres[i].center.x = orbit_center.x + x;
+        data->spheres[i].center.y = orbit_center.y + y;
+        data->spheres[i].center.z = orbit_center.z + z;
+    }
+
+	cl_int err = clEnqueueWriteBuffer(
+        data->gpu.queue,   // Your command queue (check your struct for the exact name)
+        data->gpu.sphere_buffer,   // The GPU buffer you created in init_scene
+        CL_TRUE,                   // Blocking write? (True = wait until finished)
+        0,                         // Offset (start at the beginning)
+        sizeof(t_sphere) * data->sphere_count, // Size of data to copy
+        data->spheres,             // Pointer to the CPU data source
+        0, NULL, NULL              // Events (can be left empty for now)
+    );
+
+    if (err != CL_SUCCESS)
+        printf("Error updating sphere buffer: %d\n", err);
 
     if (moved)
     {
         update_camera(&data->camera, data->width, data->height);
     }
 
-    printf("%f %f %f\n", data->camera.origin.x, data->camera.origin.y, data->camera.origin.z);
+    // printf("%f %f %f\n", data->camera.origin.x, data->camera.origin.y, data->camera.origin.z);
 
     render_frame(data);
 }
@@ -109,17 +134,26 @@ void cleanup(void *param)
 
 void  init_scene(t_data *data)
 {
-  data->sphere_count = 10;
+  data->sphere_count = 13;
   data->spheres = malloc(sizeof(t_sphere) * data->sphere_count);
 
-  data->spheres[0].center = make_float3(1.0f, 0.0f, -2.0f);
+//   data->spheres[0].center = make_float3(1.0f, 0.0f, -2.0f);
+//   data->spheres[0].radius = 0.5f;
+
+//   data->spheres[1].center = make_float3(0.0f, 0.0f, -120.0f);
+//   data->spheres[1].radius = 100.0f;
+
+//   data->spheres[2].center = make_float3(0.0f, 0.0f, -1100.0f);
+//   data->spheres[2].radius = 1000.0f;
+
+  data->spheres[0].center = make_float3(-1.0f, 0.0f, -2.0f);
   data->spheres[0].radius = 0.5f;
 
-  data->spheres[1].center = make_float3(0.0f, 0.0f, -120.0f);
-  data->spheres[1].radius = 100.0f;
+  data->spheres[1].center = make_float3(0.0f, -1.0f, -2.0f);
+  data->spheres[1].radius = 0.5f;
 
-  data->spheres[2].center = make_float3(0.0f, 0.0f, -1100.0f);
-  data->spheres[2].radius = 1000.0f;
+  data->spheres[2].center = make_float3(0.0f, 1.0f, -2.0f);
+  data->spheres[2].radius = 0.5f;
 
   data->spheres[3].center = make_float3(-1.0f, 0.0f, -2.0f);
   data->spheres[3].radius = 0.5f;
@@ -130,17 +164,26 @@ void  init_scene(t_data *data)
   data->spheres[5].center = make_float3(0.0f, 1.0f, -2.0f);
   data->spheres[5].radius = 0.5f;
 
-  data->spheres[6].center = make_float3(100.0f, 1.0f, -120.0f);
-  data->spheres[6].radius = 100.0f;
+  data->spheres[6].center = make_float3(-1.0f, 0.0f, -2.0f);
+  data->spheres[6].radius = 0.5f;
 
-  data->spheres[7].center = make_float3(-100.0f, 1.0f, -120.0f);
-  data->spheres[7].radius = 100.0f;
+  data->spheres[7].center = make_float3(0.0f, -1.0f, -2.0f);
+  data->spheres[7].radius = 0.5f;
 
-  data->spheres[8].center = make_float3(0.0f, 100.0f, -120.0f);
-  data->spheres[8].radius = 100.0f;
+  data->spheres[8].center = make_float3(0.0f, 1.0f, -2.0f);
+  data->spheres[8].radius = 0.5f;
 
-  data->spheres[9].center = make_float3(0.0f, -100.0f, -120.0f);
-  data->spheres[9].radius = 100.0f;
+  data->spheres[9].center = make_float3(100.0f, 1.0f, -120.0f);
+  data->spheres[9].radius = 20.0f;
+
+  data->spheres[10].center = make_float3(-100.0f, 1.0f, -120.0f);
+  data->spheres[10].radius = 20.0f;
+
+  data->spheres[11].center = make_float3(0.0f, 100.0f, -120.0f);
+  data->spheres[11].radius = 20.0f;
+
+  data->spheres[12].center = make_float3(0.0f, -100.0f, -120.0f);
+  data->spheres[12].radius = 20.0f;
 
 
   data->gpu.sphere_buffer = clCreateBuffer(data->gpu.context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,

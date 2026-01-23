@@ -123,6 +123,7 @@ void render_frame(t_data *data)
     cl_int err;
     size_t total_bytes = data->width * data->height * 4;
 
+	
     err = clSetKernelArg(data->gpu.kernel, 5, sizeof(t_camera), &data->camera);
     if (err != CL_SUCCESS) printf("Arg Error: %d\n", err);
 
@@ -166,6 +167,7 @@ void render_frame(t_data *data)
 void clean_gpu(t_data *data)
 {
     clReleaseMemObject(data->gpu.buffer);
+	clReleaseMemObject(data->gpu.sphere_buffer);
     clReleaseKernel(data->gpu.kernel);
     clReleaseProgram(data->gpu.program);
     clReleaseCommandQueue(data->gpu.queue);
