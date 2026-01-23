@@ -1,17 +1,6 @@
-// ==========================================
-// 1. HELPER FUNCTIONS (Refactored)
-// ==========================================
-
-// No custom struct or math functions needed!
-// We rely entirely on OpenCL built-ins:
-// - float3
-// - dot(), normalize(), length(), sqrt()
-// - Operators (+, -, *) work automatically on vectors
-
-// Returns -1.0 if no hit, or the distance "t" if it hits
 float hit_sphere(float3 center, float radius, float3 orig, float3 dir) {
-    float3 oc = orig - center;         // Vector subtraction
-    float a = dot(dir, dir);           // Built-in dot product
+    float3 oc = orig - center;
+    float a = dot(dir, dir);
     float b = 2.0f * dot(oc, dir);
     float c = dot(oc, oc) - radius * radius;
     float discriminant = b * b - 4 * a * c;
@@ -19,13 +8,26 @@ float hit_sphere(float3 center, float radius, float3 orig, float3 dir) {
     if (discriminant < 0) {
         return -1.0f;
     } else {
+        // -b - sqrt(b^2 - 4ac) / (2a)
         return (-b - sqrt(discriminant)) / (2.0f * a);
     }
 }
 
-// Determine the color of the ray
+float3  background_gradient(float3 dir)
+{
+    float3  unit_dir;
+    float   a;
+    float3  white;
+    float3  blue;
+    
+    unit_dir = normalize(dir);
+    a = 0.5f * (unit_dir.y + 1.0f);
+    white = (float3)(1.0f, 1.0f, 1.0f);
+    blue = (float3)(0.5f, 0.7f, 1.0f);
+    return (1.0f - a) * white + a * blue;
+}
+
 float3 ray_color(float3 orig, float3 dir) {
-    // 1. Check for Sphere Hit
     float3 sphere_center = (float3)(0.0f, 0.0f, -1.0f);
     float t = hit_sphere(sphere_center, 0.5f, orig, dir);
 
@@ -39,14 +41,7 @@ float3 ray_color(float3 orig, float3 dir) {
     }
 
     // 2. Background (Blue/White Gradient)
-    float3 unit_dir = normalize(dir);
-    float a = 0.5f * (unit_dir.y + 1.0f);
-    
-    float3 color1 = (float3)(1.0f, 1.0f, 1.0f); // White
-    float3 color2 = (float3)(0.5f, 0.7f, 1.0f); // Blueish
-    
-    // Linear interpolation: (1-a)*c1 + a*c2
-    return (1.0f - a) * color1 + a * color2;
+    return (background_gradient(dir));
 }
 
 
@@ -71,45 +66,21 @@ __kernel void render_kernel(__global int *img_buffer, int width, int height,
 
     float3 origin = (float3)(cam_x, cam_y, cam_z);
     float3 horizontal = (float3)(viewport_width, 0.0f, 0.0f);
-    float3 vertical = (float3)(0.0f, viewport_height, 0.0f);
+    float3 vertical = (float3)(0.0f, -viewport_height, 0.0f);
     
     // Lower Left Corner
-    float3 lower_left_corner = origin - (horizontal / 2.0f) - (vertical / 2.0f) - (float3)(0.0f, 0.0f, focal_length);
+    float3 top_left_corner = origin - (horizontal / 2.0f) - (vertical / 2.0f) - (float3)(0.0f, 0.0f, focal_length);
 
     // 4. Calculate UV
-    float u = (float)x / (float)(width - 1);
-    float v = 1.0f - ((float)y / (float)(height - 1));
+    float3 pixel_delta_u = horizontal / (float)width;
+    float3 pixel_delta_v = vertical / (float)height;
 
     // 5. Ray Direction
-    float3 direction = lower_left_corner + (u * horizontal) + (v * vertical) - origin;
-
-    // 6. Ray Color Logic (Inline for simplicity)
-    float3 sphere_center = (float3)(0.0f, 0.0f, -1.0f);
-    float radius = 0.5f;
+    float3 pixel00_loc = top_left_corner + 0.5f * (pixel_delta_u + pixel_delta_v);
+    float3 pixel_center = pixel00_loc + ((float)x * pixel_delta_u) + ((float)y * pixel_delta_v);
+    float3 direction = pixel_center - origin;
     
-    // Hit Sphere?
-    float3 oc = origin - sphere_center;
-    float a = dot(direction, direction);
-    float b = 2.0f * dot(oc, direction);
-    float c = dot(oc, oc) - radius * radius;
-    float discriminant = b * b - 4 * a * c;
-
-    float3 final_color;
-
-    if (discriminant > 0.0f) {
-        // Hit: Calculate Normal
-        float t = (-b - sqrt(discriminant)) / (2.0f * a);
-        float3 hit_point = origin + (direction * t);
-        float3 normal = normalize(hit_point - sphere_center);
-        final_color = 0.5f * (normal + 1.0f);
-    } else {
-        // Miss: Background Gradient
-        float3 unit_dir = normalize(direction);
-        float t = 0.5f * (unit_dir.y + 1.0f);
-        float3 white = (float3)(1.0f, 1.0f, 1.0f);
-        float3 blue = (float3)(0.5f, 0.7f, 1.0f);
-        final_color = (1.0f - t) * white + t * blue;
-    }
+    float3 final_color = ray_color(origin, direction);
 
     // 1. Calculate color
     uchar ir = (uchar)(255.99f * final_color.x);

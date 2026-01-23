@@ -54,7 +54,8 @@ void    init_gpu(t_data *data, char *kernel_file)
         exit(1);
     }
     data->gpu.context = clCreateContext(NULL, 1, &device, NULL, NULL, &err);
-    data->gpu.queue = clCreateCommandQueueWithProperties(data->gpu.context, device, 0, &err);
+    cl_queue_properties properties[] = {CL_QUEUE_PROPERTIES, CL_QUEUE_PROFILING_ENABLE, 0};
+    data->gpu.queue = clCreateCommandQueueWithProperties(data->gpu.context, device, properties, &err);
 
     if (err != CL_SUCCESS) {
         printf("Error: Failed to create Command Queue! %d\n", err);
@@ -149,10 +150,18 @@ void render_frame(t_data *data)
     // 3. Enqueue 2D Kernel
     // Note the '2' in the 3rd argument (dimensions)
     // Note we pass 'local_work' instead of NULL
+    cl_event event;
     err = clEnqueueNDRangeKernel(data->gpu.queue, data->gpu.kernel, 2, NULL, 
-                                 global_work, local_work, 0, NULL, NULL);
+                                 global_work, local_work, 0, NULL, &event);
                                  
     if (err) printf("Kernel Launch Error: %d\n", err);
+    clWaitForEvents(1, &event);
+    cl_ulong start, end;
+    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(start), &start, NULL);
+    clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(end), &end, NULL);
+
+    double gpu_time_ms = (double)(end - start) / 1000000.0;
+    printf("GPU Kernel TIme: %.3f ms\n", gpu_time_ms);
 
     clFinish(data->gpu.queue);
 
