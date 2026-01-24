@@ -29,13 +29,13 @@ MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
 MLX42_DIR  = MLX42
 MLX42_BUILD = $(MLX42_DIR)/build/libmlx42.a
 
-LDFLAGS = -L./libs -Wl,-rpath,'$$ORIGIN/libs'
-LDLIBS  = -ldl -lglfw -pthread -lm -lz -lOpenCL
-
+# LDFLAGS = -L./libs -Wl,-rpath,'$$ORIGIN/libs'-Wl,--disable-new-dtags
+# LDLIBS  = -ldl -lglfw -pthread -lm -lz -lOpenCL
+MLX_FLAGS = -L./libs -ldl -lglfw -pthread -lm -lz -lOpenCL -Wl,-rpath,'$$ORIGIN/libs' -Wl,--disable-new-dtags
 all: $(NAME)
 
 $(NAME): $(MLX42_BUILD) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(MLX42_BUILD) $(LDFLAGS) $(LDLIBS) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(MLX42_BUILD) $(MLX_FLAGS) -o $(NAME)
 
 $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
