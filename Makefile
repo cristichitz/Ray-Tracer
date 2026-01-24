@@ -1,41 +1,61 @@
 NAME = minirt
+
+SRCS = \
+src/main.c \
+src/gpu_setup.c \
+src/math/vec3.c \
+src/math/color.c
+
+OBJ_DIR = obj
+OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
+
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
+CFLAGS += -DCL_TARGET_OPENCL_VERSION=200
+INCLUDES = -I./include -I./MLX42/include
 
-OBJ_DIR = obj/
+VFLAGS = -g
+SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
-SRCS = src/main.c src/gpu_setup.c src/math/vec3.c src/math/color.c
+debug ?= 0
+ifeq ($(debug), 1)
+	CFLAGS := $(CFLAGS) $(VFLAGS)
+endif
+ifeq ($(debug), 2)
+	CFLAGS := $(CFLAGS) $(SFLAGS)
+endif
 
-OBJS = $(SRCS:%.c=$(OBJ_DIR)%.o)
-INCLUDES = -I./include -I../MLX42/include
+MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
+MLX42_DIR  = MLX42
+MLX42_BUILD = $(MLX42_DIR)/build/libmlx42.a
 
-MLX_PATH = ../MLX42/
-MLX_BUILD_PATH = $(MLX_PATH)/build
-MLX_LIB = $(MLX_BUILD_PATH)/libmlx42.a
+LDFLAGS = -L./libs -Wl,-rpath,'$$ORIGIN/libs'
+LDLIBS  = -ldl -lglfw -pthread -lm -lz -lOpenCL
 
-MLX_FLAGS = -L$(MLX_BUILD_PATH) -L./libs -lmlx42 -ldl -lglfw -pthread -lm -lz -lOpenCL -Wl,-rpath,'$$ORIGIN/libs' -Wl,--disable-new-dtags
+all: $(NAME)
 
-all: $(MLX_LIB) $(NAME)
+$(NAME): $(MLX42_BUILD) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) $(MLX42_BUILD) $(LDFLAGS) $(LDLIBS) -o $(NAME)
 
-$(MLX_LIB):
-	@echo "Building MLX42..."
-	@cmake $(MLX_PATH) -B $(MLX_BUILD_PATH)
-	@cmake --build $(MLX_BUILD_PATH) -j4
-
-$(OBJ_DIR)%.o: %.c
+$(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(NAME): $(OBJS)
-			 $(CC) $(CFLAGS) $(OBJS) $(MLX_FLAGS) -o $(NAME)
+$(MLX42_DIR):
+	git clone $(MLX42_REPO) $(MLX42_DIR)
+
+$(MLX42_BUILD): | $(MLX42_DIR)
+	cmake -B $(MLX42_DIR)/build -S $(MLX42_DIR)
+	cmake --build $(MLX42_DIR)/build -j4
 
 clean:
 	rm -rf $(OBJ_DIR)
-	@rm -rf $(MLX_BUILD_PATH)	
+	rm -rf $(MLX42_DIR)/build
 
 fclean: clean
-				rm -f $(NAME)
+	rm -f $(NAME)
+	rm -rf $(MLX42_DIR)
 
 re: fclean all
 
-.PHONY: all clean fclean re	
+.PHONY: all clean fclean re
