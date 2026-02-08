@@ -32,12 +32,14 @@ void cleanup(void *param)
     clean_gpu(data);
     
     printf("Cleaning up and exiting...\n");
-}
-
-int main(void)
+}    
+int main(int ac, char **av)
 {
   t_data  data;
   float   aspect_ratio;
+
+  parse_i
+
 
   aspect_ratio = 16.0 / 9.0;
   data.width = 1920;

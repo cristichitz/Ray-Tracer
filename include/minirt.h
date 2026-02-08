@@ -11,6 +11,7 @@
 # include <stdlib.h>
 # include <sys/time.h>
 # include <unistd.h>
+#include "parse.h"
 
 typedef struct s_gpu
 {

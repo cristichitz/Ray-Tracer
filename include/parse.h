@@ -6,14 +6,14 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/04 15:19:02 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/06 14:40:51 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSE_H
 #define PARSE_H
 
-
+int parse_input(int ac, char **av)
 
 
 

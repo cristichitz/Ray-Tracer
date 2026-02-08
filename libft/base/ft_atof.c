@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.c                                            :+:      :+:    :+:   */
+/*   ft_atof.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/06 14:40:38 by timurray         ###   ########.fr       */
+/*   Created: 2026/02/06 11:11:47 by timurray          #+#    #+#             */
+/*   Updated: 2026/02/08 16:32:55 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parse.h"
+#include "../libft.h"
 
-int parse_input(int ac, char **av)
+float ft_atof(const char *nptr)
 {
-	
+	return(ft_strtof(nptr, NULL));
 }
