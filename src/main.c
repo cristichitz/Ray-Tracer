@@ -38,7 +38,7 @@ int main(int ac, char **av)
   t_data  data;
   float   aspect_ratio;
 
-  parse_i
+  parse_input()
 
 
   aspect_ratio = 16.0 / 9.0;
