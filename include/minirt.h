@@ -4,6 +4,7 @@
 # include "../include/CL/cl.h" // or just <CL/cl.h> if you add the -I flag
 # include "MLX42/MLX42.h"
 # include "math.h"
+# include "parse.h"
 # include "stdio.h"
 # include "vec3.h"
 # include <limits.h>
@@ -11,7 +12,6 @@
 # include <stdlib.h>
 # include <sys/time.h>
 # include <unistd.h>
-#include "parse.h"
 
 typedef struct s_gpu
 {
@@ -50,5 +50,8 @@ void					render_frame(t_data *data);
 void					clean_gpu(t_data *data);
 
 void					game_loop(void *param);
+
+// ERROR
+void					print_error(char *msg);
 
 #endif

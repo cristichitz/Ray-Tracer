@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/02/04 18:08:02 by timurray         ###   ########.fr        #
+#    Updated: 2026/02/14 17:11:16 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,14 +16,15 @@ CFLAGS = -Wall -Wextra -Werror
 CFLAGS += -DCL_TARGET_OPENCL_VERSION=200
 VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
-INCLUDES = -I./include -I./MLX42/include
+INCLUDES = -I./include -I./MLX42/include -I./libft
 
 SRCS = \
 src/main.c \
 src/gpu_setup.c \
 src/math/vec3.c \
 src/math/color.c \
-src/parse.c 
+src/parse.c \
+src/error.c 
 
 
 MLX42_REPO = https://github.com/codam-coding-college/MLX42.git

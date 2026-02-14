@@ -1,24 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.h                                            :+:      :+:    :+:   */
+/*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/14 17:27:14 by timurray         ###   ########.fr       */
+/*   Created: 2026/02/14 17:10:43 by timurray          #+#    #+#             */
+/*   Updated: 2026/02/14 17:19:05 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSE_H
-#define PARSE_H
+#include "minirt.h"
 
-#include <fcntl.h>
-#include "libft.h"
-
-
-int parse_input(int ac, char **av);
-
-
-
-#endif
+void print_error(char *msg)
+{
+	ft_printfd(2,"Error\n %s\n",msg);
+}
