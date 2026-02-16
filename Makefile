@@ -1,58 +1,38 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/02/04 18:08:02 by timurray         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-NAME = minirt
+NAME = minirt_cpu
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
-CFLAGS += -DCL_TARGET_OPENCL_VERSION=200
 VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
-INCLUDES = -I./include -I./MLX42/include
 
-SRCS = \
-src/main.c \
-src/gpu_setup.c \
-src/math/vec3.c \
-src/math/color.c \
-src/parse.c 
+# Update these to match where you saved the CPU files
+SRCS = main_cpu.c render_cpu2.c
+OBJ_DIR = obj
+OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
+INCLUDES = -I. -I./MLX42/include -I./libft
 
 MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
 MLX42_DIR  = MLX42
 MLX42_BUILD = $(MLX42_DIR)/build/libmlx42.a
 
+LIBFT_DIR  = ./libft
+LIBFT = $(LIBFT_DIR)/libft.a
 
-LIBFT_DIR  := ./libft
-LIBFT := $(LIBFT_DIR)/libft.a
-
-OBJ_DIR = obj
-OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
-
+# Removed -lOpenCL
+MLX_FLAGS = -ldl -lglfw -pthread -lm -lz
 
 debug ?= 0
 ifeq ($(debug), 1)
-	CFLAGS := $(CFLAGS) $(VFLAGS)
+	CFLAGS += $(VFLAGS)
 endif
 ifeq ($(debug), 2)
-	CFLAGS := $(CFLAGS) $(SFLAGS)
+	CFLAGS += $(SFLAGS)
 endif
 
-# LDFLAGS = -L./libs -Wl,-rpath,'$$ORIGIN/libs'-Wl,--disable-new-dtags
-# LDLIBS  = -ldl -lglfw -pthread -lm -lz -lOpenCL
-MLX_FLAGS = -L./libs -ldl -lglfw -pthread -lm -lz -lOpenCL -Wl,-rpath,'$$ORIGIN/libs' -Wl,--disable-new-dtags
 all: $(NAME)
 
 $(NAME): $(MLX42_BUILD) $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(MLX42_BUILD) $(MLX_FLAGS) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(MLX42_BUILD) $(LIBFT) $(MLX_FLAGS) -o $(NAME)
 
 $(LIBFT):
 	make -C $(LIBFT_DIR)
@@ -72,7 +52,7 @@ clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(MLX42_DIR)/build
 	make clean -C $(LIBFT_DIR)
-	
+
 fclean: clean
 	rm -f $(NAME)
 	rm -rf $(MLX42_DIR)
