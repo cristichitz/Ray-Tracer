@@ -1,5 +1,10 @@
 #include "rt_cpu.h"
 
+t_vec3 make_vec(float a, float b, float c)
+{
+  return (t_vec3){a, b, c};
+}
+
 t_vec3 add(t_vec3 a, t_vec3 b)
 {
   return (t_vec3){a.x + b.x, a.y + b.y, a.z + b.z};
@@ -22,15 +27,10 @@ float dot(t_vec3 a, t_vec3 b)
 
 t_vec3 norm(t_vec3 a)
 {
-  float len = sqrtf(a.x * a.x + a.y * a.y + a.z * a.z);
-  return scale(a, sq);
+  float len = sqrtf(a.x *a.x + a.y * a.y + a.z * a.z);
+  return make_vec(a.x / len, a.y / len, a.z / len);
 }
 
-
-t_vec3 make_vec(float a, float b, float c)
-{
-  return (t_vec3){a, b, c};
-}
 
 void  print_vec(t_vec3 a)
 {
@@ -40,18 +40,15 @@ void  print_vec(t_vec3 a)
 t_vec3 get_ray_color(t_vec3 origin, t_vec3 dir)
 {
   t_vec3 sphere_center = make_vec(0.0f, 0.0f, -1.0f);
-
   float radius = 0.5f;
 
   t_vec3 oc = sub(origin, sphere_center);
 
   float a = dot(dir, dir);
   float b = 2.0f * dot(oc, dir);
-
   float c = dot(oc, oc) - radius * radius;
 
   float discriminant = b*b - 4.0f * a * c;
-
   if (discriminant > 0.0f)
   {
     float t = (-b - sqrtf(discriminant)) / (2.0f * a);
@@ -68,7 +65,6 @@ t_vec3 get_ray_color(t_vec3 origin, t_vec3 dir)
 
     return add(scale(white, 1.0f - t), scale(blue, t));
   }
-  
 }
 
 int render_frame(t_data* data) {
@@ -79,23 +75,29 @@ int render_frame(t_data* data) {
 
   t_vec3 origin = make_vec(data->cam_x, data->cam_y, data->cam_z);
   t_vec3 horizontal = make_vec(viewport_width, 0.0f, 0.0f);
-  t_vec3 vertical = make_vec(0.0f, viewport_height, 0.0f);
-  
+  t_vec3 vertical = make_vec(0.0f, -viewport_height, 0.0f);
 
-  t_vec3 lower_left_corner = sub(origin, scale(horizontal, 0.5f));
-  lower_left_corner = sub(lower_left_corner, scale(vertical, 0.5f));
-  lower_left_corner = sub(lower_left_corner, make_vec(0.0f, 0.0f, focal_length));
+  t_vec3 pixel_delta_u =  scale(horizontal, (float)1 / (float)data->width);
+  t_vec3 pixel_delta_v = scale(vertical, (float)1 / (float)data->height);
+  
+  //upper = origin - horizontal / 2 - vertical / 2 - focal_length
+  t_vec3 upper_left_corner = sub(origin, scale(horizontal, 0.5f));
+  upper_left_corner = sub(upper_left_corner, scale(vertical, 0.5f));
+  upper_left_corner = sub(upper_left_corner, make_vec(0.0f, 0.0f, focal_length));
+
+  // corner + 0.5 * (pixel_delta_u + pixel_delta_v)
+  t_vec3 pixel00_loc = add(upper_left_corner, scale(add(pixel_delta_u, pixel_delta_v), 0.5f)); 
 
   for (uint32_t y = 0; y < data->height; y++)
   {
     for (uint32_t x = 0; x < data->width; x++) 
     {
-      float u = (float)x / (float)(data->width - 1);
-      float v = 1.0f - ((float)y / (data->height - 1));
 
-      t_vec3 direction = add(lower_left_corner, scale(horizontal, u));
-      direction = add(direction, scale(vertical, v));
-      direction = sub(direction, origin);
+      //t_vec3 pixel_center = pixel00_loc + (x * pixel_delta_u) + (y * pixel_delta_v);
+      t_vec3 pixel_center = add(pixel00_loc, scale(pixel_delta_u, x));
+      pixel_center = add(pixel_center, scale(pixel_delta_v, y));
+
+      t_vec3 direction = sub(pixel_center, origin);
 
       t_vec3 color = get_ray_color(origin, direction);
 
@@ -110,6 +112,5 @@ int render_frame(t_data* data) {
     }
     
   }
-  //mlx_put_pixel(data->img, x, y, pixel_color);
   return (0);
 }
