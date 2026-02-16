@@ -1,6 +1,5 @@
 #include "rt_cpu.h"
 
-
 void game_loop(void *param)
 {
   t_data *data = (t_data *)param;
@@ -29,6 +28,12 @@ int main(void)
     data.cam_y = 0.0f;
     data.cam_z = 0.0f;
     
+    data.aspect_ratio = (float)data.width / (float)data.height;
+    data.viewport_height = 2.0f;
+    data.viewport_width = data.aspect_ratio * data.viewport_height;
+    data.focal_length = 1.0f;
+
+    init_sphere(&data);
     // Init MlX42
     data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
     if (!data.mlx) { puts(mlx_strerror(mlx_errno)); return(EXIT_FAILURE); }
