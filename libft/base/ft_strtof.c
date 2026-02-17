@@ -73,9 +73,7 @@ static inline void	handle_exp(const char **nptr, double *num)
 float	ft_strtof(const char *nptr, char **endptr)
 {
 	int		sign;
-	int		e_sign;
 	double	num;
-	int		e;
 
 	while (ft_isspace(*nptr))
 		nptr++;

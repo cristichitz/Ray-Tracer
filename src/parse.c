@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/14 17:30:03 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/15 13:16:33 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,5 @@ int	parse_input(int ac, char **av)
 
 // Check for valid filename
 // Check if file exists
-// 
-//
+// Read each line
+// vector each pointer
