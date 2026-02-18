@@ -3,21 +3,12 @@
 t_vec3 get_ray_color(t_data *data, t_ray ray)
 {
   //We define a nice sphere;
-  float t = data->sphere.hit(&data->sphere, ray);
+  t_hit_record  hit_record;
+  bool hit = data->sphere.hit(&data->sphere, ray, 0, INFINITY, &hit_record);
 
-  if (t > 0.0f)
+  if (hit)
   {
-    // origim + time * direction
-    // P(t) = O + t*D;
-    t_vec3 hit_point = ray.at(&ray, t);
-    // Normal vector from sphere_center to hit_point
-    t_vec3 normal = sub(hit_point, data->sphere.center);
-    // unit vector of the normal
-    t_vec3 unit_vec = norm(normal);
-    // (unit_vec + 1) / 2 
-    // the unit vector ranges from -1 to 1
-    // we scale it to be between 0 and 1 and use its x y z values as r g b colors
-    return scale(add(unit_vec, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
+    return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
   }
   else
   {
@@ -36,21 +27,6 @@ t_vec3 get_ray_color(t_data *data, t_ray ray)
   }
 }
 
-t_vec3 ray_at(t_ray *self, float t)
-{
-  t_vec3 result;
-  result = add(self->origin, scale(self->dir, t));
-  return (result);
-}
-
-t_ray make_ray(t_vec3 origin, t_vec3 direction) {
-  t_ray r;
-
-  r.origin = origin;
-  r.dir = direction;
-  r.at = ray_at;
-  return (r);
-}
 
 int render_frame(t_data* data) {
 

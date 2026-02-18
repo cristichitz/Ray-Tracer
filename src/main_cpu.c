@@ -33,6 +33,15 @@ int main(void)
     data.viewport_width = data.aspect_ratio * data.viewport_height;
     data.focal_length = 1.0f;
 
+    // World
+    /* t_hittable_list world; */
+    /**/
+    /* if (!init_world(&world)) */
+    /*   return (EXIT_FAILURE); */
+    /**/
+    /**/
+    /* world.add(&world, make_sphere(make_vec(0, 0, 1), 0.5)); */
+
     init_sphere(&data);
     // Init MlX42
     data.mlx = mlx_init(data.width, data.height, "CPU RT", true);

@@ -20,6 +20,11 @@ t_vec3 scale(t_vec3 a, float b)
   return (t_vec3){a.x * b, a.y * b, a.z * b};
 }
 
+t_vec3 divide(t_vec3 a, float b)
+{
+  return (t_vec3){a.x / b, a.y / b, a.z /b};
+}
+
 float dot(t_vec3 a, t_vec3 b)
 {
   return (a.x * b.x + a.y * b.y + a.z * b.z);
