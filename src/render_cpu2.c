@@ -4,6 +4,7 @@ t_vec3 get_ray_color(t_data *data, t_ray ray)
 {
   //We define a nice sphere;
   t_hit_record  hit_record;
+  hit_record.set_face_normal = ft_set_face_normal;
   bool hit = data->sphere.hit(&data->sphere, ray, 0, INFINITY, &hit_record);
 
   if (hit)

@@ -31,30 +31,11 @@ bool  hit_sphere(t_sphere *self, t_ray ray, float t_min, float t_max, t_hit_reco
   // Point - sphere_center is already a normal vector
   // Dividing by the radius makes it unit length aswell
   // PC / radius
-  t_vec3 outward_normal = divide(sub(rec->p, self->center), self->radius); 
-  /* rec->set_face_normal(rec, ray, outward_normal); */
-  rec->normal = outward_normal;
+  t_vec3 outward_normal = divide(sub(rec->p, self->center), self->radius);
+  rec->set_face_normal(rec, ray, outward_normal);
   
   return (true);
 }
-
-/*
-float hit_sphere(t_sphere *self, t_ray ray)
-{
-  // origin -> sphere_center 
-  t_vec3 oc = sub(self->center, ray.origin);
-
-  float a = dot(ray.dir, ray.dir);
-  float b = -2.0f * dot(ray.dir, oc);
-  float c = dot(oc, oc) - self->radius * self->radius;
-
-  float discriminant = b*b - 4.0f * a * c;
-  if (discriminant < 0)
-    return (-1.0f);
-  else
-    return ((-b - sqrtf(discriminant)) / (2.0*a));
-}
-*/
 
 void  init_sphere(t_data *data)
 {

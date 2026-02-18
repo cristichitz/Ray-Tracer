@@ -19,13 +19,13 @@ t_ray make_ray(t_vec3 origin, t_vec3 direction) {
 }
 
 // Hit record normal vector
-void  set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal)
+void  ft_set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal)
 {
   // true if the ray comes from outside the sphere 
   // (as in the ray doesn t come from inside like in a lightbulb)
   self->front_face = dot(r.dir, outward_normal) < 0;
   if (self->front_face != true)
-    outward_normal = scale(outward_normal, -1);
+    outward_normal = scale(outward_normal, -1.0f);
   self->normal = outward_normal;
 }
 
@@ -39,6 +39,33 @@ void add_object(t_hittable_list *self, void *object)
 void destroy_objects(t_hittable_list *self)
 {
   ft_vec_free(self->objects); 
+}
+
+bool hit_objects(t_hittable_list *self, t_ray ray, float t_min, float t_max, t_hit_record *rec)
+{
+  t_hit_record temp_rec;
+  temp_rec.set_face_normal = ft_set_face_normal;
+
+  bool hit_anything = false;
+  float closest_so_far = t_max;
+
+  uint32_t i;
+  t_sphere *object;
+  i = 0;
+  while (i < self->objects->len)
+  {
+    object = ft_vec_get(self->objects, i);
+    printf("radius: %f\n", object->radius);
+    if (object->hit(object, ray, t_min, closest_so_far, &temp_rec))
+    {
+      hit_anything = true;
+      closest_so_far = temp_rec.t;
+      rec = &temp_rec;
+    }
+    i++;
+  }
+
+  return hit_anything; 
 }
 
 /* bool hit_objects() */

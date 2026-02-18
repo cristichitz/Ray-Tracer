@@ -9,6 +9,13 @@
 
 //objects
 #include "vec3.h"
+
+// Constants
+inline float degrees_to_radians(float degrees)
+{
+  return degrees * M_PI / 180.0f;
+}
+
 typedef t_vec t_list;
 
 typedef struct s_ray {
@@ -21,8 +28,7 @@ typedef struct s_hit_record {
   t_vec3  p;
   t_vec3  normal;
   float   t;
-  bool    front_face;
-  
+  bool    front_face; 
   void    (*set_face_normal)(struct s_hit_record *self, t_ray ray, t_vec3 outward_normal);
 } t_hit_record;
 
@@ -30,7 +36,7 @@ typedef struct s_hittable_list {
    t_list *objects;
    void   (*add)(struct s_hittable_list *self, void *object);
    void   (*destroy)(struct s_hittable_list *self);
-   bool   (*hit)(struct s_hittable_list *self, t_ray r, float t_min, t_hit_record *rec);
+   bool   (*hit)(struct s_hittable_list *self, t_ray r, float t_min, float t_max, t_hit_record *rec);
 } t_hittable_list;
 
 // Sphere object
@@ -77,4 +83,10 @@ int  init_world(t_hittable_list  *world);
 
 // Ray
 t_ray make_ray(t_vec3 origin, t_vec3 direction);
+
+// Hittable
+void  ft_set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal);
+
+
+
 #endif
