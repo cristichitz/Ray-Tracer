@@ -9,7 +9,8 @@ t_vec3 ray_at(t_ray *self, float t)
   return (result);
 }
 
-t_ray make_ray(t_vec3 origin, t_vec3 direction) {
+t_ray make_ray(t_vec3 origin, t_vec3 direction)
+{
   t_ray r;
 
   r.origin = origin;
@@ -31,9 +32,11 @@ void  ft_set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal)
 
 // List of hittable objects
 
-void add_object(t_hittable_list *self, void *object)
+int add_object(t_hittable_list *self, void *object)
 {
-  ft_vec_push(self->objects, object);
+  if (ft_vec_push(self->objects, object) != 1)
+    return (EXIT_FAILURE);
+  return (EXIT_SUCCESS);
 }
 
 void destroy_objects(t_hittable_list *self)
@@ -50,34 +53,31 @@ bool hit_objects(t_hittable_list *self, t_ray ray, float t_min, float t_max, t_h
   float closest_so_far = t_max;
 
   uint32_t i;
-  t_sphere *object;
+  t_hittable *object;
   i = 0;
   while (i < self->objects->len)
   {
     object = ft_vec_get(self->objects, i);
-    printf("radius: %f\n", object->radius);
     if (object->hit(object, ray, t_min, closest_so_far, &temp_rec))
     {
       hit_anything = true;
       closest_so_far = temp_rec.t;
-      rec = &temp_rec;
+      *rec = temp_rec;
     }
     i++;
   }
-
-  return hit_anything; 
+  return (hit_anything); 
 }
 
 /* bool hit_objects() */
 
 int  init_world(t_hittable_list  *world)
-{
-  ft_vec_new(world->objects, 0, sizeof(void *));
-
+{ 
+  if (ft_vec_new(world->objects, 1, sizeof(void *)) == -1)
+      return (EXIT_FAILURE);
 
   world->add = add_object;
   world->destroy = destroy_objects;
-  /* world->hit = hit_objects; */
-  return (0);
-
+  world->hit = hit_objects;
+  return (EXIT_SUCCESS);
 }

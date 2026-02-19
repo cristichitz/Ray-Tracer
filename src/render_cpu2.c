@@ -1,35 +1,33 @@
 #include "rt_cpu.h"
 
-t_vec3 get_ray_color(t_data *data, t_ray ray)
+t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
 {
   //We define a nice sphere;
   t_hit_record  hit_record;
   hit_record.set_face_normal = ft_set_face_normal;
-  bool hit = data->sphere.hit(&data->sphere, ray, 0, INFINITY, &hit_record);
+  /* bool hit = data->sphere.hit(&data->sphere, ray, 0, INFINITY, &hit_record); */
 
-  if (hit)
-  {
+  if (world.hit(&world, ray, 0, INFINITY, &hit_record))
     return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
-  }
-  else
-  {
-    //Background 
 
-    // We normalize the direction vector meaning it's length is 1
-    t_vec3 unit_dir = norm(ray.dir);
-    
-    // make it between 0 and 1 rather than -1 to 1
-    float t = 0.5f * (unit_dir.y + 1.0f);
-    t_vec3 white = make_vec(1.0f, 1.0f, 1.0f);
-    t_vec3 blue = make_vec(0.5f, 0.7f, 1.0f);
+  //Background 
 
-    // (1 - t)white + t(blue);
-    return add(scale(white, 1.0f - t), scale(blue, t));
-  }
+  // We normalize the direction vector meaning it's length is 1
+  t_vec3 unit_dir = norm(ray.dir);
+  
+  // make it between 0 and 1 rather than -1 to 1
+  float t = 0.5f * (unit_dir.y + 1.0f);
+  t_vec3 white = make_vec(1.0f, 1.0f, 1.0f);
+  t_vec3 blue = make_vec(0.5f, 0.7f, 1.0f);
+
+  // (1 - t)white + t(blue);
+  return add(scale(white, 1.0f - t), scale(blue, t));
+
 }
 
 
-int render_frame(t_data* data) {
+int render_frame(t_data* data)
+{
 
   t_vec3 origin = make_vec(data->cam_x, data->cam_y, data->cam_z);
   t_vec3 horizontal = make_vec(data->viewport_width, 0.0f, 0.0f);
@@ -58,7 +56,7 @@ int render_frame(t_data* data) {
 
       t_ray r = make_ray(origin, direction);
 
-      t_vec3 color = get_ray_color(data, r);
+      t_vec3 color = get_ray_color(data->world, r);
 
       uint32_t ir = (uint32_t)(255.99f * color.x);
       uint32_t ig = (uint32_t)(255.99f * color.y);

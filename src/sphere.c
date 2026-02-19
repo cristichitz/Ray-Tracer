@@ -1,8 +1,11 @@
 #include "rt_cpu.h"
 
 
-bool  hit_sphere(t_sphere *self, t_ray ray, float t_min, float t_max, t_hit_record *rec)
+bool  hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *rec)
 {
+  t_sphere *self;
+
+  self = (t_sphere *)base;
   t_vec3 oc = sub(self->center, ray.origin);
 
   float a = dot(ray.dir, ray.dir);
@@ -16,15 +19,14 @@ bool  hit_sphere(t_sphere *self, t_ray ray, float t_min, float t_max, t_hit_reco
   float sqrtd = sqrt(discriminant);
 
   float root = (h - sqrtd) / a;
-
   if (root <= t_min || t_max <= root)
   {
     root = (h + sqrtd) / a;
     if (root <= t_min || t_max <= root)
       return (false);
   }
-  rec->t = root;
 
+  rec->t = root;
   //point at t in the ray direction
   rec->p = ray.at(&ray, rec->t);
 
@@ -37,24 +39,27 @@ bool  hit_sphere(t_sphere *self, t_ray ray, float t_min, float t_max, t_hit_reco
   return (true);
 }
 
-void  init_sphere(t_data *data)
-{
-  t_sphere sphere;
-
-  sphere.center = make_vec(0, 0, -1);
-  sphere.radius = 0.5f;
-  sphere.hit = hit_sphere;
-
-  data->sphere = sphere;
-}
+/* void  init_sphere(t_data *data) */
+/* { */
+/*   t_sphere sphere; */
+/**/
+/*   sphere.center = make_vec(0, 0, -1); */
+/*   sphere.radius = 0.5f; */
+/*   sphere.hit = hit_sphere; */
+/**/
+/*   data->sphere = sphere; */
+/* } */
 
 t_sphere* make_sphere(t_vec3 center, float radius)
 {
   t_sphere *s;
 
   s = malloc(sizeof(t_sphere));
+  if (!s)
+    return (NULL);
   s->radius = radius;
   s->center = center;
-  s->hit = hit_sphere;
+  s->base.hit = hit_sphere;
+  //s->hit = hit_sphere;
   return (s);
 }

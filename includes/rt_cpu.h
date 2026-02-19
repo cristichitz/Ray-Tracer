@@ -34,16 +34,23 @@ typedef struct s_hit_record {
 
 typedef struct s_hittable_list {
    t_list *objects;
-   void   (*add)(struct s_hittable_list *self, void *object);
+   int    (*add)(struct s_hittable_list *self, void *object);
    void   (*destroy)(struct s_hittable_list *self);
    bool   (*hit)(struct s_hittable_list *self, t_ray r, float t_min, float t_max, t_hit_record *rec);
 } t_hittable_list;
 
+// Base class 
+typedef struct s_hittable {
+  bool  (*hit)(void *object, t_ray ray, float t_min, float t_max, t_hit_record *rec);
+  void  (*destroy)(void *object);
+} t_hittable;
+
 // Sphere object
 typedef struct s_sphere {
-  t_vec3  center;
-  float   radius;
-  bool   (*hit)(struct s_sphere *self, t_ray ray, float t_min, float t_max, t_hit_record *rec);
+  t_hittable  base;
+  t_vec3      center;
+  float       radius;
+  // bool   (*hit)(struct s_sphere *self, t_ray ray, float t_min, float t_max, t_hit_record *rec);
 } t_sphere;
 
 typedef struct s_data {
@@ -64,12 +71,13 @@ typedef struct s_data {
     float focal_length;
 
     t_sphere sphere;
+    t_hittable_list world;
     
 } t_data;
 
 
-bool      hit_sphere(t_sphere *self, t_ray ray, float t_min, float t_max, t_hit_record *rec);
-void      init_sphere(t_data *data);
+bool      hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *rec);
+// void      init_sphere(t_data *data);
 t_sphere* make_sphere(t_vec3 center, float radius);
 
 
