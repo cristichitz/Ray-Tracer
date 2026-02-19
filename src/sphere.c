@@ -1,6 +1,5 @@
 #include "rt_cpu.h"
 
-
 bool  hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *rec)
 {
   t_sphere *self;
@@ -29,7 +28,6 @@ bool  hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *
   rec->t = root;
   //point at t in the ray direction
   rec->p = ray.at(&ray, rec->t);
-
   // Point - sphere_center is already a normal vector
   // Dividing by the radius makes it unit length aswell
   // PC / radius
