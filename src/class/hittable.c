@@ -30,7 +30,6 @@ void  ft_set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal)
 }
 
 // List of hittable objects
-
 int add_object(t_hittable_list *self, void *object)
 {
   if (ft_vec_push(self->objects, object) != 1)
@@ -43,13 +42,13 @@ void destroy_objects(t_hittable_list *self)
   ft_vec_free(self->objects); 
 }
 
-bool hit_objects(t_hittable_list *self, t_ray ray, float t_min, float t_max, t_hit_record *rec)
+bool hit_objects(t_hittable_list *self, t_ray ray, t_interval t, t_hit_record *rec)
 {
   t_hit_record temp_rec;
   temp_rec.set_face_normal = ft_set_face_normal;
 
   bool hit_anything = false;
-  float closest_so_far = t_max;
+  float closest_so_far = t.max;
 
   uint32_t i;
   t_hittable *object;
@@ -57,7 +56,8 @@ bool hit_objects(t_hittable_list *self, t_ray ray, float t_min, float t_max, t_h
   while (i < self->objects->len)
   {
     object = ft_vec_get(self->objects, i);
-    if (object->hit(object, ray, t_min, closest_so_far, &temp_rec))
+    t_interval new_t;
+    if (object->hit(object, ray, interval_init(&new_t, t.min, closest_so_far), &temp_rec))
     {
       hit_anything = true;
       closest_so_far = temp_rec.t;

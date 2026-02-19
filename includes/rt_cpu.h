@@ -2,7 +2,6 @@
 #define RT_CPU_H
 
 #include "MLX42/MLX42.h"
-#include "interval.h"
 //Sphere inclues hittable...
 #include "sphere.h"
 
@@ -18,7 +17,7 @@ typedef struct s_hittable_list {
    t_list *objects;
    int    (*add)(struct s_hittable_list *self, void *object);
    void   (*destroy)(struct s_hittable_list *self);
-   bool   (*hit)(struct s_hittable_list *self, t_ray r, float t_min, float t_max, t_hit_record *rec);
+   bool   (*hit)(struct s_hittable_list *self, t_ray r, t_interval t, t_hit_record *rec);
 } t_hittable_list;
 
 typedef struct s_data {

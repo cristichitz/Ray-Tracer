@@ -1,20 +1,21 @@
 #include "interval.h"
 
-bool  contains(t_interval *self, float x)
+bool  ft_contains(t_interval *self, float x)
 {
   return (self->min <= x && x <= self->max);
 }
 
-bool  surrounds(t_interval *self, float x)
+bool  ft_surrounds(t_interval *self, float x)
 {
   return (self->min < x && x < self->max);
 }
 
-void interval_init(t_interval *i, float min, float max)
+t_interval interval_init(t_interval *i, float t_min, float t_max)
 {
-  i->min = min;
-  i->max = max;
-  i->size = max - min;
-  i->contains = contains;
-  i->surrounds = surrounds;
+  i->min = t_min;
+  i->max = t_max;
+  i->size = t_max - t_min;
+  i->contains = ft_contains;
+  i->surrounds = ft_surrounds;
+  return (*i);
 }

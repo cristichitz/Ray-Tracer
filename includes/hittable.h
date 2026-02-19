@@ -1,11 +1,11 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include <stdbool.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include "libft.h"
 #include "vec3.h"
+#include "interval.h"
 
 typedef struct s_ray {
   t_vec3 origin;
@@ -23,7 +23,7 @@ typedef struct s_hit_record {
 
 // Base class 
 typedef struct s_hittable {
-  bool  (*hit)(void *object, t_ray ray, float t_min, float t_max, t_hit_record *rec);
+  bool  (*hit)(void *object, t_ray ray, t_interval t, t_hit_record *rec);
   void  (*destroy)(void *object);
 } t_hittable;
 

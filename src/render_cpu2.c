@@ -6,7 +6,8 @@ t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
   t_hit_record  hit_record;
   hit_record.set_face_normal = ft_set_face_normal;
 
-  if (world.hit(&world, ray, 0, INFINITY, &hit_record))
+  t_interval t_int;
+  if (world.hit(&world, ray, interval_init(&t_int, 0, INFINITY), &hit_record))
     return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
 
   //Background 

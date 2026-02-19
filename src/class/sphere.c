@@ -1,6 +1,6 @@
 #include "sphere.h"
 
-bool  hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *rec)
+bool  hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
   t_sphere *self;
 
@@ -18,10 +18,10 @@ bool  hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *
   float sqrtd = sqrt(discriminant);
 
   float root = (h - sqrtd) / a;
-  if (root <= t_min || t_max <= root)
+  if (!t.surrounds(&t, root))
   {
     root = (h + sqrtd) / a;
-    if (root <= t_min || t_max <= root)
+    if (!t.surrounds(&t, root))
       return (false);
   }
 
