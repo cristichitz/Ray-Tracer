@@ -56,8 +56,7 @@ bool hit_objects(t_hittable_list *self, t_ray ray, t_interval t, t_hit_record *r
   while (i < self->objects->len)
   {
     object = ft_vec_get(self->objects, i);
-    t_interval new_t;
-    if (object->hit(object, ray, interval_init(&new_t, t.min, closest_so_far), &temp_rec))
+    if (object->hit(object, ray, interval_init(t.min, closest_so_far), &temp_rec))
     {
       hit_anything = true;
       closest_so_far = temp_rec.t;

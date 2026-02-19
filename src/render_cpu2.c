@@ -6,8 +6,7 @@ t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
   t_hit_record  hit_record;
   hit_record.set_face_normal = ft_set_face_normal;
 
-  t_interval t_int;
-  if (world.hit(&world, ray, interval_init(&t_int, 0, INFINITY), &hit_record))
+  if (world.hit(&world, ray, interval_init(0, INFINITY), &hit_record))
     return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
 
   //Background 
@@ -24,28 +23,41 @@ t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
   return add(scale(white, 1.0f - t), scale(blue, t));
 }
 
+void  write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
+{
+  uint32_t r;
+  uint32_t g;
+  uint32_t b;
+  uint32_t pixel_color;
+  t_interval intensity;
+
+  intensity = interval_init(0.0f, 0.999f);
+
+  r = (uint32_t)(255.99f * intensity.clamp(&intensity, color.x));
+  g = (uint32_t)(255.99f * intensity.clamp(&intensity, color.y));
+  b = (uint32_t)(255.99f * intensity.clamp(&intensity, color.z));
+  pixel_color = (r <<  24) | (g << 16) | (b << 8) | 255;
+  mlx_put_pixel(data->img, x, y, pixel_color);
+}
+
 int render_frame(t_data* data)
 {
+  t_vec3  pixel_center;
+  t_vec3  direction;
+  t_ray   r;
+  t_vec3  color;
+
   for (uint32_t y = 0; y < data->height; y++)
   {
     for (uint32_t x = 0; x < data->width; x++) 
     {
       //t_vec3 pixel_center = pixel00_loc + (x * pixel_delta_u) + (y * pixel_delta_v);
-      t_vec3 pixel_center = add(data->pixel00_loc, scale(data->pixel_width, x));
+      pixel_center = add(data->pixel00_loc, scale(data->pixel_width, x));
       pixel_center = add(pixel_center, scale(data->pixel_height, y));
-      t_vec3 direction = sub(pixel_center, data->origin);
-
-      t_ray r = make_ray(data->origin, direction);
-
-      t_vec3 color = get_ray_color(data->world, r);
-
-      uint32_t ir = (uint32_t)(255.99f * color.x);
-      uint32_t ig = (uint32_t)(255.99f * color.y);
-      uint32_t ib = (uint32_t)(255.99f * color.z);
-      uint32_t ia = 255;
-
-      uint32_t pixel_color = (ir << 24) | (ig << 16) | (ib << 8) | ia;
-      mlx_put_pixel(data->img, x, y, pixel_color);
+      direction = sub(pixel_center, data->origin);
+      r = make_ray(data->origin, direction);
+      color = get_ray_color(data->world, r);
+      write_color(data, x, y, color);
     }
     
   }

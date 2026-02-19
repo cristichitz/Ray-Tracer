@@ -76,7 +76,6 @@ int main(void)
     data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
     if (!data.mlx) { puts(mlx_strerror(mlx_errno)); return(EXIT_FAILURE); }
 
-    printf("2. Creating Image...\n");
     data.img = mlx_new_image(data.mlx, data.width, data.height);
     if (!data.img) { mlx_close_window(data.mlx); puts(mlx_strerror(mlx_errno)); return(EXIT_FAILURE); }
 
