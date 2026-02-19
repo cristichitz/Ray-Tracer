@@ -37,9 +37,17 @@ typedef struct s_data {
     float viewport_height;
     float focal_length;
 
-    t_sphere sphere;
-    t_hittable_list world;
-    
+    t_vec3 origin;
+    t_vec3 pixel00_loc;
+
+    t_vec3 horizontal;
+    t_vec3 vertical;
+
+    t_vec3 pixel_width;
+    t_vec3 pixel_height;
+
+    // List of objects
+    t_hittable_list world; 
 } t_data;
 
 // World

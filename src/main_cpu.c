@@ -13,47 +13,65 @@ void game_loop(void *param)
   if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam_x -= speed;
   if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam_x += speed;
 
+  data->origin = make_vec(data->cam_x, data->cam_y, data->cam_z);
   render_frame(data);
+}
+
+void initialize(t_data *data)
+{
+    data->width = 1920;
+    data->height = (int)(data->width / (16.0 / 9.0));
+    data->height = (data->height < 1) ? 1 : data->height;
+
+    data->cam_x = 0.0f;
+    data->cam_y = 0.0f;
+    data->cam_z = 0.0f;
+    
+    data->origin = make_vec(data->cam_x, data->cam_y, data->cam_z);
+
+    data->aspect_ratio = (float)data->width / (float)data->height;
+    data->viewport_height = 2.0f;
+    data->viewport_width = data->aspect_ratio * data->viewport_height;
+    data->focal_length = 1.0f;
+
+    data->horizontal = make_vec(data->viewport_width, 0.0f, 0.0f);
+    data->vertical = make_vec(0.0f, -data->viewport_height, 0.0f);
+
+    data->pixel_width =  scale(data->horizontal, (float)1 / (float)data->width);
+    data->pixel_height = scale(data->vertical, (float)1 / (float)data->height);
+
+    t_vec3 upper_left_corner = sub(data->origin, scale(data->horizontal, 0.5f));
+    upper_left_corner = sub(upper_left_corner, scale(data->vertical, 0.5f));
+    upper_left_corner = sub(upper_left_corner, make_vec(0.0f, 0.0f, data->focal_length));
+
+    // corner + 0.5 * (pixel_delta_u + pixel_delta_v)
+    data->pixel00_loc = add(upper_left_corner, scale(add(data->pixel_width, data->pixel_height), 0.5f)); 
+}
+
+int create_objects(t_hittable_list *world)
+{
+  int status;
+  status = world->add(world, make_sphere(make_vec(0, 0, -1), 0.5));
+  status = world->add(world, make_sphere(make_vec(0, -100.5, -1), 100));
+
+  return (status);
 }
 
 int main(void)
 {
-    t_data  data;
-
-    data.width = 1920;
-    data.height = (int)(data.width / (16.0 / 9.0));
-    data.height = (data.height < 1) ? 1 : data.height;
-
-    data.cam_x = 0.0f;
-    data.cam_y = 0.0f;
-    data.cam_z = 0.0f;
-    
-    data.aspect_ratio = (float)data.width / (float)data.height;
-    data.viewport_height = 2.0f;
-    data.viewport_width = data.aspect_ratio * data.viewport_height;
-    data.focal_length = 1.0f;
-
-    // World
+    t_data          data;
     t_hittable_list world;
-    t_list obj;
+    t_list          obj;
+
+
+    initialize(&data);
     world.objects = &obj;
     if (init_world(&world))
-    {
-      printf("init failed\n");
       return (EXIT_FAILURE);
-    }
-
-    t_sphere *sph = make_sphere(make_vec(0, 0, -1), 0.5);
-    if(world.add(&world, sph))
-    {
-      printf("add failed\n");
+    if (create_objects(&world) == EXIT_FAILURE)
       return (EXIT_FAILURE);
-
-    }
-    world.add(&world, make_sphere(make_vec(0, -100.5, -1), 100));
 
     data.world = world;
-
     // Init MlX42
     data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
     if (!data.mlx) { puts(mlx_strerror(mlx_errno)); return(EXIT_FAILURE); }
@@ -70,7 +88,6 @@ int main(void)
     mlx_loop_hook(data.mlx, game_loop, &data);
     mlx_loop(data.mlx);
     mlx_terminate(data.mlx);
-
 
     return (EXIT_SUCCESS);
 }
