@@ -37,7 +37,6 @@ int main(void)
     t_hittable_list world;
     t_list obj;
     world.objects = &obj;
-
     if (init_world(&world))
     {
       printf("init failed\n");
@@ -54,7 +53,7 @@ int main(void)
     world.add(&world, make_sphere(make_vec(0, -100.5, -1), 100));
 
     data.world = world;
-    /* init_sphere(&data); */
+
     // Init MlX42
     data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
     if (!data.mlx) { puts(mlx_strerror(mlx_errno)); return(EXIT_FAILURE); }

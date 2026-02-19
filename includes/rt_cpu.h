@@ -13,7 +13,7 @@
 // Constants
 inline float degrees_to_radians(float degrees)
 {
-  return degrees * M_PI / 180.0f;
+  return (degrees * M_PI / 180.0f);
 }
 
 typedef t_vec t_list;
@@ -50,7 +50,6 @@ typedef struct s_sphere {
   t_hittable  base;
   t_vec3      center;
   float       radius;
-  // bool   (*hit)(struct s_sphere *self, t_ray ray, float t_min, float t_max, t_hit_record *rec);
 } t_sphere;
 
 typedef struct s_data {
@@ -76,25 +75,25 @@ typedef struct s_data {
 } t_data;
 
 
+//Sphere
 bool      hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *rec);
-// void      init_sphere(t_data *data);
 t_sphere* make_sphere(t_vec3 center, float radius);
 
-
-t_vec3  make_vec(float a, float b, float c);
-int     render_frame(t_data *data);
-int     close_app(t_data *data);
-int     key_hook(int keycode, t_data *data);
+t_vec3    make_vec(float a, float b, float c);
 
 // World
-int  init_world(t_hittable_list  *world);
+int       init_world(t_hittable_list  *world);
 
 // Ray
-t_ray make_ray(t_vec3 origin, t_vec3 direction);
+t_ray     make_ray(t_vec3 origin, t_vec3 direction);
 
 // Hittable
-void  ft_set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal);
+void      ft_set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal);
 
+// MLX Loop
+int       render_frame(t_data *data);
+int       close_app(t_data *data);
+int       key_hook(int keycode, t_data *data);
 
 
 #endif

@@ -5,7 +5,6 @@ t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
   //We define a nice sphere;
   t_hit_record  hit_record;
   hit_record.set_face_normal = ft_set_face_normal;
-  /* bool hit = data->sphere.hit(&data->sphere, ray, 0, INFINITY, &hit_record); */
 
   if (world.hit(&world, ray, 0, INFINITY, &hit_record))
     return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
@@ -22,13 +21,10 @@ t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
 
   // (1 - t)white + t(blue);
   return add(scale(white, 1.0f - t), scale(blue, t));
-
 }
-
 
 int render_frame(t_data* data)
 {
-
   t_vec3 origin = make_vec(data->cam_x, data->cam_y, data->cam_z);
   t_vec3 horizontal = make_vec(data->viewport_width, 0.0f, 0.0f);
   t_vec3 vertical = make_vec(0.0f, -data->viewport_height, 0.0f);
@@ -48,7 +44,6 @@ int render_frame(t_data* data)
   {
     for (uint32_t x = 0; x < data->width; x++) 
     {
-
       //t_vec3 pixel_center = pixel00_loc + (x * pixel_delta_u) + (y * pixel_delta_v);
       t_vec3 pixel_center = add(pixel00_loc, scale(pixel_delta_u, x));
       pixel_center = add(pixel_center, scale(pixel_delta_v, y));
