@@ -1,1 +1,5 @@
 .vscode
+
+libft/*
+obj/*
+MLX42/*  

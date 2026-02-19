@@ -1,4 +1,4 @@
-#include "rt_cpu.h"
+#include "sphere.h"
 
 bool  hit_sphere(void *base, t_ray ray, float t_min, float t_max, t_hit_record *rec)
 {

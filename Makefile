@@ -5,11 +5,11 @@ VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 # Update these to match where you saved the CPU files
-SRCS = src/main_cpu.c src/render_cpu2.c src/vec3.c src/sphere.c src/hittable.c
+SRCS = src/main_cpu.c src/render_cpu2.c src/class/vec3.c src/class/sphere.c src/class/hittable.c
 OBJ_DIR = obj
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
-INCLUDES = -I. -I./MLX42/include -I./libft -I./includes/ -I./src/
+INCLUDES = -I. -I./MLX42/include -I./libft -I./includes/
 
 MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
 MLX42_DIR  = MLX42
