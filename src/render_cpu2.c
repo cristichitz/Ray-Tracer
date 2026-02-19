@@ -23,6 +23,27 @@ t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
   return add(scale(white, 1.0f - t), scale(blue, t));
 }
 
+t_vec3  sample_square(void)
+{
+  return make_vec(random_float(0.0f, 1.0f) - 0.5, random_float(0.0f, 1.0f) - 0.5f, 0);
+}
+
+t_ray get_ray(t_data *data, uint32_t x, uint32_t y)
+{
+  // A point at most abs(0.5, 0.5, 0) away from the current point
+  // We will average the colors around this point
+  t_vec3 offset = sample_square();
+
+  t_vec3 pixel_sample = scale(data->pixel_width, x + offset.x);
+  pixel_sample = add(pixel_sample, scale(data->pixel_height, y + offset.y));
+  pixel_sample = add(pixel_sample, data->pixel00_loc);
+
+  t_vec3 ray_origin = data->origin;
+  t_vec3 ray_direction = sub(pixel_sample, ray_origin);
+
+  return make_ray(ray_origin, ray_direction);
+}
+
 void  write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
 {
   uint32_t r;
@@ -33,17 +54,17 @@ void  write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
 
   intensity = interval_init(0.0f, 0.999f);
 
-  r = (uint32_t)(255.99f * intensity.clamp(&intensity, color.x));
-  g = (uint32_t)(255.99f * intensity.clamp(&intensity, color.y));
-  b = (uint32_t)(255.99f * intensity.clamp(&intensity, color.z));
+  r = (uint32_t)(256 * intensity.clamp(&intensity, color.x));
+  g = (uint32_t)(256 * intensity.clamp(&intensity, color.y));
+  b = (uint32_t)(256 * intensity.clamp(&intensity, color.z));
   pixel_color = (r <<  24) | (g << 16) | (b << 8) | 255;
   mlx_put_pixel(data->img, x, y, pixel_color);
 }
 
 int render_frame(t_data* data)
 {
-  t_vec3  pixel_center;
-  t_vec3  direction;
+  /* t_vec3  pixel_center; */
+  /* t_vec3  direction; */
   t_ray   r;
   t_vec3  color;
 
@@ -52,12 +73,21 @@ int render_frame(t_data* data)
     for (uint32_t x = 0; x < data->width; x++) 
     {
       //t_vec3 pixel_center = pixel00_loc + (x * pixel_delta_u) + (y * pixel_delta_v);
-      pixel_center = add(data->pixel00_loc, scale(data->pixel_width, x));
-      pixel_center = add(pixel_center, scale(data->pixel_height, y));
-      direction = sub(pixel_center, data->origin);
-      r = make_ray(data->origin, direction);
-      color = get_ray_color(data->world, r);
-      write_color(data, x, y, color);
+      /* pixel_center = add(data->pixel00_loc, scale(data->pixel_width, x)); */
+      /* pixel_center = add(pixel_center, scale(data->pixel_height, y)); */
+      /* direction = sub(pixel_center, data->origin); */
+      /* r = make_ray(data->origin, direction); */
+      /* color = get_ray_color(data->world, r); */
+      /* write_color(data, x, y, color); */
+
+      // NEW
+      color = make_vec(0.0f, 0.0f, 0.0f);
+      for (uint32_t sample = 0; sample < data->samples_per_pixel; sample++)
+      {
+        r = get_ray(data, x, y);
+        color = add(color, get_ray_color(data->world, r));
+      }
+      write_color(data, x, y, scale(color, data->pixel_samples_scale));
     }
     
   }

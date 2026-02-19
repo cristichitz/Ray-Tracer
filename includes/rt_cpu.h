@@ -5,19 +5,6 @@
 //Sphere inclues hittable...
 #include "sphere.h"
 
-// Constants
-inline float degrees_to_radians(float degrees)
-{
-  return (degrees * M_PI / 180.0f);
-}
-
-// Random number generator
-inline float random_float(float min, float max)
-{
-  // random is a number between 0 and 1
-  return (min + (max - min)*((rand() / ((double)RAND_MAX + 1))));
-}
-
 typedef t_vec t_list;
 
 typedef struct s_hittable_list {
@@ -33,6 +20,9 @@ typedef struct s_data {
     
     uint32_t  width;
     uint32_t  height;
+
+    uint32_t  samples_per_pixel;
+    float     pixel_samples_scale;
     
     // Camera
     float     cam_x;
@@ -65,5 +55,10 @@ int       render_frame(t_data *data);
 int       close_app(t_data *data);
 int       key_hook(int keycode, t_data *data);
 
+// Can be made inline if we add -O1 optimization for the compilation
+// Random number generator
+float random_float(float min, float max);
+// Constants
+float degrees_to_radians(float degrees);
 
 #endif

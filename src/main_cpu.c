@@ -1,5 +1,17 @@
 #include "rt_cpu.h"
 
+float random_float(float min, float max)
+{
+  // random is a number between 0 and 1
+  return (min + (max - min)*((rand() / ((double)RAND_MAX + 1))));
+}
+
+// Constants
+float degrees_to_radians(float degrees)
+{
+  return (degrees * M_PI / 180.0f);
+}
+
 void game_loop(void *param)
 {
   t_data *data = (t_data *)param;
@@ -33,6 +45,10 @@ void initialize(t_data *data)
     data->viewport_height = 2.0f;
     data->viewport_width = data->aspect_ratio * data->viewport_height;
     data->focal_length = 1.0f;
+
+    // New. For Antialising
+    data->samples_per_pixel = 5;
+    data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
 
     data->horizontal = make_vec(data->viewport_width, 0.0f, 0.0f);
     data->vertical = make_vec(0.0f, -data->viewport_height, 0.0f);

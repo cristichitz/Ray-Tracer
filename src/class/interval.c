@@ -10,12 +10,13 @@ bool  surrounds(t_interval *self, float x)
   return (self->min < x && x < self->max);
 }
 
+//Keeps the number strictly between the intervals min and max
 float clamp(t_interval *self, float x)
 {
   if (x < self->min)
       return (self->min);
   if (x > self->max)
-      return (self->max);
+    return (self->max);
   return (x);
 }
 
