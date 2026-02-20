@@ -16,13 +16,11 @@ CFLAGS = -Wall -Wextra -Werror
 VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 INCLUDES = -I./include -I./MLX42/include -I./libft
-INCLUDES = -I. -I./MLX42/include -I./libft -I./includes/
+INCLUDES = -I. -I./MLX42/include -I./libft -I./include
 
 SRCS = \
-src/math/vec3.c \
-src/math/color.c \
 src/parse.c \
-src/error.c 
+src/error.c \
 src/main_cpu.c \
 src/render_cpu2.c \
 src/class/vec3.c \

@@ -39,8 +39,8 @@ static int	valid_filename(char *filename, const char *ext)
 int	parse_input(int ac, char **av)
 {
 	int		fd;
-	char	*file;
-	char *line;
+	// char	*file;
+	// char *line;
 
 	if (ac != 2)
 	{
@@ -55,7 +55,7 @@ int	parse_input(int ac, char **av)
 		return (0);
 	}
 	
-
+	return (0);
 }
 
 // Check for valid filename

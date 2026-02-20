@@ -1,5 +1,6 @@
 #ifndef INTERVAL_H
 #define INTERVAL_H
+
 #include <stdbool.h>
 
 #include <stdio.h>
