@@ -16,7 +16,7 @@ t_vec3 get_ray_color(t_hittable_list world, int depth, t_ray ray)
 
   if (world.hit(&world, ray, interval_init(0.001f, INFINITY), &rec))
   {
-    t_vec3 direction = random_on_hemisphere(rec.normal);
+    t_vec3 direction = add(rec.normal, random_on_hemisphere(rec.normal));
     return scale(get_ray_color(world, depth - 1, make_ray(rec.p, direction)), 0.5f);
   }
 
