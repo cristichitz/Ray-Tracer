@@ -18,12 +18,13 @@ int	ft_vec_push(t_vec *dst, void *src)
 		return (-1);
 	else if (!dst->memory)
 		ft_vec_new(dst, 1, dst->elem_size);
+
 	if (dst->elem_size * dst->len >= dst->alloc_size)
 	{
 		if (ft_vec_resize(dst, dst->len * 2) < 0)
 			return (-1);
 	}
-	ft_memcpy(&dst->memory[dst->elem_size * dst->len], src, dst->elem_size);
+	ft_memcpy(&dst->memory[dst->elem_size * dst->len], &src, dst->elem_size);
 	dst->len = dst->len + 1;
 	return (1);
 }
@@ -46,5 +47,5 @@ void	*ft_vec_get(t_vec *src, size_t index)
 	if (!src || index >= src->len || !src->memory)
 		return (NULL);
 	v = &src->memory[src->elem_size * index];
-	return (v);
+	return (*(void **)v);
 }
