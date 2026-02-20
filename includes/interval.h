@@ -2,7 +2,6 @@
 #define INTERVAL_H
 #include <stdbool.h>
 
-#include <stdio.h>
 typedef struct s_interval {
   float min;
   float max;

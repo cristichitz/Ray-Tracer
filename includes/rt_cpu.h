@@ -3,6 +3,7 @@
 
 #include "MLX42/MLX42.h"
 //Sphere inclues hittable...
+// #include "shape.h"
 #include "sphere.h"
 
 typedef t_vec t_list;
@@ -23,6 +24,7 @@ typedef struct s_data {
 
     uint32_t  samples_per_pixel;
     float     pixel_samples_scale;
+    int       max_depth;
     
     // Camera
     float     cam_x;
@@ -54,11 +56,5 @@ int       init_world(t_hittable_list  *world);
 int       render_frame(t_data *data);
 int       close_app(t_data *data);
 int       key_hook(int keycode, t_data *data);
-
-// Can be made inline if we add -O1 optimization for the compilation
-// Random number generator
-float random_float(float min, float max);
-// Constants
-float degrees_to_radians(float degrees);
 
 #endif

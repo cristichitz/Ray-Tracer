@@ -1,6 +1,6 @@
 NAME = minirt_cpu
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -O2
 VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 

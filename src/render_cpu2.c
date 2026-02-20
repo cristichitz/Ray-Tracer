@@ -1,13 +1,24 @@
 #include "rt_cpu.h"
 
-t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
+t_vec3 get_ray_color(t_hittable_list world, int depth, t_ray ray)
 {
   //We define a nice sphere;
-  t_hit_record  hit_record;
-  hit_record.set_face_normal = ft_set_face_normal;
+  t_hit_record  rec;
+  rec.set_face_normal = ft_set_face_normal;
 
-  if (world.hit(&world, ray, interval_init(0, INFINITY), &hit_record))
-    return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
+  if (depth <= 0)
+    return make_vec(0.0f, 0.0f, 0.0f);
+
+  /* if (world.hit(&world, ray, interval_init(0, INFINITY), &rec)) */
+  /*   return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f); */
+  //Before
+  // 0.5 * (normal + vec(1)) = [0, 1] 
+
+  if (world.hit(&world, ray, interval_init(0.001f, INFINITY), &rec))
+  {
+    t_vec3 direction = random_on_hemisphere(rec.normal);
+    return scale(get_ray_color(world, depth - 1, make_ray(rec.p, direction)), 0.5f);
+  }
 
   //Background 
 
@@ -72,6 +83,8 @@ int render_frame(t_data* data)
   {
     for (uint32_t x = 0; x < data->width; x++) 
     {
+      // WITHOUT PIXEL SAMPLING
+      
       //t_vec3 pixel_center = pixel00_loc + (x * pixel_delta_u) + (y * pixel_delta_v);
       /* pixel_center = add(data->pixel00_loc, scale(data->pixel_width, x)); */
       /* pixel_center = add(pixel_center, scale(data->pixel_height, y)); */
@@ -80,12 +93,12 @@ int render_frame(t_data* data)
       /* color = get_ray_color(data->world, r); */
       /* write_color(data, x, y, color); */
 
-      // NEW
+      // NEW. PIXEL SAMPLING
       color = make_vec(0.0f, 0.0f, 0.0f);
       for (uint32_t sample = 0; sample < data->samples_per_pixel; sample++)
       {
         r = get_ray(data, x, y);
-        color = add(color, get_ray_color(data->world, r));
+        color = add(color, get_ray_color(data->world, data->max_depth, r));
       }
       write_color(data, x, y, scale(color, data->pixel_samples_scale));
     }

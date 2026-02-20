@@ -9,7 +9,6 @@ typedef struct s_sphere {
   float       radius;
 } t_sphere;
 
-bool      hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec);
 t_sphere* make_sphere(t_vec3 center, float radius);
 #endif
 

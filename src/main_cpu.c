@@ -49,7 +49,11 @@ void initialize(t_data *data)
     // New. For Antialising
     data->samples_per_pixel = 5;
     data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
+    data->max_depth = 2;
+    // until here
 
+
+    // This was in rendering but they are alwas  the same
     data->horizontal = make_vec(data->viewport_width, 0.0f, 0.0f);
     data->vertical = make_vec(0.0f, -data->viewport_height, 0.0f);
 
@@ -78,7 +82,6 @@ int main(void)
     t_data          data;
     t_hittable_list world;
     t_list          obj;
-
 
     initialize(&data);
     world.objects = &obj;
