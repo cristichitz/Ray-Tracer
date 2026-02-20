@@ -40,15 +40,22 @@ int	parse_input(int ac, char **av)
 {
 	int		fd;
 	char	*file;
+	char *line;
 
 	if (ac != 2)
 	{
 		print_error("Please provide one argument.");
 	}
-	if (valid_filename(av[1], ".rt"))
+	if (!valid_filename(av[1], ".rt"))
+		return (0);
+	fd = open(av[1], O_RDONLY);
+	if (fd == -1)
 	{
-		fd = open(av[1], O_RDONLY);
+		print_error("File not found.");
+		return (0);
 	}
+	
+
 }
 
 // Check for valid filename
