@@ -47,9 +47,9 @@ void initialize(t_data *data)
     data->focal_length = 1.0f;
 
     // New. For Antialising
-    data->samples_per_pixel = 1;
+    data->samples_per_pixel = 3;
     data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
-    data->max_depth = 3;
+    data->max_depth = 5;
     // until here
 
     // This was in rendering but they are alwas  the same
