@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/15 13:16:33 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/21 13:17:33 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	valid_filename(char *filename, const char *ext)
 	if (!dot || dot == filename)
 	{
 		print_error("Please input valid .rt files.");
-		return (EXIT_FAILURE);
+		return (0);
 	}
 	ext_len = ft_strlen(ext);
 	dot_len = ft_strlen(dot);
@@ -30,21 +30,22 @@ static int	valid_filename(char *filename, const char *ext)
 				dot_len) == 0))
 	{
 		print_error("Incorrect file type, only .rt accepted.");
-		return (EXIT_FAILURE);
+		return (0);
 	}
 	else
-		return (!(dot[ext_len] == '\0'));
+		return ((dot[ext_len] == '\0'));
 }
 
 int	parse_input(int ac, char **av)
 {
 	int		fd;
 	// char	*file;
-	// char *line;
+	char *line;
 
 	if (ac != 2)
 	{
 		print_error("Please provide one argument.");
+		return (0);
 	}
 	if (!valid_filename(av[1], ".rt"))
 		return (0);
@@ -54,9 +55,20 @@ int	parse_input(int ac, char **av)
 		print_error("File not found.");
 		return (0);
 	}
+	line = ft_strtrim(get_next_line(fd)," ");
+	while (line)
+	{
+		
+		printf("line: %s\n", line);
+		line = ft_strtrim(get_next_line(fd)," ");
+		// line = get_next_line(fd);
+	}
 	
-	return (0);
+	close (fd);
+	return (1);
 }
+
+
 
 // Check for valid filename
 // Check if file exists

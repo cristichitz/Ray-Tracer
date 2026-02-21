@@ -2,8 +2,13 @@
 #define RT_CPU_H
 
 #include "MLX42/MLX42.h"
-//Sphere inclues hittable...
+
+//Sphere includes hittable...
 #include "sphere.h"
+
+#ifndef M_PI
+# define M_PI 3.14159265358979323846
+#endif
 
 typedef t_vec t_list;
 

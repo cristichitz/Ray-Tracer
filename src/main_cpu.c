@@ -1,4 +1,5 @@
 #include "rt_cpu.h"
+#include "parse.h"
 
 float random_float(float min, float max)
 {
@@ -73,12 +74,18 @@ int create_objects(t_hittable_list *world)
   return (status);
 }
 
-int main(void)
+int main(int ac, char **av)
 {
     t_data          data;
     t_hittable_list world;
     t_list          obj;
 
+	// if(ac != 2) //will switchover when we have good presets
+	if (ac > 1)
+	{
+		parse_input(ac, av);
+		exit(123);
+	}
 
     initialize(&data);
     world.objects = &obj;
