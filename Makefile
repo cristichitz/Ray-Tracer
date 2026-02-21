@@ -5,7 +5,7 @@ VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 # Update these to match where you saved the CPU files
-SRCS = src/main_cpu.c src/render_cpu2.c src/class/vec3.c src/class/sphere.c src/class/hittable.c src/class/interval.c
+SRCS = src/main_cpu.c src/render_cpu.c src/class/vec3.c src/class/sphere.c src/class/hittable.c src/class/interval.c src/class/material.c
 OBJ_DIR = obj
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 

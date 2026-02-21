@@ -47,11 +47,10 @@ void initialize(t_data *data)
     data->focal_length = 1.0f;
 
     // New. For Antialising
-    data->samples_per_pixel = 5;
+    data->samples_per_pixel = 1;
     data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
-    data->max_depth = 2;
+    data->max_depth = 3;
     // until here
-
 
     // This was in rendering but they are alwas  the same
     data->horizontal = make_vec(data->viewport_width, 0.0f, 0.0f);
@@ -71,8 +70,23 @@ void initialize(t_data *data)
 int create_objects(t_hittable_list *world)
 {
   int status;
-  status = world->add(world, make_sphere(make_vec(0, 0, -1), 0.5));
-  status = world->add(world, make_sphere(make_vec(0, -100.5, -1), 100));
+  t_material    material_ground;
+  t_material    material_left;
+  t_material    material_center;
+  t_material    material_right;
+
+
+  material_ground = init_lambertian(make_vec(0.8f, 0.8f, 0.0f));
+  material_left = init_metal(make_vec(0.8f, 0.8f, 0.8f));
+  material_center = init_metal(make_vec(0.1f, 0.2f, 0.5f));
+  material_right = init_metal(make_vec(0.8f, 0.6f, 0.2f));
+
+
+  status = world->add(world, make_sphere(make_vec(0, -100.5, -1.0), 100.0, material_ground));
+  status = world->add(world, make_sphere(make_vec(0, 0, -1.2), 0.5, material_left));
+  status = world->add(world, make_sphere(make_vec(-1, 0, -1), 0.5, material_center));
+  status = world->add(world, make_sphere(make_vec(1, 0, -1), 0.5, material_right));
+  status = world->add(world, make_sphere(make_vec(1, 1, -1), 0.5, material_right));
 
   return (status);
 }

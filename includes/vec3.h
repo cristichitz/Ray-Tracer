@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <stdio.h>
-
+#include <stdbool.h>
 
 // Can be made inline if we add -O1 optimization for the compilation
 // Random number generator
@@ -21,6 +21,9 @@ float   length_squared(t_vec3 a);
 t_vec3  random_vec_between(float min, float max);
 t_vec3  random_unit_vector(void);
 t_vec3  random_on_hemisphere(t_vec3 normal);
+
+bool near_zero(t_vec3 a);
+t_vec3 mult(t_vec3 a, t_vec3 b);
 
 t_vec3  make_vec(float a, float b, float c);
 t_vec3  add(t_vec3 a, t_vec3 b);

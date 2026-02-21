@@ -37,6 +37,19 @@ t_vec3 random_on_hemisphere(t_vec3 normal)
     return scale(on_unit_sphere, -1.0f);
 }
 
+bool  near_zero(t_vec3 a)
+{
+  float s;
+  
+  s = 1e-8;
+  return (fabs(a.x) < s) && (fabs(a.y) < s) && (fabs(a.z) < s);
+}
+
+t_vec3 mult(t_vec3 a, t_vec3 b)
+{
+  return (make_vec(a.x * b.x, a.y * b.y, a.z * b.z));
+}
+
 t_vec3 add(t_vec3 a, t_vec3 b)
 {
   return (t_vec3){a.x + b.x, a.y + b.y, a.z + b.z};
