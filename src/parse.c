@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/21 13:17:33 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/21 20:56:32 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,25 @@ static int	valid_filename(char *filename, const char *ext)
 		return ((dot[ext_len] == '\0'));
 }
 
+int set_cam(char *param)
+{
+	
+}
+
+int	process_line(char *data)
+{
+	char **components;
+
+	components = ft_split(data, ' ');
+	if(components[0][0] != '\n')
+		printf("Object type: %s\n", components[0]);
+	return (1);
+}
+
 int	parse_input(int ac, char **av)
 {
 	int		fd;
-	// char	*file;
-	char *line;
+	char	*line;
 
 	if (ac != 2)
 	{
@@ -55,20 +69,17 @@ int	parse_input(int ac, char **av)
 		print_error("File not found.");
 		return (0);
 	}
-	line = ft_strtrim(get_next_line(fd)," ");
+	line = get_next_line(fd);
 	while (line)
 	{
-		
-		printf("line: %s\n", line);
-		line = ft_strtrim(get_next_line(fd)," ");
-		// line = get_next_line(fd);
+		// printf("line: %s\n", line);
+		process_line(ft_strtrim(line, " "));
+
+		line = get_next_line(fd);
 	}
-	
-	close (fd);
+	close(fd);
 	return (1);
 }
-
-
 
 // Check for valid filename
 // Check if file exists

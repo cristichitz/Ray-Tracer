@@ -21,12 +21,12 @@ void game_loop(void *param)
   if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
     mlx_close_window(data->mlx);
 
-  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) data->cam_z -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam_z += speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam_x -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam_x += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) data->cam.coord.z -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam.z += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam.x -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam.x += speed;
 
-  data->origin = make_vec(data->cam_x, data->cam_y, data->cam_z);
+  data->origin = make_vec(data->cam.x, data->cam.y, data->cam.z);
   render_frame(data);
 }
 
@@ -36,11 +36,11 @@ void initialize(t_data *data)
     data->height = (int)(data->width / (16.0 / 9.0));
     data->height = (data->height < 1) ? 1 : data->height;
 
-    data->cam_x = 0.0f;
-    data->cam_y = 0.0f;
-    data->cam_z = 0.0f;
+    data->cam.x = 0.0f;
+    data->cam.y = 0.0f;
+    data->cam.z = 0.0f;
     
-    data->origin = make_vec(data->cam_x, data->cam_y, data->cam_z);
+    data->origin = make_vec(data->cam.x, data->cam.y, data->cam.z);
 
     data->aspect_ratio = (float)data->width / (float)data->height;
     data->viewport_height = 2.0f;

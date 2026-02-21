@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/21 12:09:28 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/21 20:48:42 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,12 @@ typedef struct s_amb_light
 						// rgb
 }			t_amb_light;
 
-typedef struct s_cam
-{
-	// coord
-	// 3d Normalised vector
-	// fov
-}			t_cam; 
+// typedef struct s_cam
+// {
+// 	// coord
+// 	// 3d Normalised vector
+// 	// fov
+// }			t_cam; 
 
 typedef struct s_light
 {
