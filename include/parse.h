@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/21 20:48:42 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/22 19:19:22 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,25 @@
 # define PARSE_H
 
 # include "libft.h"
+# include "rt_cpu.h"
 # include <fcntl.h>
-# include <stdlib.h>
 # include <stdio.h>
+# include <stdlib.h>
+# include <limits.h>
+
+#define COORD_MAX 2000.0 //TODO: What should max be?
+#define COORD_MIN -2000.0 //TODO: What should max be?
+typedef struct s_range
+{
+	float	max;
+	float	min;
+}			t_range;
 
 typedef struct s_amb_light
 {
 	float brightness; // [0.0,1.0]
 						// rgb
 }			t_amb_light;
-
-// typedef struct s_cam
-// {
-// 	// coord
-// 	// 3d Normalised vector
-// 	// fov
-// }			t_cam; 
 
 typedef struct s_light
 {
@@ -62,6 +65,6 @@ typedef struct s_cylinder
 }			t_cylinder;
 
 void		print_error(char *msg);
-int			parse_input(int ac, char **av);
+int			parse_input(t_data *data, int ac, char **av);
 
 #endif

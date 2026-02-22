@@ -21,26 +21,26 @@ void game_loop(void *param)
   if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
     mlx_close_window(data->mlx);
 
-  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) data->cam.coord.z -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam.z += speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam.x -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam.x += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) data->cam.pt.z -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam.pt.z += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam.pt.x -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam.pt.x += speed;
 
-  data->origin = make_vec(data->cam.x, data->cam.y, data->cam.z);
+  data->origin = make_vec(data->cam.pt.x, data->cam.pt.y, data->cam.pt.z);
   render_frame(data);
 }
 
 void initialize(t_data *data)
 {
-    data->width = 1920;
+    data->width = 640;
     data->height = (int)(data->width / (16.0 / 9.0));
     data->height = (data->height < 1) ? 1 : data->height;
 
-    data->cam.x = 0.0f;
-    data->cam.y = 0.0f;
-    data->cam.z = 0.0f;
+    // data->cam.pt.x = 0.0f;
+    // data->cam.pt.y = 0.0f;
+    // data->cam.pt.z = 0.0f;
     
-    data->origin = make_vec(data->cam.x, data->cam.y, data->cam.z);
+    data->origin = make_vec(data->cam.pt.x, data->cam.pt.y, data->cam.pt.z);
 
     data->aspect_ratio = (float)data->width / (float)data->height;
     data->viewport_height = 2.0f;
@@ -80,11 +80,11 @@ int main(int ac, char **av)
     t_hittable_list world;
     t_list          obj;
 
-	// if(ac != 2) //will switchover when we have good presets
-	if (ac > 1)
+	
+	if (ac > 1) // TODO: if(ac != 2) //will switchover when we have good presets
 	{
-		parse_input(ac, av);
-		exit(123);
+		parse_input(&data, ac, av);
+		// exit(123);
 	}
 
     initialize(&data);

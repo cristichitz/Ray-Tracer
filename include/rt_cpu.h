@@ -10,6 +10,8 @@
 #  define M_PI 3.14159265358979323846
 # endif
 
+# define WIDTH = 1920
+
 typedef t_vec		t_list;
 
 typedef struct s_hittable_list
@@ -21,22 +23,22 @@ typedef struct s_hittable_list
 					t_hit_record *rec);
 }					t_hittable_list;
 
-typedef struct s_coord
+typedef struct s_pt
 {
 	float			x;
 	float			y;
 	float			z;
-}					t_coord;
+}					t_pt;
 
-typedef struct s_nvec
+typedef struct s_udir
 {
-	t_coord			coord;
-}					t_nvec;
+	t_pt			pt;
+}					t_udir;
 
 typedef struct s_cam
 {
-	t_coord			coord;
-	t_nvec			nvec;
+	t_pt			pt;
+	t_udir			udir;
 	unsigned int	fov;
 }					t_cam;
 
