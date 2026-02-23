@@ -22,6 +22,7 @@
 
 #define COORD_MAX 2000.0 //TODO: What should max be?
 #define COORD_MIN -2000.0 //TODO: What should max be?
+
 typedef struct s_range
 {
 	float	max;

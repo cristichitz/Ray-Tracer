@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/22 19:24:16 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/23 15:55:03 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,9 @@ int	set_cam(t_data *data, char **params)
 	data->cam.udir.pt.y = ft_atof(str_pts[0]);
 	data->cam.udir.pt.z = ft_atof(str_pts[0]);
 	ft_free_split(str_pts);
-	data->cam.fov = ft_atoi(params[3]);
+	// data->cam.fov = ft_atoi(params[3]);
+	if (!get_fov(data->cam.fov, params[3]))
+		print("err on fov.\n");
 	return (1);
 }
 
@@ -157,9 +159,20 @@ int	parse_input(t_data *data, int ac, char **av)
 	close(fd);
 	return (1);
 }
+/*
+TODO: load the whole file into string vector.
+TODO: Check for duplicate Capital letters.
+TODO: Convert float values
+TODO: convert unsigned int values
+TODO: handle error flow
 
-// Check for valid filename
-// Check if file exists
-// Read each line
-// vector each pointer
-// Check for multiple declarations
+TODO: create cam
+TODO: create sphere
+TODO: create cylinder
+TODO: create plane
+TODO: create ambient light
+TODO: create light
+
+TODO: Apply udir where applicable.
+
+*/
