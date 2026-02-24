@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/23 15:55:03 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/24 21:07:18 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,8 @@ int	set_cam(t_data *data, char **params)
 	data->cam.udir.pt.z = ft_atof(str_pts[0]);
 	ft_free_split(str_pts);
 	// data->cam.fov = ft_atoi(params[3]);
-	if (!get_fov(data->cam.fov, params[3]))
-		print("err on fov.\n");
+	// if (!get_fov(data->cam.fov, params[3]))
+	// 	print("err on fov.\n");
 	return (1);
 }
 
@@ -131,10 +131,12 @@ int	process_line(t_data *data, char *line)
 	return (1);
 }
 
+
 int	parse_input(t_data *data, int ac, char **av)
 {
 	int		fd;
 	char	*line;
+	t_vec scene;
 
 	if (ac != 2)
 	{
@@ -149,13 +151,39 @@ int	parse_input(t_data *data, int ac, char **av)
 		print_error("File not found.");
 		return (0);
 	}
+
+
+	
+	ft_vec_new(&scene, 0, sizeof(char *));
 	line = get_next_line(fd);
+	//TODO: if no first  line?
 	while (line)
 	{
-		// printf("line: %s\n", line);
+		ft_vec_push(&scene, ft_strtrim(line, " "));
+		
 		process_line(data, ft_strtrim(line, " "));
 		line = get_next_line(fd);
 	}
+
+
+
+	size_t j = 0;
+	while (j < scene.len)
+	{
+		char *el;
+		el = (char *)ft_vec_get(&scene, j);
+		printf("first char : %c\n", el[0]);
+		j++;
+	}
+
+	size_t i = 0;
+	while (i < scene.len)
+	{
+		printf("vec: %s\n", (char *)ft_vec_get(&scene, i));
+		i++;
+	}
+	exit(1);
+
 	close(fd);
 	return (1);
 }
