@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/24 21:07:18 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/25 19:32:23 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,17 @@ static int	valid_filename(char *filename, const char *ext)
 		return ((dot[ext_len] == '\0'));
 }
 
-int	convert_limit(float *num, char *param, t_range range)
+int	convert_limit(float *num, char *param, float min, float max)
 {
-	float fnum;
+	float	fnum;
 
 	fnum = ft_strtof(param, NULL);
-	if (fnum > range.max)
+	if (fnum > max)
 	{
 		print_error("val too large.");
 		return (0);
 	}
-	if (fnum < range.min)
+	if (fnum < min)
 	{
 		print_error("val too low");
 		return (0);
@@ -56,38 +56,42 @@ int	convert_limit(float *num, char *param, t_range range)
 	return (1);
 }
 
-int get_pt(float *num, char *param)
+int	convert_int_limit(int *num, char *param, int min, int max)
 {
-	t_range range;
+	int	n;
 
-	range.min = COORD_MIN;
-	range.max = COORD_MAX;
-	
-	if(!convert_limit(num, param, range))
+	n = ft_atoi(param);
+	if (n > max)
+	{
+		print_error("val too large.");
+		return (0);
+	}
+	if (n < min)
+	{
+		print_error("val too low");
+		return (0);
+	}
+	*num = n;
+	return (1);
+}
+
+int	get_pt(float *num, char *param)
+{
+	if (!convert_limit(num, param, COORD_MIN, COORD_MAX))
 		return (0);
 	return (1);
 }
 
-int get_udir(float *num, char *param)
+int	get_udir(float *num, char *param)
 {
-	t_range range;
-
-	range.min = 0.0;
-	range.max = 1.0;
-	
-	if(!convert_limit(num, param, range))
+	if (!convert_limit(num, param, 0.0, 1.0))
 		return (0);
 	return (1);
 }
 
-int get_fov(float *num, char *param)
+int	get_fov(int *num, char *param)
 {
-	t_range range;
-
-	range.max = 0;
-	range.min = 180.0;
-	
-	if(!convert_limit(num, param, range))
+	if (!convert_int_limit(num, param, 0, 180))
 		return (0);
 	return (1);
 }
@@ -96,20 +100,65 @@ int	set_cam(t_data *data, char **params)
 {
 	char	**str_pts;
 
+	if (data->set_cam == true)
+	{
+		print_error("Duplicate camera entry.");
+		return (0);
+	}
 	str_pts = ft_split(params[1], ',');
 	data->cam.pt.x = ft_atof(str_pts[0]);
 	data->cam.pt.y = ft_atof(str_pts[1]);
 	data->cam.pt.z = ft_atof(str_pts[2]);
 	ft_free_split(str_pts);
-
 	str_pts = ft_split(params[2], ',');
 	data->cam.udir.pt.x = ft_atof(str_pts[0]);
 	data->cam.udir.pt.y = ft_atof(str_pts[0]);
 	data->cam.udir.pt.z = ft_atof(str_pts[0]);
 	ft_free_split(str_pts);
-	// data->cam.fov = ft_atoi(params[3]);
-	// if (!get_fov(data->cam.fov, params[3]))
-	// 	print("err on fov.\n");
+	if (!get_fov(&data->cam.fov, params[3]))
+	{
+		print_error("err on fov.\n");
+		return (0);
+	}
+	data->set_cam = true;
+	return (1);
+}
+int set_ambient_light(t_data *data, char **params)
+{
+	char	**str_pts;
+
+	if (data->set_ambient_light == true)
+	{
+		print_error("Duplicate ambient light entry.");
+		return (0);
+	}
+
+
+	return (1);
+}
+
+int set_light(t_data *data, char **params)
+{
+	if (data->set_light == true)
+	{
+		print_error("Duplicate light entry.");
+		return (0);
+	}
+	return (1);
+}
+
+int set_sphere(void)
+{
+	return (1);
+}
+
+int set_cylinder(void)
+{
+	return (1);
+}
+
+int set_plane(void)
+{
 	return (1);
 }
 
@@ -120,23 +169,39 @@ int	process_line(t_data *data, char *line)
 	params = ft_split(line, ' ');
 	if (params[0][0] != '\n')
 	{
-		// printf("Object type: %s\n", params[0]);
-		// printf("Object type: %s\n", params[1]);
 		if (ft_strncmp(params[0], "C", 1) == 0)
 		{
-			// printf("cam found: %s\n", params[0]);
 			set_cam(data, params);
 		}
+		else if (ft_strcmp(params[0], "A") == 0)
+		{
+			set_ambient_light(data, params);
+		}
+		else if(ft_strcmp(params[0], "L") == 0)
+		{
+			set_light();
+		}
+		else if(ft_strcmp(params[0], "pl") == 0)
+		{
+			set_plane();
+		}
+		else if(ft_strcmp(params[0], "sp") == 0)
+		{
+			set_sphere();
+		}
+		else if(ft_strcmp(params[0], "cy") == 0)
+		{
+			set_cylinder();
+		}
+		
 	}
 	return (1);
 }
 
-
 int	parse_input(t_data *data, int ac, char **av)
 {
-	int		fd;
+	int		fd; 
 	char	*line;
-	t_vec scene;
 
 	if (ac != 2)
 	{
@@ -151,54 +216,29 @@ int	parse_input(t_data *data, int ac, char **av)
 		print_error("File not found.");
 		return (0);
 	}
-
-
-	
-	ft_vec_new(&scene, 0, sizeof(char *));
 	line = get_next_line(fd);
-	//TODO: if no first  line?
+	// TODO: if no first  line?
 	while (line)
 	{
-		ft_vec_push(&scene, ft_strtrim(line, " "));
-		
 		process_line(data, ft_strtrim(line, " "));
 		line = get_next_line(fd);
 	}
-
-
-
-	size_t j = 0;
-	while (j < scene.len)
-	{
-		char *el;
-		el = (char *)ft_vec_get(&scene, j);
-		printf("first char : %c\n", el[0]);
-		j++;
-	}
-
-	size_t i = 0;
-	while (i < scene.len)
-	{
-		printf("vec: %s\n", (char *)ft_vec_get(&scene, i));
-		i++;
-	}
-	exit(1);
-
 	close(fd);
 	return (1);
 }
+
 /*
-TODO: load the whole file into string vector.
-TODO: Check for duplicate Capital letters.
+
+
 TODO: Convert float values
 TODO: convert unsigned int values
 TODO: handle error flow
 
 TODO: create cam
+TODO: create ambient light
 TODO: create sphere
 TODO: create cylinder
 TODO: create plane
-TODO: create ambient light
 TODO: create light
 
 TODO: Apply udir where applicable.

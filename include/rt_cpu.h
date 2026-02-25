@@ -2,13 +2,9 @@
 # define RT_CPU_H
 
 # include "MLX42/MLX42.h"
-
-// Sphere includes hittable...
 # include "sphere.h"
 
-# ifndef M_PI
-#  define M_PI 3.14159265358979323846
-# endif
+# define M_PI 3.14159265358979323846
 
 # define WIDTH = 1920
 
@@ -39,7 +35,8 @@ typedef struct s_cam
 {
 	t_pt			pt;
 	t_udir			udir;
-	unsigned int	fov;
+	int				fov;
+	bool			assigned;
 }					t_cam;
 
 typedef struct s_data
@@ -68,6 +65,10 @@ typedef struct s_data
 
 	t_vec3			pixel_width;
 	t_vec3			pixel_height;
+
+	bool			set_cam;
+	bool			set_ambient_light;
+	bool			set_light;
 
 	// List of objects
 	t_hittable_list	world;

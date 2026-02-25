@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/22 19:19:22 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/25 13:18:40 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,19 @@
 #define COORD_MAX 2000.0 //TODO: What should max be?
 #define COORD_MIN -2000.0 //TODO: What should max be?
 
-typedef struct s_range
-{
-	float	max;
-	float	min;
-}			t_range;
+// typedef struct s_range
+// {
+// 	float	max;
+// 	float	min;
+// }			t_range;
 
-typedef struct s_amb_light
+typedef struct s_amb_light // A
 {
 	float brightness; // [0.0,1.0]
 						// rgb
 }			t_amb_light;
 
-typedef struct s_light
+typedef struct s_light //L
 {
 	// coord
 	float brightness; // [0.0,1.0]
