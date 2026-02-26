@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/25 13:18:40 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/26 14:47:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@
 // 	float	min;
 // }			t_range;
 
-typedef struct s_amb_light // A
-{
-	float brightness; // [0.0,1.0]
-						// rgb
-}			t_amb_light;
+// typedef struct s_amb_light // A
+// {
+// 	float brightness; // [0.0,1.0]
+// 						// rgb
+// }			t_amb_light;
 
 typedef struct s_light //L
 {

@@ -26,6 +26,12 @@ typedef struct s_pt
 	float			z;
 }					t_pt;
 
+typedef struct s_rgb
+{
+	unsigned int	r;
+	unsigned int	g;
+	unsigned int	b;
+}					t_rgb;
 typedef struct s_udir
 {
 	t_pt			pt;
@@ -39,6 +45,12 @@ typedef struct s_cam
 	bool			assigned;
 }					t_cam;
 
+typedef struct s_ambient_light
+{
+	float brightness; // [0.0,1.0]
+	t_rgb colour;					// rgb
+}					t_ambient_light;
+
 typedef struct s_data
 {
 	void			*mlx;
@@ -51,6 +63,7 @@ typedef struct s_data
 	float			pixel_samples_scale;
 
 	t_cam			cam;
+	t_ambient_light ambient_light;
 
 	float			aspect_ratio;
 	float			viewport_width;

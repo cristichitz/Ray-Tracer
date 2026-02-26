@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/25 19:32:23 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/26 16:15:19 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static int	valid_filename(char *filename, const char *ext)
 		return ((dot[ext_len] == '\0'));
 }
 
-int	convert_limit(float *num, char *param, float min, float max)
+int	convert_float_limit(float *num, char *param, float min, float max)
 {
 	float	fnum;
 
@@ -75,16 +75,19 @@ int	convert_int_limit(int *num, char *param, int min, int max)
 	return (1);
 }
 
-int	get_pt(float *num, char *param)
+int	get_pt(float *num, char *param, unsigned int *err)
 {
-	if (!convert_limit(num, param, COORD_MIN, COORD_MAX))
+	if (!convert_float_limit(num, param, COORD_MIN, COORD_MAX))
+	{
+		*err = *err +1;
 		return (0);
+	}
 	return (1);
 }
 
 int	get_udir(float *num, char *param)
 {
-	if (!convert_limit(num, param, 0.0, 1.0))
+	if (!convert_float_limit(num, param, 0.0, 1.0))
 		return (0);
 	return (1);
 }
@@ -99,14 +102,17 @@ int	get_fov(int *num, char *param)
 int	set_cam(t_data *data, char **params)
 {
 	char	**str_pts;
+	unsigned int err;
 
 	if (data->set_cam == true)
 	{
 		print_error("Duplicate camera entry.");
 		return (0);
 	}
+	err = 0;
 	str_pts = ft_split(params[1], ',');
-	data->cam.pt.x = ft_atof(str_pts[0]);
+	// data->cam.pt.x = ft_atof(str_pts[0]);
+	data->cam.pt.x = get_pt(&data->cam.pt.x, str_pts[0],&err);
 	data->cam.pt.y = ft_atof(str_pts[1]);
 	data->cam.pt.z = ft_atof(str_pts[2]);
 	ft_free_split(str_pts);
@@ -132,8 +138,12 @@ int set_ambient_light(t_data *data, char **params)
 		print_error("Duplicate ambient light entry.");
 		return (0);
 	}
+	data->ambient_light.brightness = ft_atof(params[1]);
+	str_pts = ft_split(params[2], ',');
+	data->ambient_light.colour.r = ft_atoi()
 
 
+	data->set_ambient_light = true;
 	return (1);
 }
 
@@ -193,7 +203,11 @@ int	process_line(t_data *data, char *line)
 		{
 			set_cylinder();
 		}
-		
+		else
+		{
+			print_error("type not found");
+			return (0);
+		}
 	}
 	return (1);
 }
@@ -217,6 +231,11 @@ int	parse_input(t_data *data, int ac, char **av)
 		return (0);
 	}
 	line = get_next_line(fd);
+	if(!line)
+	{
+		print_error("Empty file.");
+		return (0);
+	}
 	// TODO: if no first  line?
 	while (line)
 	{
