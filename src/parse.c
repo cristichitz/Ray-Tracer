@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/26 16:15:19 by timurray         ###   ########.fr       */
+/*   Updated: 2026/02/28 19:03:42 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,10 @@ int	convert_int_limit(int *num, char *param, int min, int max)
 	return (1);
 }
 
-int	get_pt(float *num, char *param, unsigned int *err)
+int	get_pt(float *num, char *param)
 {
 	if (!convert_float_limit(num, param, COORD_MIN, COORD_MAX))
-	{
-		*err = *err +1;
 		return (0);
-	}
 	return (1);
 }
 
@@ -99,37 +96,46 @@ int	get_fov(int *num, char *param)
 	return (1);
 }
 
+int	set_pts(t_pt *pt, char **params, int index, int (*f)(float *n, char *p))
+{
+	char		**str_pts;
+	const char	delim = ',';
+	int			err;
+
+	err = 0;
+	str_pts = ft_split(params[index], delim);
+	//TODO: ftsplit check
+	if (!f(&pt->x, str_pts[0]))
+		err++;
+	if (!f(&pt->y, str_pts[1]))
+		err++;
+	if (!f(&pt->z, str_pts[2]))
+		err++;
+	ft_free_split(str_pts);
+	if (err > 0)
+		return (0);
+	return (1);
+}
+
 int	set_cam(t_data *data, char **params)
 {
 	char	**str_pts;
-	unsigned int err;
 
 	if (data->set_cam == true)
 	{
 		print_error("Duplicate camera entry.");
 		return (0);
 	}
-	err = 0;
-	str_pts = ft_split(params[1], ',');
-	// data->cam.pt.x = ft_atof(str_pts[0]);
-	data->cam.pt.x = get_pt(&data->cam.pt.x, str_pts[0],&err);
-	data->cam.pt.y = ft_atof(str_pts[1]);
-	data->cam.pt.z = ft_atof(str_pts[2]);
-	ft_free_split(str_pts);
-	str_pts = ft_split(params[2], ',');
-	data->cam.udir.pt.x = ft_atof(str_pts[0]);
-	data->cam.udir.pt.y = ft_atof(str_pts[0]);
-	data->cam.udir.pt.z = ft_atof(str_pts[0]);
-	ft_free_split(str_pts);
-	if (!get_fov(&data->cam.fov, params[3]))
-	{
-		print_error("err on fov.\n");
+	if (!set_pts(&data->cam.pt, params, 1, get_pt))
 		return (0);
-	}
+	if (!set_pts(&data->cam.udir, params, 2, get_udir))
+		return (0);
+	if (!get_fov(&data->cam.fov, params[3]))
+		return (0);
 	data->set_cam = true;
 	return (1);
 }
-int set_ambient_light(t_data *data, char **params)
+int	set_ambient_light(t_data *data, char **params)
 {
 	char	**str_pts;
 
@@ -140,14 +146,12 @@ int set_ambient_light(t_data *data, char **params)
 	}
 	data->ambient_light.brightness = ft_atof(params[1]);
 	str_pts = ft_split(params[2], ',');
-	data->ambient_light.colour.r = ft_atoi()
-
-
+	// data->ambient_light.colour.r = ft_atoi();
 	data->set_ambient_light = true;
 	return (1);
 }
 
-int set_light(t_data *data, char **params)
+int	set_light(t_data *data, char **params)
 {
 	if (data->set_light == true)
 	{
@@ -157,17 +161,17 @@ int set_light(t_data *data, char **params)
 	return (1);
 }
 
-int set_sphere(void)
+int	set_sphere(void)
 {
 	return (1);
 }
 
-int set_cylinder(void)
+int	set_cylinder(void)
 {
 	return (1);
 }
 
-int set_plane(void)
+int	set_plane(void)
 {
 	return (1);
 }
@@ -187,19 +191,19 @@ int	process_line(t_data *data, char *line)
 		{
 			set_ambient_light(data, params);
 		}
-		else if(ft_strcmp(params[0], "L") == 0)
+		else if (ft_strcmp(params[0], "L") == 0)
 		{
 			set_light();
 		}
-		else if(ft_strcmp(params[0], "pl") == 0)
+		else if (ft_strcmp(params[0], "pl") == 0)
 		{
 			set_plane();
 		}
-		else if(ft_strcmp(params[0], "sp") == 0)
+		else if (ft_strcmp(params[0], "sp") == 0)
 		{
 			set_sphere();
 		}
-		else if(ft_strcmp(params[0], "cy") == 0)
+		else if (ft_strcmp(params[0], "cy") == 0)
 		{
 			set_cylinder();
 		}
@@ -214,7 +218,7 @@ int	process_line(t_data *data, char *line)
 
 int	parse_input(t_data *data, int ac, char **av)
 {
-	int		fd; 
+	int		fd;
 	char	*line;
 
 	if (ac != 2)
@@ -231,7 +235,7 @@ int	parse_input(t_data *data, int ac, char **av)
 		return (0);
 	}
 	line = get_next_line(fd);
-	if(!line)
+	if (!line)
 	{
 		print_error("Empty file.");
 		return (0);
