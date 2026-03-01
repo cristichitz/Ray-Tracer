@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/28 19:03:42 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/01 16:10:47 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	convert_int_limit(int *num, char *param, int min, int max)
 {
 	int	n;
 
-	n = ft_atoi(param);
+	n = ft_atoi(param); // TODO : replace with safer check.
 	if (n > max)
 	{
 		print_error("val too large.");
@@ -89,7 +89,7 @@ int	get_udir(float *num, char *param)
 	return (1);
 }
 
-int	get_fov(int *num, char *param)
+int	set_fov(int *num, char *param)
 {
 	if (!convert_int_limit(num, param, 0, 180))
 		return (0);
@@ -104,7 +104,7 @@ int	set_pts(t_pt *pt, char **params, int index, int (*f)(float *n, char *p))
 
 	err = 0;
 	str_pts = ft_split(params[index], delim);
-	//TODO: ftsplit check
+	// TODO: ftsplit check
 	if (!f(&pt->x, str_pts[0]))
 		err++;
 	if (!f(&pt->y, str_pts[1]))
@@ -117,10 +117,15 @@ int	set_pts(t_pt *pt, char **params, int index, int (*f)(float *n, char *p))
 	return (1);
 }
 
+int	get_colour(int *num, char *param)
+{
+	if (!convert_int_limit(num, param, 0, 255))
+		return (0);
+	return (1);
+}
+
 int	set_cam(t_data *data, char **params)
 {
-	char	**str_pts;
-
 	if (data->set_cam == true)
 	{
 		print_error("Duplicate camera entry.");
@@ -128,25 +133,48 @@ int	set_cam(t_data *data, char **params)
 	}
 	if (!set_pts(&data->cam.pt, params, 1, get_pt))
 		return (0);
-	if (!set_pts(&data->cam.udir, params, 2, get_udir))
+	if (!set_pts(&data->cam.u_pt, params, 2, get_udir))
 		return (0);
-	if (!get_fov(&data->cam.fov, params[3]))
+	if (!set_fov(&data->cam.fov, params[3]))
 		return (0);
 	data->set_cam = true;
 	return (1);
 }
+
+int	set_colour(t_rgb *colour, char *params)
+{
+	char		**str_pts;
+	const char	delim = ',';
+
+	str_pts = ft_split(params, delim);
+	if (!get_colour(&colour->r, str_pts[0]))
+		return (0);
+	if (!get_colour(&colour->g, str_pts[1]))
+		return (0);
+	if (!get_colour(&colour->b, str_pts[2]))
+		return (0);
+	ft_free_split(str_pts);
+	return (1);
+}
+
+int set_brightness(float *fnum, char *param)
+{
+	if(!convert_float_limit(fnum, param, 0.0, 1.0))
+		return (1);
+	return (0);
+}
+
 int	set_ambient_light(t_data *data, char **params)
 {
-	char	**str_pts;
-
 	if (data->set_ambient_light == true)
 	{
 		print_error("Duplicate ambient light entry.");
 		return (0);
 	}
-	data->ambient_light.brightness = ft_atof(params[1]);
-	str_pts = ft_split(params[2], ',');
-	// data->ambient_light.colour.r = ft_atoi();
+	if(set_brightness(&data->ambient_light.brightness, params[1]))
+		return (0);
+	if (!set_colour(&data->ambient_light.colour, params[2]))
+		return (0);
 	data->set_ambient_light = true;
 	return (1);
 }
@@ -158,6 +186,13 @@ int	set_light(t_data *data, char **params)
 		print_error("Duplicate light entry.");
 		return (0);
 	}
+	if(!set_pts(&data->light.pt, params, 1, get_pt))
+		return (1);
+	if(!set_brightness(&data->light.brightness, params[2]))
+		return (1);	
+	if(!set_colour(&data->light.colour, params[3]))
+		return (1);
+	data->set_light = true;
 	return (1);
 }
 
@@ -168,11 +203,13 @@ int	set_sphere(void)
 
 int	set_cylinder(void)
 {
+	printf("cyclinder implementation pending.\n");
 	return (1);
 }
 
 int	set_plane(void)
 {
+	printf("plane pending\n");
 	return (1);
 }
 
@@ -193,7 +230,7 @@ int	process_line(t_data *data, char *line)
 		}
 		else if (ft_strcmp(params[0], "L") == 0)
 		{
-			set_light();
+			set_light(data, params);
 		}
 		else if (ft_strcmp(params[0], "pl") == 0)
 		{
@@ -246,23 +283,21 @@ int	parse_input(t_data *data, int ac, char **av)
 		process_line(data, ft_strtrim(line, " "));
 		line = get_next_line(fd);
 	}
+
+
+
+
 	close(fd);
 	return (1);
 }
 
 /*
+TODO: After splits, check elements exist.
 
-
-TODO: Convert float values
-TODO: convert unsigned int values
-TODO: handle error flow
-
-TODO: create cam
-TODO: create ambient light
 TODO: create sphere
 TODO: create cylinder
 TODO: create plane
-TODO: create light
+
 
 TODO: Apply udir where applicable.
 

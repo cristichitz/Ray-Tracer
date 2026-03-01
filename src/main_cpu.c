@@ -80,18 +80,23 @@ int	main(int ac, char **av)
 	data.set_ambient_light = false;
 	data.set_cam = false;
 	data.set_light = false;
+	
+	initialize(&data);
+	world.objects = &obj;
+
 	if (ac > 1) // TODO: if(ac != 2) //will switchover when we have good presets
 	{
 		parse_input(&data, ac, av);
-		// exit(123);
 	}
-	initialize(&data);
-	world.objects = &obj;
+	
+
 	if (init_world(&world))
 		return (EXIT_FAILURE);
 	if (create_objects(&world) == EXIT_FAILURE)
-		return (EXIT_FAILURE);
+		return (EXIT_FAILURE);		
 	data.world = world;
+
+
 	// Init MlX42
 	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
 	if (!data.mlx)

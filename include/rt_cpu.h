@@ -28,28 +28,35 @@ typedef struct s_pt
 
 typedef struct s_rgb
 {
-	unsigned int	r;
-	unsigned int	g;
-	unsigned int	b;
+	int	r;
+	int	g;
+	int	b;
 }					t_rgb;
-typedef struct s_udir
-{
-	t_pt			pt;
-}					t_udir;
+// typedef struct s_udir
+// {
+// 	t_pt			pt;
+// }					t_udir;
 
 typedef struct s_cam
 {
 	t_pt			pt;
-	t_udir			udir;
+	t_pt			u_pt;
 	int				fov;
 	bool			assigned;
 }					t_cam;
 
 typedef struct s_ambient_light
 {
-	float brightness; // [0.0,1.0]
-	t_rgb colour;					// rgb
+	float			brightness;
+	t_rgb			colour;
 }					t_ambient_light;
+
+typedef struct s_light
+{
+	t_pt			pt;
+	float			brightness;
+	t_rgb colour; // UNUSED in Mandatory but still parsed.
+}					t_light;
 
 typedef struct s_data
 {
@@ -63,7 +70,8 @@ typedef struct s_data
 	float			pixel_samples_scale;
 
 	t_cam			cam;
-	t_ambient_light ambient_light;
+	t_ambient_light	ambient_light;
+	t_light			light;
 
 	float			aspect_ratio;
 	float			viewport_width;
