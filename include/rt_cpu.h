@@ -32,10 +32,6 @@ typedef struct s_rgb
 	int	g;
 	int	b;
 }					t_rgb;
-// typedef struct s_udir
-// {
-// 	t_pt			pt;
-// }					t_udir;
 
 typedef struct s_cam
 {

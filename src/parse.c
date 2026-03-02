@@ -6,12 +6,13 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/01 16:10:47 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/02 19:01:31 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parse.h"
 #include "rt_cpu.h"
+#include "sphere.h"
 
 static int	valid_filename(char *filename, const char *ext)
 {
@@ -117,6 +118,27 @@ int	set_pts(t_pt *pt, char **params, int index, int (*f)(float *n, char *p))
 	return (1);
 }
 
+int	set_pts_vec3(t_vec3 *pt, char **params, int index, int (*f)(float *n, char *p))
+{
+	char		**str_pts;
+	const char	delim = ',';
+	int			err;
+
+	err = 0;
+	str_pts = ft_split(params[index], delim);
+	// TODO: ftsplit check
+	if (!f(&pt->x, str_pts[0]))
+		err++;
+	if (!f(&pt->y, str_pts[1]))
+		err++;
+	if (!f(&pt->z, str_pts[2]))
+		err++;
+	ft_free_split(str_pts);
+	if (err > 0)
+		return (0);
+	return (1);
+}
+
 int	get_colour(int *num, char *param)
 {
 	if (!convert_int_limit(num, param, 0, 255))
@@ -196,8 +218,15 @@ int	set_light(t_data *data, char **params)
 	return (1);
 }
 
-int	set_sphere(void)
+
+
+int	set_sphere(t_data *data, char **params)
 {
+	t_sphere sp;
+
+	if(!set_pts_vec3(sp.center, params, 1, get_pt))
+
+	// world->add(world, make_sphere(make_vec(0, 0, -1), 0.5));
 	return (1);
 }
 
@@ -232,13 +261,13 @@ int	process_line(t_data *data, char *line)
 		{
 			set_light(data, params);
 		}
+		else if (ft_strcmp(params[0], "sp") == 0)
+		{
+			set_sphere(data, params);
+		}
 		else if (ft_strcmp(params[0], "pl") == 0)
 		{
 			set_plane();
-		}
-		else if (ft_strcmp(params[0], "sp") == 0)
-		{
-			set_sphere();
 		}
 		else if (ft_strcmp(params[0], "cy") == 0)
 		{
@@ -277,7 +306,9 @@ int	parse_input(t_data *data, int ac, char **av)
 		print_error("Empty file.");
 		return (0);
 	}
-	// TODO: if no first  line?
+
+	ft_vec_new(data->world.objects, 0, sizeof(void *));
+
 	while (line)
 	{
 		process_line(data, ft_strtrim(line, " "));

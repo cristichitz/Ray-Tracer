@@ -69,7 +69,7 @@ bool hit_objects(t_hittable_list *self, t_ray ray, t_interval t, t_hit_record *r
 
 int  init_world(t_hittable_list  *world)
 {
-  ft_vec_new(world->objects, 0, sizeof(void *));
+//   ft_vec_new(world->objects, 0, sizeof(void *));
 
   world->add = add_object;
   world->destroy = destroy_objects;
