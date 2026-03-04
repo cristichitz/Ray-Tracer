@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/04 14:47:11 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/04 15:30:45 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,13 +218,23 @@ int	set_light(t_data *data, char **params)
 	return (1);
 }
 
+int get_radius(float *num, char *param)
+{
+	float diameter;
+
+	if (!get_float(&diameter, param, 0.0, FLT_MAX))
+		return (0);
+	*num = diameter/2;
+	return (1);
+}
+
 int	set_sphere(t_data *data, char **params)
 {
 	t_sphere	sp;
 
 	if (!set_pts_vec3(&sp.center, params, 1, get_pt))
 		return (0);
-	if (!get_float(&sp.radius, params[2], 0, FLT_MAX))
+	if (!get_radius(&sp.radius, params[2]))
 		return (0);
 	if (!set_colour(&sp.colour, params[3]))
 		return (0);
@@ -319,7 +329,11 @@ int	parse_input(t_data *data, int ac, char **av)
 }
 
 /*
+TODO: match pt to vec3.
+
 TODO: After splits, check elements exist.
+
+TODO: error process flow
 
 TODO: create sphere
 TODO: create cylinder

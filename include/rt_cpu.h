@@ -3,6 +3,8 @@
 
 # include "MLX42/MLX42.h"
 # include "sphere.h"
+# include "cam.h"
+# include "light.h"
 # include "types.h"
 
 # define M_PI 3.14159265358979323846
@@ -20,26 +22,6 @@ typedef struct s_hittable_list
 }					t_hittable_list;
 
 
-typedef struct s_cam
-{
-	t_pt			pt;
-	t_pt			u_pt;
-	int				fov;
-	bool			assigned;
-}					t_cam;
-
-typedef struct s_ambient_light
-{
-	float			brightness;
-	t_rgb			colour;
-}					t_ambient_light;
-
-typedef struct s_light
-{
-	t_pt			pt;
-	float			brightness;
-	t_rgb colour; // UNUSED in Mandatory but still parsed.
-}					t_light;
 
 typedef struct s_data
 {

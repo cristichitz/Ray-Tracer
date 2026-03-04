@@ -1,30 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.h                                            :+:      :+:    :+:   */
+/*   cam.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/04 15:36:52 by timurray         ###   ########.fr       */
+/*   Created: 2026/03/04 15:32:53 by timurray          #+#    #+#             */
+/*   Updated: 2026/03/04 15:33:54 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSE_H
-# define PARSE_H
+#ifndef CAM_H
+# define CAM_H
 
-# include "libft.h"
-# include "rt_cpu.h"
-# include <fcntl.h>
-# include <float.h>
-# include <limits.h>
-# include <stdio.h>
-# include <stdlib.h>
+#include "types.h"
 
-# define COORD_MAX 2000.0  // TODO: What should max be?
-# define COORD_MIN -2000.0 // TODO: What should min be?
-
-void	print_error(char *msg);
-int		parse_input(t_data *data, int ac, char **av);
+typedef struct s_cam
+{
+	t_pt	pt;
+	t_pt	u_pt;
+	int		fov;
+	bool	assigned;
+}			t_cam;
 
 #endif

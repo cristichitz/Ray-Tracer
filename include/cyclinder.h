@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.h                                            :+:      :+:    :+:   */
+/*   cyclinder.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/04 15:36:52 by timurray         ###   ########.fr       */
+/*   Created: 2026/03/04 15:06:33 by timurray          #+#    #+#             */
+/*   Updated: 2026/03/04 15:06:43 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSE_H
-# define PARSE_H
+#ifndef CYLINDER_H
+# define CYLINDER_H
 
-# include "libft.h"
-# include "rt_cpu.h"
-# include <fcntl.h>
-# include <float.h>
-# include <limits.h>
-# include <stdio.h>
-# include <stdlib.h>
+# include "hittable.h"
+# include "types.h"
 
-# define COORD_MAX 2000.0  // TODO: What should max be?
-# define COORD_MIN -2000.0 // TODO: What should min be?
+typedef struct s_cylinder
+{
+	t_hittable	base;
+	t_vec3		cylinder;
+	float		radius;
+	float		height;
+	t_rgb		colour;
+}				t_cylinder;
 
-void	print_error(char *msg);
-int		parse_input(t_data *data, int ac, char **av);
+// bool			hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec);
+// t_cylinder		*make_cylinder(t_vec3 center, float radius, float height);
 
 #endif

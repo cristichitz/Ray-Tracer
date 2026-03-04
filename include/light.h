@@ -1,30 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse.h                                            :+:      :+:    :+:   */
+/*   light.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/04 15:36:52 by timurray         ###   ########.fr       */
+/*   Created: 2026/03/04 15:34:42 by timurray          #+#    #+#             */
+/*   Updated: 2026/03/04 15:35:33 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSE_H
-# define PARSE_H
+#ifndef LIGHT_H
+#define LIGHT_H
 
-# include "libft.h"
-# include "rt_cpu.h"
-# include <fcntl.h>
-# include <float.h>
-# include <limits.h>
-# include <stdio.h>
-# include <stdlib.h>
+#include "types.h"
 
-# define COORD_MAX 2000.0  // TODO: What should max be?
-# define COORD_MIN -2000.0 // TODO: What should min be?
+typedef struct s_ambient_light
+{
+	float			brightness;
+	t_rgb			colour;
+}					t_ambient_light;
 
-void	print_error(char *msg);
-int		parse_input(t_data *data, int ac, char **av);
+typedef struct s_light
+{
+	t_pt			pt;
+	float			brightness;
+	t_rgb colour; // UNUSED in Mandatory but still parsed.
+}					t_light;
+
 
 #endif
