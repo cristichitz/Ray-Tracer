@@ -62,14 +62,14 @@ void	initialize(t_data *data)
 					data->pixel_height), 0.5f));
 }
 
-int	create_objects(t_hittable_list *world)
-{
-	int	status;
+// int	create_objects(t_hittable_list *world)
+// {
+// 	int	status;
 
-	status = world->add(world, make_sphere(make_vec(0, 0, -1), 0.5));
-	status = world->add(world, make_sphere(make_vec(0, -100.5, -1), 100));
-	return (status);
-}
+// 	status = world->add(world, make_sphere(make_vec(0, 0, -1), 0.5));
+// 	status = world->add(world, make_sphere(make_vec(0, -100.5, -1), 100));
+// 	return (status);
+// }
 
 int	main(int ac, char **av)
 {
@@ -93,8 +93,8 @@ int	main(int ac, char **av)
 	
 
 
-	if (create_objects(&world) == EXIT_FAILURE)
-		return (EXIT_FAILURE);		
+	// if (create_objects(&world) == EXIT_FAILURE)
+	// 	return (EXIT_FAILURE);		
 
 
 	// Init MlX42

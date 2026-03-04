@@ -6,13 +6,12 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/02 19:01:31 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/04 14:47:11 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parse.h"
 #include "rt_cpu.h"
-#include "sphere.h"
 
 static int	valid_filename(char *filename, const char *ext)
 {
@@ -38,7 +37,7 @@ static int	valid_filename(char *filename, const char *ext)
 		return ((dot[ext_len] == '\0'));
 }
 
-int	convert_float_limit(float *num, char *param, float min, float max)
+int	get_float(float *num, char *param, float min, float max)
 {
 	float	fnum;
 
@@ -57,7 +56,7 @@ int	convert_float_limit(float *num, char *param, float min, float max)
 	return (1);
 }
 
-int	convert_int_limit(int *num, char *param, int min, int max)
+int	get_int(int *num, char *param, int min, int max)
 {
 	int	n;
 
@@ -78,21 +77,21 @@ int	convert_int_limit(int *num, char *param, int min, int max)
 
 int	get_pt(float *num, char *param)
 {
-	if (!convert_float_limit(num, param, COORD_MIN, COORD_MAX))
+	if (!get_float(num, param, COORD_MIN, COORD_MAX))
 		return (0);
 	return (1);
 }
 
-int	get_udir(float *num, char *param)
+int	get_u_pt(float *num, char *param)
 {
-	if (!convert_float_limit(num, param, 0.0, 1.0))
+	if (!get_float(num, param, 0.0, 1.0))
 		return (0);
 	return (1);
 }
 
 int	set_fov(int *num, char *param)
 {
-	if (!convert_int_limit(num, param, 0, 180))
+	if (!get_int(num, param, 0, 180))
 		return (0);
 	return (1);
 }
@@ -118,7 +117,8 @@ int	set_pts(t_pt *pt, char **params, int index, int (*f)(float *n, char *p))
 	return (1);
 }
 
-int	set_pts_vec3(t_vec3 *pt, char **params, int index, int (*f)(float *n, char *p))
+int	set_pts_vec3(t_vec3 *pt, char **params, int index, int (*f)(float *n,
+			char *p))
 {
 	char		**str_pts;
 	const char	delim = ',';
@@ -139,9 +139,9 @@ int	set_pts_vec3(t_vec3 *pt, char **params, int index, int (*f)(float *n, char *
 	return (1);
 }
 
-int	get_colour(int *num, char *param)
+int	set_rgb(int *num, char *param)
 {
-	if (!convert_int_limit(num, param, 0, 255))
+	if (!get_int(num, param, 0, 255))
 		return (0);
 	return (1);
 }
@@ -155,7 +155,7 @@ int	set_cam(t_data *data, char **params)
 	}
 	if (!set_pts(&data->cam.pt, params, 1, get_pt))
 		return (0);
-	if (!set_pts(&data->cam.u_pt, params, 2, get_udir))
+	if (!set_pts(&data->cam.u_pt, params, 2, get_u_pt))
 		return (0);
 	if (!set_fov(&data->cam.fov, params[3]))
 		return (0);
@@ -169,19 +169,19 @@ int	set_colour(t_rgb *colour, char *params)
 	const char	delim = ',';
 
 	str_pts = ft_split(params, delim);
-	if (!get_colour(&colour->r, str_pts[0]))
+	if (!set_rgb(&colour->r, str_pts[0]))
 		return (0);
-	if (!get_colour(&colour->g, str_pts[1]))
+	if (!set_rgb(&colour->g, str_pts[1]))
 		return (0);
-	if (!get_colour(&colour->b, str_pts[2]))
+	if (!set_rgb(&colour->b, str_pts[2]))
 		return (0);
 	ft_free_split(str_pts);
 	return (1);
 }
 
-int set_brightness(float *fnum, char *param)
+int	set_brightness(float *fnum, char *param)
 {
-	if(!convert_float_limit(fnum, param, 0.0, 1.0))
+	if (!get_float(fnum, param, 0.0, 1.0))
 		return (1);
 	return (0);
 }
@@ -193,7 +193,7 @@ int	set_ambient_light(t_data *data, char **params)
 		print_error("Duplicate ambient light entry.");
 		return (0);
 	}
-	if(set_brightness(&data->ambient_light.brightness, params[1]))
+	if (set_brightness(&data->ambient_light.brightness, params[1]))
 		return (0);
 	if (!set_colour(&data->ambient_light.colour, params[2]))
 		return (0);
@@ -208,25 +208,27 @@ int	set_light(t_data *data, char **params)
 		print_error("Duplicate light entry.");
 		return (0);
 	}
-	if(!set_pts(&data->light.pt, params, 1, get_pt))
+	if (!set_pts(&data->light.pt, params, 1, get_pt))
 		return (1);
-	if(!set_brightness(&data->light.brightness, params[2]))
-		return (1);	
-	if(!set_colour(&data->light.colour, params[3]))
+	if (!set_brightness(&data->light.brightness, params[2]))
+		return (1);
+	if (!set_colour(&data->light.colour, params[3]))
 		return (1);
 	data->set_light = true;
 	return (1);
 }
 
-
-
 int	set_sphere(t_data *data, char **params)
 {
-	t_sphere sp;
+	t_sphere	sp;
 
-	if(!set_pts_vec3(sp.center, params, 1, get_pt))
-
-	// world->add(world, make_sphere(make_vec(0, 0, -1), 0.5));
+	if (!set_pts_vec3(&sp.center, params, 1, get_pt))
+		return (0);
+	if (!get_float(&sp.radius, params[2], 0, FLT_MAX))
+		return (0);
+	if (!set_colour(&sp.colour, params[3]))
+		return (0);
+	data->world.add(&data->world, make_sphere((t_vec3)sp.center, sp.radius));
 	return (1);
 }
 
@@ -306,18 +308,12 @@ int	parse_input(t_data *data, int ac, char **av)
 		print_error("Empty file.");
 		return (0);
 	}
-
 	ft_vec_new(data->world.objects, 0, sizeof(void *));
-
 	while (line)
 	{
 		process_line(data, ft_strtrim(line, " "));
 		line = get_next_line(fd);
 	}
-
-
-
-
 	close(fd);
 	return (1);
 }

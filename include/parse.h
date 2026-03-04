@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/01 13:21:37 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/04 14:45:58 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,30 +19,10 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <limits.h>
+# include <float.h>
 
 #define COORD_MAX 2000.0 //TODO: What should max be?
 #define COORD_MIN -2000.0 //TODO: What should max be?
-
-// typedef struct s_range
-// {
-// 	float	max;
-// 	float	min;
-// }			t_range;
-
-// typedef struct s_amb_light // A
-// {
-// 	float brightness; // [0.0,1.0]
-// 						// rgb
-// }			t_amb_light;
-
-
-
-// typedef struct s_sphere
-// {
-// 	// coord
-// 	float	d;
-// 	// rgb
-// }			t_sphere;
 
 typedef struct s_plane
 {

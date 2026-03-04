@@ -3,9 +3,9 @@
 
 # include "MLX42/MLX42.h"
 # include "sphere.h"
+# include "types.h"
 
 # define M_PI 3.14159265358979323846
-
 # define WIDTH = 1920
 
 typedef t_vec		t_list;
@@ -19,19 +19,6 @@ typedef struct s_hittable_list
 					t_hit_record *rec);
 }					t_hittable_list;
 
-typedef struct s_pt
-{
-	float			x;
-	float			y;
-	float			z;
-}					t_pt;
-
-typedef struct s_rgb
-{
-	int	r;
-	int	g;
-	int	b;
-}					t_rgb;
 
 typedef struct s_cam
 {
