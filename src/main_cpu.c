@@ -38,7 +38,7 @@ void	initialize(t_data *data)
 {
 	t_vec3	upper_left_corner;
 
-	data->width = 640;
+	data->width = WIDTH;
 	data->height = (int)(data->width / (16.0 / 9.0));
 	data->height = (data->height < 1) ? 1 : data->height;
 	data->origin = make_vec(data->cam.pt.x, data->cam.pt.y, data->cam.pt.z);
@@ -62,14 +62,6 @@ void	initialize(t_data *data)
 					data->pixel_height), 0.5f));
 }
 
-// int	create_objects(t_hittable_list *world)
-// {
-// 	int	status;
-
-// 	status = world->add(world, make_sphere(make_vec(0, 0, -1), 0.5));
-// 	status = world->add(world, make_sphere(make_vec(0, -100.5, -1), 100));
-// 	return (status);
-// }
 
 int	main(int ac, char **av)
 {
@@ -86,16 +78,13 @@ int	main(int ac, char **av)
 	if (init_world(&world))
 		return (EXIT_FAILURE);
 	data.world = world;
-	if (ac > 1) // TODO: if(ac != 2) //will switchover when we have good presets
+	if (ac != 2)
 	{
-		parse_input(&data, ac, av);
+		print_error("No scene file given.");
+		return (0);
 	}
 	
-
-
-	// if (create_objects(&world) == EXIT_FAILURE)
-	// 	return (EXIT_FAILURE);		
-
+	parse_input(&data, ac, av);
 
 	// Init MlX42
 	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);

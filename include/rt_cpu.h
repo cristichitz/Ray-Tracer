@@ -8,7 +8,7 @@
 # include "types.h"
 
 # define M_PI 3.14159265358979323846
-# define WIDTH = 1920
+# define WIDTH 640
 
 typedef t_vec		t_list;
 
