@@ -38,15 +38,17 @@ bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	return (true);
 }
 
-t_sphere	*make_sphere(t_vec3 center, float radius)
+// t_sphere	*make_sphere(t_vec3 center, float radius)
+t_sphere	*make_sphere(t_sphere sphere)
 {
 	t_sphere	*s;
 
 	s = malloc(sizeof(t_sphere));
 	if (!s)
 		return (NULL);
-	s->radius = radius;
-	s->center = center;
+	s->center = sphere.center;
+	s->radius = sphere.radius;
+	// s->colour = sphere.colour;
 	s->base.hit = hit_sphere;
 	return (s);
 }

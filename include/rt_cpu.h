@@ -2,9 +2,10 @@
 # define RT_CPU_H
 
 # include "MLX42/MLX42.h"
-# include "sphere.h"
 # include "cam.h"
+# include "cylinder.h"
 # include "light.h"
+# include "sphere.h"
 # include "types.h"
 
 # define M_PI 3.14159265358979323846
@@ -20,8 +21,6 @@ typedef struct s_hittable_list
 	bool			(*hit)(struct s_hittable_list *self, t_ray r, t_interval t,
 					t_hit_record *rec);
 }					t_hittable_list;
-
-
 
 typedef struct s_data
 {

@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/04 15:30:45 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/05 13:27:28 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,21 +230,25 @@ int get_radius(float *num, char *param)
 
 int	set_sphere(t_data *data, char **params)
 {
-	t_sphere	sp;
+	t_sphere	sphere;
 
-	if (!set_pts_vec3(&sp.center, params, 1, get_pt))
+	if (!set_pts_vec3(&sphere.center, params, 1, get_pt))
 		return (0);
-	if (!get_radius(&sp.radius, params[2]))
+	if (!get_radius(&sphere.radius, params[2]))
 		return (0);
-	if (!set_colour(&sp.colour, params[3]))
+	if (!set_colour(&sphere.colour, params[3]))
 		return (0);
-	data->world.add(&data->world, make_sphere((t_vec3)sp.center, sp.radius));
+	//TODO: what if the malloc fails?
+	data->world.add(&data->world, make_sphere(sphere));
 	return (1);
 }
 
 int	set_cylinder(void)
 {
+	// t_cylinder cylinder;
+
 	printf("cyclinder implementation pending.\n");
+
 	return (1);
 }
 
