@@ -6,12 +6,52 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/05 13:27:28 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/05 15:49:19 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parse.h"
 #include "rt_cpu.h"
+
+static size_t	split_len(char **split)
+{
+	size_t	len;
+
+	len = 0;
+	if (!split)
+		return (0);
+	while (split[len])
+		len++;
+	return (len);
+}
+
+static int	float_parse3(float *x, float *y, float *z, char *param,
+		int (*f)(float *n, char *p))
+{
+	char	**parts;
+	int		ok;
+
+	ok = 1;
+	parts = ft_split(param, ',');
+	if (!parts)
+		return (0);
+	if (split_len(parts) != 3)
+		ok = 0;
+	else if (!f(x, parts[0]) || !f(y, parts[1]) || !f(z, parts[2]))
+		ok = 0;
+	ft_free_split(parts);
+	return (ok);
+}
+
+static int	split_count(char **params, size_t expected)
+{
+	if (split_len(params) != expected)
+	{
+		print_error("Invalid number of arguments.");
+		return (0);
+	}
+	return (1);
+}
 
 static int	valid_filename(char *filename, const char *ext)
 {
@@ -98,45 +138,23 @@ int	set_fov(int *num, char *param)
 
 int	set_pts(t_pt *pt, char **params, int index, int (*f)(float *n, char *p))
 {
-	char		**str_pts;
-	const char	delim = ',';
-	int			err;
-
-	err = 0;
-	str_pts = ft_split(params[index], delim);
-	// TODO: ftsplit check
-	if (!f(&pt->x, str_pts[0]))
-		err++;
-	if (!f(&pt->y, str_pts[1]))
-		err++;
-	if (!f(&pt->z, str_pts[2]))
-		err++;
-	ft_free_split(str_pts);
-	if (err > 0)
+	if (!params[index])
+	{
+		print_error("Missing point parameter.");
 		return (0);
-	return (1);
+	}
+	return (float_parse3(&pt->x, &pt->y, &pt->z, params[index], f));
 }
 
 int	set_pts_vec3(t_vec3 *pt, char **params, int index, int (*f)(float *n,
 			char *p))
 {
-	char		**str_pts;
-	const char	delim = ',';
-	int			err;
-
-	err = 0;
-	str_pts = ft_split(params[index], delim);
-	// TODO: ftsplit check
-	if (!f(&pt->x, str_pts[0]))
-		err++;
-	if (!f(&pt->y, str_pts[1]))
-		err++;
-	if (!f(&pt->z, str_pts[2]))
-		err++;
-	ft_free_split(str_pts);
-	if (err > 0)
+	if (!params[index])
+	{
+		print_error("Missing point parameter.");
 		return (0);
-	return (1);
+	}
+	return (float_parse3(&pt->x, &pt->y, &pt->z, params[index], f));
 }
 
 int	set_rgb(int *num, char *param)
@@ -148,6 +166,8 @@ int	set_rgb(int *num, char *param)
 
 int	set_cam(t_data *data, char **params)
 {
+	if (!split_count(params, 4))
+		return (0);
 	if (data->set_cam == true)
 	{
 		print_error("Duplicate camera entry.");
@@ -165,35 +185,39 @@ int	set_cam(t_data *data, char **params)
 
 int	set_colour(t_rgb *colour, char *params)
 {
-	char		**str_pts;
-	const char	delim = ',';
+	char	**parts;
+	int		ok;
 
-	str_pts = ft_split(params, delim);
-	if (!set_rgb(&colour->r, str_pts[0]))
+	parts = ft_split(params, ',');
+	if (!parts)
 		return (0);
-	if (!set_rgb(&colour->g, str_pts[1]))
-		return (0);
-	if (!set_rgb(&colour->b, str_pts[2]))
-		return (0);
-	ft_free_split(str_pts);
-	return (1);
+	ok = 1;
+	if (split_len(parts) != 3)
+		ok = 0;
+	else if (!set_rgb(&colour->r, parts[0]) || !set_rgb(&colour->g, parts[1])
+		|| !set_rgb(&colour->b, parts[2]))
+		ok = 0;
+	ft_free_split(parts);
+	return (ok);
 }
 
 int	set_brightness(float *fnum, char *param)
 {
 	if (!get_float(fnum, param, 0.0, 1.0))
-		return (1);
-	return (0);
+		return (0);
+	return (1);
 }
 
 int	set_ambient_light(t_data *data, char **params)
 {
+	if (!split_count(params, 3))
+		return (0);
 	if (data->set_ambient_light == true)
 	{
 		print_error("Duplicate ambient light entry.");
 		return (0);
 	}
-	if (set_brightness(&data->ambient_light.brightness, params[1]))
+	if (!set_brightness(&data->ambient_light.brightness, params[1]))
 		return (0);
 	if (!set_colour(&data->ambient_light.colour, params[2]))
 		return (0);
@@ -203,43 +227,58 @@ int	set_ambient_light(t_data *data, char **params)
 
 int	set_light(t_data *data, char **params)
 {
+	if (!split_count(params, 4))
+		return (0);
 	if (data->set_light == true)
 	{
 		print_error("Duplicate light entry.");
 		return (0);
 	}
 	if (!set_pts(&data->light.pt, params, 1, get_pt))
-		return (1);
+		return (0);
 	if (!set_brightness(&data->light.brightness, params[2]))
-		return (1);
+		return (0);
 	if (!set_colour(&data->light.colour, params[3]))
-		return (1);
+		return (0);
 	data->set_light = true;
 	return (1);
 }
 
-int get_radius(float *num, char *param)
+int	get_radius(float *num, char *param)
 {
-	float diameter;
+	float	diameter;
 
 	if (!get_float(&diameter, param, 0.0, FLT_MAX))
 		return (0);
-	*num = diameter/2;
+	*num = diameter / 2.0f;
 	return (1);
 }
 
 int	set_sphere(t_data *data, char **params)
 {
 	t_sphere	sphere;
+	t_sphere	*object;
 
+	if (!split_count(params, 4))
+		return (0);
 	if (!set_pts_vec3(&sphere.center, params, 1, get_pt))
 		return (0);
 	if (!get_radius(&sphere.radius, params[2]))
 		return (0);
 	if (!set_colour(&sphere.colour, params[3]))
 		return (0);
-	//TODO: what if the malloc fails?
-	data->world.add(&data->world, make_sphere(sphere));
+	object = make_sphere(sphere);
+	if (!object)
+	{
+		print_error("Failed to allocate sphere.");
+		return (0);
+	}
+	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
+	{
+		free(object);
+		print_error("Failed to add sphere to world.");
+		return (0);
+	}
 	return (1);
 }
 
@@ -258,50 +297,44 @@ int	set_plane(void)
 	return (1);
 }
 
+static int	process_type(t_data *data, char **params)
+{
+	if (ft_strcmp(params[0], "C") == 0)
+		return (set_cam(data, params));
+	if (ft_strcmp(params[0], "A") == 0)
+		return (set_ambient_light(data, params));
+	if (ft_strcmp(params[0], "L") == 0)
+		return (set_light(data, params));
+	if (ft_strcmp(params[0], "sp") == 0)
+		return (set_sphere(data, params));
+	if (ft_strcmp(params[0], "pl") == 0)
+		return (set_plane());
+	if (ft_strcmp(params[0], "cy") == 0)
+		return (set_cylinder());
+	print_error("type not found");
+	return (0);
+}
+
 int	process_line(t_data *data, char *line)
 {
 	char	**params;
+	int		result;
 
+	if (!line || line[0] == '\0')
+		return (1);
 	params = ft_split(line, ' ');
-	if (params[0][0] != '\n')
-	{
-		if (ft_strncmp(params[0], "C", 1) == 0)
-		{
-			set_cam(data, params);
-		}
-		else if (ft_strcmp(params[0], "A") == 0)
-		{
-			set_ambient_light(data, params);
-		}
-		else if (ft_strcmp(params[0], "L") == 0)
-		{
-			set_light(data, params);
-		}
-		else if (ft_strcmp(params[0], "sp") == 0)
-		{
-			set_sphere(data, params);
-		}
-		else if (ft_strcmp(params[0], "pl") == 0)
-		{
-			set_plane();
-		}
-		else if (ft_strcmp(params[0], "cy") == 0)
-		{
-			set_cylinder();
-		}
-		else
-		{
-			print_error("type not found");
-			return (0);
-		}
-	}
-	return (1);
+	if (!params || !params[0])
+		return (0);
+	result = process_type(data, params);
+	ft_free_split(params);
+	return (result);
 }
 
 int	parse_input(t_data *data, int ac, char **av)
 {
 	int		fd;
 	char	*line;
+	char	*trimmed;
 
 	if (ac != 2)
 	{
@@ -320,12 +353,32 @@ int	parse_input(t_data *data, int ac, char **av)
 	if (!line)
 	{
 		print_error("Empty file.");
+		close(fd);
 		return (0);
 	}
-	ft_vec_new(data->world.objects, 0, sizeof(void *));
+	if (ft_vec_new(data->world.objects, 0, sizeof(void *)) < 0)
+	{
+		print_error("Failed to allocate world object list.");
+		free(line);
+		close(fd);
+		return (0);
+	}
 	while (line)
 	{
-		process_line(data, ft_strtrim(line, " "));
+		trimmed = ft_strtrim(line, " \t\n");
+		free(line);
+		if (!trimmed)
+		{
+			close(fd);
+			return (0);
+		}
+		if (!process_line(data, trimmed))
+		{
+			free(trimmed);
+			close(fd);
+			return (0);
+		}
+		free(trimmed);
 		line = get_next_line(fd);
 	}
 	close(fd);

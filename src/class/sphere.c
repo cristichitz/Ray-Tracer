@@ -46,9 +46,7 @@ t_sphere	*make_sphere(t_sphere sphere)
 	s = malloc(sizeof(t_sphere));
 	if (!s)
 		return (NULL);
-	s->center = sphere.center;
-	s->radius = sphere.radius;
-	// s->colour = sphere.colour;
+	*s = sphere;
 	s->base.hit = hit_sphere;
 	return (s);
 }
