@@ -23,14 +23,14 @@ void	game_loop(void *param)
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
 		mlx_close_window(data->mlx);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_W))
-		data->cam.pt.z -= speed;
+		data->cam.center.z -= speed;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_S))
-		data->cam.pt.z += speed;
+		data->cam.center.z += speed;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_A))
-		data->cam.pt.x -= speed;
+		data->cam.center.x -= speed;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_D))
-		data->cam.pt.x += speed;
-	data->origin = make_vec(data->cam.pt.x, data->cam.pt.y, data->cam.pt.z);
+		data->cam.center.x += speed;
+	data->origin = make_vec(data->cam.center.x, data->cam.center.y, data->cam.center.z);
 	render_frame(data);
 }
 
@@ -41,7 +41,7 @@ void	initialize(t_data *data)
 	data->width = WIDTH;
 	data->height = (int)(data->width / (16.0 / 9.0));
 	data->height = (data->height < 1) ? 1 : data->height;
-	data->origin = make_vec(data->cam.pt.x, data->cam.pt.y, data->cam.pt.z);
+	data->origin = make_vec(data->cam.center.x, data->cam.center.y, data->cam.center.z);
 	data->aspect_ratio = (float)data->width / (float)data->height;
 	data->viewport_height = 2.0f;
 	data->viewport_width = data->aspect_ratio * data->viewport_height;
@@ -84,7 +84,8 @@ int	main(int ac, char **av)
 		return (0);
 	}
 	
-	parse_input(&data, ac, av);
+	if(!parse_input(&data, ac, av))
+		return (EXIT_FAILURE);
 
 	// Init MlX42
 	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
