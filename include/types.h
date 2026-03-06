@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/04 13:30:57 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/04 14:48:32 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/06 11:31:37 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,6 @@ typedef struct s_rgb
 	int		g;
 	int		b;
 }			t_rgb;
-
-typedef struct s_pt
-{
-	float	x;
-	float	y;
-	float	z;
-}			t_pt;
 
 typedef struct s_vec3
 {

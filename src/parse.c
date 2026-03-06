@@ -6,52 +6,12 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/05 15:49:19 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/06 16:58:27 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parse.h"
 #include "rt_cpu.h"
-
-static size_t	split_len(char **split)
-{
-	size_t	len;
-
-	len = 0;
-	if (!split)
-		return (0);
-	while (split[len])
-		len++;
-	return (len);
-}
-
-static int	float_parse3(float *x, float *y, float *z, char *param,
-		int (*f)(float *n, char *p))
-{
-	char	**parts;
-	int		ok;
-
-	ok = 1;
-	parts = ft_split(param, ',');
-	if (!parts)
-		return (0);
-	if (split_len(parts) != 3)
-		ok = 0;
-	else if (!f(x, parts[0]) || !f(y, parts[1]) || !f(z, parts[2]))
-		ok = 0;
-	ft_free_split(parts);
-	return (ok);
-}
-
-static int	split_count(char **params, size_t expected)
-{
-	if (split_len(params) != expected)
-	{
-		print_error("Invalid number of arguments.");
-		return (0);
-	}
-	return (1);
-}
 
 static int	valid_filename(char *filename, const char *ext)
 {
@@ -77,19 +37,64 @@ static int	valid_filename(char *filename, const char *ext)
 		return ((dot[ext_len] == '\0'));
 }
 
+static size_t	split_len(char **split)
+{
+	size_t	len;
+
+	len = 0;
+	if (!split)
+		return (0);
+	while (split[len])
+		len++;
+	return (len);
+}
+
+static int	split_count(char **params, size_t expected)
+{
+	if (split_len(params) != expected)
+	{
+		print_error("Invalid number of arguments.");
+		return (0);
+	}
+	return (1);
+}
+
+int	set_pts(t_vec3 *pt, char **params, int index, int (*f)(float *n, char *p))
+{
+	char	**parts;
+	int		ok;
+
+	if (!params[index])
+	{
+		print_error("Missing point parameter.");
+		return (0);
+	}
+	ok = 1;
+	parts = ft_split(params[index], ',');
+	if (!parts)
+		return (0);
+	if (split_len(parts) != 3)
+		ok = 0;
+	else if (!f(&pt->x, parts[0]) || !f(&pt->y, parts[1]) || !f(&pt->z,
+			parts[2]))
+		ok = 0;
+	ft_free_split(parts);
+	return (ok);
+}
+
 int	get_float(float *num, char *param, float min, float max)
 {
 	float	fnum;
 
-	fnum = ft_strtof(param, NULL);
+	fnum = ft_strtof(param, NULL); // TODO: Use endptr for check.
 	if (fnum > max)
 	{
-		print_error("val too large.");
+		print_error("Value too large.");
 		return (0);
 	}
 	if (fnum < min)
 	{
-		print_error("val too low");
+		print_error("Value too low.");
 		return (0);
 	}
 	*num = fnum;
@@ -100,15 +105,15 @@ int	get_int(int *num, char *param, int min, int max)
 {
 	int	n;
 
-	n = ft_atoi(param); // TODO : replace with safer check.
+	n = ft_atoi(param); // TODO: Replace with safer check.
 	if (n > max)
 	{
-		print_error("val too large.");
+		print_error("Value too large.");
 		return (0);
 	}
 	if (n < min)
 	{
-		print_error("val too low");
+		print_error("Value too low.");
 		return (0);
 	}
 	*num = n;
@@ -122,7 +127,7 @@ int	get_pt(float *num, char *param)
 	return (1);
 }
 
-int	get_u_pt(float *num, char *param)
+int	get_uvec_pt(float *num, char *param)
 {
 	if (!get_float(num, param, 0.0, 1.0))
 		return (0);
@@ -136,50 +141,10 @@ int	set_fov(int *num, char *param)
 	return (1);
 }
 
-int	set_pts(t_pt *pt, char **params, int index, int (*f)(float *n, char *p))
-{
-	if (!params[index])
-	{
-		print_error("Missing point parameter.");
-		return (0);
-	}
-	return (float_parse3(&pt->x, &pt->y, &pt->z, params[index], f));
-}
-
-int	set_pts_vec3(t_vec3 *pt, char **params, int index, int (*f)(float *n,
-			char *p))
-{
-	if (!params[index])
-	{
-		print_error("Missing point parameter.");
-		return (0);
-	}
-	return (float_parse3(&pt->x, &pt->y, &pt->z, params[index], f));
-}
-
 int	set_rgb(int *num, char *param)
 {
 	if (!get_int(num, param, 0, 255))
 		return (0);
-	return (1);
-}
-
-int	set_cam(t_data *data, char **params)
-{
-	if (!split_count(params, 4))
-		return (0);
-	if (data->set_cam == true)
-	{
-		print_error("Duplicate camera entry.");
-		return (0);
-	}
-	if (!set_pts(&data->cam.pt, params, 1, get_pt))
-		return (0);
-	if (!set_pts(&data->cam.u_pt, params, 2, get_u_pt))
-		return (0);
-	if (!set_fov(&data->cam.fov, params[3]))
-		return (0);
-	data->set_cam = true;
 	return (1);
 }
 
@@ -205,6 +170,35 @@ int	set_brightness(float *fnum, char *param)
 {
 	if (!get_float(fnum, param, 0.0, 1.0))
 		return (0);
+	return (1);
+}
+
+int	set_radius(float *num, char *param)
+{
+	float	diameter;
+
+	if (!get_float(&diameter, param, 0.0, FLT_MAX))
+		return (0);
+	*num = diameter / 2.0f;
+	return (1);
+}
+
+int	set_cam(t_data *data, char **params)
+{
+	if (!split_count(params, 4))
+		return (0);
+	if (data->set_cam == true)
+	{
+		print_error("Duplicate camera entry.");
+		return (0);
+	}
+	if (!set_pts(&data->cam.center, params, 1, get_pt))
+		return (0);
+	if (!set_pts(&data->cam.uvec, params, 2, get_uvec_pt))
+		return (0);
+	if (!set_fov(&data->cam.fov, params[3]))
+		return (0);
+	data->set_cam = true;
 	return (1);
 }
 
@@ -234,23 +228,13 @@ int	set_light(t_data *data, char **params)
 		print_error("Duplicate light entry.");
 		return (0);
 	}
-	if (!set_pts(&data->light.pt, params, 1, get_pt))
+	if (!set_pts(&data->light.center, params, 1, get_pt))
 		return (0);
 	if (!set_brightness(&data->light.brightness, params[2]))
 		return (0);
 	if (!set_colour(&data->light.colour, params[3]))
 		return (0);
 	data->set_light = true;
-	return (1);
-}
-
-int	get_radius(float *num, char *param)
-{
-	float	diameter;
-
-	if (!get_float(&diameter, param, 0.0, FLT_MAX))
-		return (0);
-	*num = diameter / 2.0f;
 	return (1);
 }
 
@@ -261,9 +245,9 @@ int	set_sphere(t_data *data, char **params)
 
 	if (!split_count(params, 4))
 		return (0);
-	if (!set_pts_vec3(&sphere.center, params, 1, get_pt))
+	if (!set_pts(&sphere.center, params, 1, get_pt))
 		return (0);
-	if (!get_radius(&sphere.radius, params[2]))
+	if (!set_radius(&sphere.radius, params[2]))
 		return (0);
 	if (!set_colour(&sphere.colour, params[3]))
 		return (0);
@@ -284,9 +268,11 @@ int	set_sphere(t_data *data, char **params)
 
 int	set_cylinder(void)
 {
-	// t_cylinder cylinder;
-
 	printf("cyclinder implementation pending.\n");
+	// t_cylinder cylinder;
+	// t_cylinder *object;
+	
+
 
 	return (1);
 }
@@ -386,7 +372,6 @@ int	parse_input(t_data *data, int ac, char **av)
 }
 
 /*
-TODO: match pt to vec3.
 
 TODO: After splits, check elements exist.
 
