@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 17:58:19 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/07 20:38:58 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,15 +59,15 @@ static int	split_count(char **params, size_t expected)
 	return (1);
 }
 
-int	set_pts(t_vec3 *pt, char **params, int index, int (*f)(float *n, char *p))
+int	set_pts(t_vec3 *pt, char *params, int (*f)(float *n, char *p))
 {
 	char	**parts;
 	int		ok;
 
-	if (!params[index])
+	if (!params)
 		return(return_print_error("Missing point parameter.", 0));
 	ok = 1;
-	parts = ft_split(params[index], ',');
+	parts = ft_split(params, ',');
 	if (!parts)
 		return (0);
 	if (split_len(parts) != 3)
@@ -184,9 +184,9 @@ int	set_cam(t_data *data, char **params)
 		print_error("Duplicate camera entry.");
 		return (0);
 	}
-	if (!set_pts(&data->cam.center, params, 1, get_pt))
+	if (!set_pts(&data->cam.center, params[1], get_pt))
 		return (0);
-	if (!set_pts(&data->cam.uvec, params, 2, get_uvec_pt))
+	if (!set_pts(&data->cam.uvec, params[2], get_uvec_pt))
 		return (0);
 	if (!set_fov(&data->cam.fov, params[3]))
 		return (0);
@@ -220,7 +220,7 @@ int	set_light(t_data *data, char **params)
 		print_error("Duplicate light entry.");
 		return (0);
 	}
-	if (!set_pts(&data->light.center, params, 1, get_pt))
+	if (!set_pts(&data->light.center, params[1], get_pt))
 		return (0);
 	if (!set_brightness(&data->light.brightness, params[2]))
 		return (0);
@@ -237,7 +237,7 @@ int	set_sphere(t_data *data, char **params)
 
 	if (!split_count(params, 4))
 		return (0);
-	if (!set_pts(&sphere.center, params, 1, get_pt))
+	if (!set_pts(&sphere.center, params[1], get_pt))
 		return (0);
 	if (!set_radius(&sphere.radius, params[2]))
 		return (0);
@@ -259,11 +259,11 @@ int	set_cylinder(t_data *data, char **params)
 	t_cylinder	cylinder;
 	t_cylinder	*object;
 
-	if (!split_count(params, 5))
+	if (!split_count(params, 6))
 		return (0);
-	if (!set_pts(&cylinder.center, params, 1, get_pt))
+	if (!set_pts(&cylinder.center, params[1], get_pt))
 		return (0);
-	if (!set_pts(&cylinder.u_vec, params, 2, get_uvec_pt))
+	if (!set_pts(&cylinder.uvec, params[2], get_uvec_pt))
 		return (0);
 	if (!set_radius(&cylinder.radius, params[3]))
 		return (0);
@@ -282,9 +282,27 @@ int	set_cylinder(t_data *data, char **params)
 	return (1);
 }
 
-int	set_plane(void)
+int	set_plane(t_data *data, char **params)
 {
-	printf("plane pending\n");
+	t_plane plane;
+	t_plane *object;
+
+	if (!split_count(params, 4))
+		return (0);
+	if(!set_pts(&plane.center, params[1], get_pt))
+		return (0);
+	if(!set_pts(&plane.uvec,params[2], get_uvec_pt))
+		return (0);
+	if(!set_colour(&plane.colour, params[3]))
+		return (0);
+	object = make_plane(plane);
+	if (!object)
+		return (return_print_error("Failed to allocate plane.", 0));
+	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
+	{
+		free(object);
+		return (return_print_error("Failed to add plane to world.", 0));
+	}
 	return (1);
 }
 
@@ -299,7 +317,7 @@ static int	process_type(t_data *data, char **params)
 	if (ft_strcmp(params[0], "sp") == 0)
 		return (set_sphere(data, params));
 	if (ft_strcmp(params[0], "pl") == 0)
-		return (set_plane());
+		return (set_plane(data, params));
 	if (ft_strcmp(params[0], "cy") == 0)
 		return (set_cylinder(data, params));
 	print_error("type not found");
@@ -378,14 +396,7 @@ int	parse_input(t_data *data, int ac, char **av)
 
 /*
 
-
-
 TODO: error process flow
-
-
-TODO: create plane
-
-
-TODO: Apply udir where applicable.
+TODO: shrink
 
 */

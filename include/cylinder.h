@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/04 15:06:33 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 12:12:53 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/07 20:38:03 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ typedef struct s_cylinder
 {
 	t_hittable	base;
 	t_vec3		center;
-	t_vec3		u_vec;
+	t_vec3		uvec;
 	float		radius;
 	float		height;
 	t_rgb		colour;

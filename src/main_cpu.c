@@ -86,7 +86,10 @@ int	main(int ac, char **av)
 		return (0);
 	}
 	if (!parse_input(&data, ac, av))
+	{
+		//TODO: free memory
 		return (EXIT_FAILURE);
+	}
 	initialize(&data);
 	// Init MlX42
 	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);

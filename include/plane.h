@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/04 15:06:28 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/06 11:26:56 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/07 19:36:42 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,6 @@ typedef struct s_plane
 }				t_plane;
 
 // bool			hit_plane(void *base, t_ray ray, t_interval t, t_hit_record *rec);
-// t_sphere		*make_plane(t_vec3 center, t_vec3 u_pt);
+t_plane *make_plane(t_plane plane);
 
 #endif

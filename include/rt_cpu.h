@@ -6,6 +6,7 @@
 # include "cylinder.h"
 # include "light.h"
 # include "sphere.h"
+# include "plane.h"
 # include "types.h"
 
 # define WIDTH 640
