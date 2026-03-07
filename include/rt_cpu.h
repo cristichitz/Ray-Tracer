@@ -39,8 +39,8 @@ typedef struct s_data
 	t_light						light;
 
 	float						aspect_ratio;
-	float						viewport_width;
-	float						viewport_height;
+	float						viewport_w;
+	float						viewport_h;
 	float						focal_length;
 
 	t_vec3						origin;
@@ -49,8 +49,8 @@ typedef struct s_data
 	t_vec3						horizontal;
 	t_vec3						vertical;
 
-	t_vec3						pixel_width;
-	t_vec3						pixel_height;
+	t_vec3						px_w;
+	t_vec3						px_h;
 
 	bool						set_cam;
 	bool						set_ambient_light;
