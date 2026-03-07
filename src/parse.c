@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/06 16:58:27 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/07 11:46:23 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,6 +183,13 @@ int	set_radius(float *num, char *param)
 	return (1);
 }
 
+int	set_height(float *num, char *param)
+{
+	if (!get_float(num, param, 0.0, FLT_MAX))
+		return (0);
+	return (1);
+}
+
 int	set_cam(t_data *data, char **params)
 {
 	if (!split_count(params, 4))
@@ -266,14 +273,35 @@ int	set_sphere(t_data *data, char **params)
 	return (1);
 }
 
-int	set_cylinder(void)
+int	set_cylinder(t_data *data, char **params)
 {
-	printf("cyclinder implementation pending.\n");
-	// t_cylinder cylinder;
-	// t_cylinder *object;
-	
+	t_cylinder	cylinder;
+	t_cylinder	*object;
 
-
+	if (!split_count(params, 5))
+		return (0);
+	if (!set_pts(&cylinder.center, params, 1, get_pt))
+		return (0);
+	if (!set_pts(&cylinder.u_vec, params, 2, get_uvec_pt))
+		return (0);
+	if (!set_radius(&cylinder.radius, params[3]))
+		return (0);
+	if (!set_height(&cylinder.height, params[4]))
+		return (0);
+	if (!set_colour(&cylinder.colour, params[5]))
+		return (0);
+	object = make_cylinder(cylinder);
+	if (!object)
+	{
+		print_error("Failed to allocate cylinder.");
+		return (0);
+	}
+	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
+	{
+		free(object);
+		print_error("Failed to add cylinder to world.");
+		return (0);
+	}
 	return (1);
 }
 
@@ -296,7 +324,7 @@ static int	process_type(t_data *data, char **params)
 	if (ft_strcmp(params[0], "pl") == 0)
 		return (set_plane());
 	if (ft_strcmp(params[0], "cy") == 0)
-		return (set_cylinder());
+		return (set_cylinder(data, params));
 	print_error("type not found");
 	return (0);
 }

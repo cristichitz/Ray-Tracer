@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/02/14 17:11:16 by timurray         ###   ########.fr        #
+#    Updated: 2026/03/07 12:12:06 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,8 @@ src/render_cpu2.c \
 src/class/vec3.c \
 src/class/sphere.c \
 src/class/hittable.c \
+src/class/plane.c \
+src/class/cylinder.c \
 src/class/interval.c
 
 OBJ_DIR = obj
