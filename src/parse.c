@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 11:46:23 by timurray         ###   ########.fr       */
+/*   Updated: 2026/03/07 17:58:19 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,7 @@ int	set_pts(t_vec3 *pt, char **params, int index, int (*f)(float *n, char *p))
 	int		ok;
 
 	if (!params[index])
-	{
-		print_error("Missing point parameter.");
-		return (0);
-	}
+		return(return_print_error("Missing point parameter.", 0));
 	ok = 1;
 	parts = ft_split(params[index], ',');
 	if (!parts)
@@ -88,15 +85,9 @@ int	get_float(float *num, char *param, float min, float max)
 
 	fnum = ft_strtof(param, NULL); // TODO: Use endptr for check.
 	if (fnum > max)
-	{
-		print_error("Value too large.");
-		return (0);
-	}
+		return (return_print_error("Value too large.", 0));
 	if (fnum < min)
-	{
-		print_error("Value too low.");
-		return (0);
-	}
+		return (return_print_error("Value too low.", 0));
 	*num = fnum;
 	return (1);
 }
@@ -107,15 +98,9 @@ int	get_int(int *num, char *param, int min, int max)
 
 	n = ft_atoi(param); // TODO: Replace with safer check.
 	if (n > max)
-	{
-		print_error("Value too large.");
-		return (0);
-	}
+		return (return_print_error("Value too large.", 0));
 	if (n < min)
-	{
-		print_error("Value too low.");
-		return (0);
-	}
+		return (return_print_error("Value too low.", 0));
 	*num = n;
 	return (1);
 }
@@ -260,15 +245,11 @@ int	set_sphere(t_data *data, char **params)
 		return (0);
 	object = make_sphere(sphere);
 	if (!object)
-	{
-		print_error("Failed to allocate sphere.");
-		return (0);
-	}
+		return (return_print_error("Failed to allocate sphere.", 0));
 	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
 	{
 		free(object);
-		print_error("Failed to add sphere to world.");
-		return (0);
+		return (return_print_error("Failed to add sphere to world.", 0));
 	}
 	return (1);
 }
@@ -292,15 +273,11 @@ int	set_cylinder(t_data *data, char **params)
 		return (0);
 	object = make_cylinder(cylinder);
 	if (!object)
-	{
-		print_error("Failed to allocate cylinder.");
-		return (0);
-	}
+		return (return_print_error("Failed to allocate cylinder.", 0));
 	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
 	{
 		free(object);
-		print_error("Failed to add cylinder to world.");
-		return (0);
+		return (return_print_error("Failed to add cylinder to world.", 0));
 	}
 	return (1);
 }
@@ -401,12 +378,11 @@ int	parse_input(t_data *data, int ac, char **av)
 
 /*
 
-TODO: After splits, check elements exist.
+
 
 TODO: error process flow
 
-TODO: create sphere
-TODO: create cylinder
+
 TODO: create plane
 
 
