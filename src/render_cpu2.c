@@ -34,8 +34,8 @@ t_ray get_ray(t_data *data, uint32_t x, uint32_t y)
   // We will average the colors around this point
   t_vec3 offset = sample_square();
 
-  t_vec3 pixel_sample = scale(data->pixel_width, x + offset.x);
-  pixel_sample = add(pixel_sample, scale(data->pixel_height, y + offset.y));
+  t_vec3 pixel_sample = scale(data->px_w, x + offset.x);
+  pixel_sample = add(pixel_sample, scale(data->px_h, y + offset.y));
   pixel_sample = add(pixel_sample, data->pixel00_loc);
 
   t_vec3 ray_origin = data->origin;

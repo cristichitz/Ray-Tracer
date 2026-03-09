@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/03/07 12:12:06 by timurray         ###   ########.fr        #
+#    Updated: 2026/03/09 10:49:14 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,6 +42,11 @@ LIBFT_DIR  = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 MLX_FLAGS = -ldl -lglfw -pthread -lm -lz
+MACOS_GLFW_FLAGS = -I/opt/homebrew/cellar/glfw/3.4/include/ -L/opt/homebrew/cellar/glfw/3.4/lib/
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	MLX_FLAGS += $(MACOS_GLFW_FLAGS)
+endif
 
 debug ?= 0
 ifeq ($(debug), 1)
