@@ -29,7 +29,6 @@ src/class/hittable.c \
 src/class/plane.c \
 src/class/cylinder.c \
 src/class/interval.c \
-src/sphere.c \
 src/utils.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./include
