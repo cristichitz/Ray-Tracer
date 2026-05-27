@@ -5,7 +5,8 @@ obj/*
 MLX42/*  
 
 MLX42
-minirt_cpu
-minirt
+miniRT
+miniRT_bonus
+
 *.pdf
 .gitignore
