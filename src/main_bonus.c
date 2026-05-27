@@ -8,9 +8,12 @@ void  SetupLocalCL()
   if (getcwd(cwd, sizeof(cwd)) != NULL)
   {
     char vendors_path[PATH_MAX];
+    char libs_path[PATH_MAX];
     snprintf(vendors_path, sizeof(vendors_path), "%s/config/vendors", cwd);
     setenv("OCL_ICD_VENDORS", vendors_path, 1);
     printf("OCL_ICD_VENDORS set to: %s\n", vendors_path);
+    snprintf(libs_path, sizeof(libs_path), "%s/libs", cwd);
+    setenv("LD_LIBRARY_PATH", libs_path, 1);
   }
 }
 
