@@ -7,3 +7,5 @@ MLX42/*
 MLX42
 minirt_cpu
 minirt
+*.pdf
+.gitignore
