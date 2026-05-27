@@ -12,12 +12,13 @@
 
 NAME = miniRT
 NAME_BONUS = miniRT_bonus
+
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
-# ---- Mandatory ----
+# MANDATORY FILES
 SRCS = \
 src/parse.c \
 src/error.c \
@@ -33,26 +34,21 @@ src/utils.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./include
 
-# ---- Bonus ----
+# BONUS FILES
 BONUS_SRCS = \
 src/main_bonus.c \
 src/cl_util_bonus.c \
-src/render_cpu_bonus.c \
-src/class/vec3_bonus.c \
-src/class/sphere_bonus.c \
-src/class/hittable_bonus.c \
-src/class/interval_bonus.c \
-src/class/material_bonus.c
+src/class/vec3_bonus.c
 
 BONUS_INCLUDES = -I. -I./MLX42/include -I./libft -I./include -I./kernels
 BONUS_CFLAGS = -DCL_TARGET_OPENCL_VERSION=300
 
-# ---- Object files ----
+
 OBJ_DIR = obj
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 BONUS_OBJS = $(BONUS_SRCS:%.c=$(OBJ_DIR)/%.o)
 
-# ---- Dependencies ----
+
 MLX42_REPO = https://github.com/codam-coding-college/MLX42.git
 MLX42_DIR  = MLX42
 MLX42_BUILD = $(MLX42_DIR)/build/libmlx42.a
@@ -77,7 +73,6 @@ ifeq ($(debug), 2)
 	CFLAGS += $(SFLAGS)
 endif
 
-# ---- Rules ----
 
 all: $(NAME)
 
