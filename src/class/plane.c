@@ -12,20 +12,24 @@
 
 #include "plane.h"
 
-bool hit_plane(void)
+bool	hit_plane(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
+	(void)base;
+	(void)ray;
+	(void)t;
+	(void)rec;
 	//TODO: implement hit plane.
-	return (true);
+	return (false);
 }
 
-t_plane *make_plane(t_plane plane)
+t_plane	*make_plane(t_plane plane)
 {
-	t_plane *p;
+	t_plane	*p;
 
 	p = malloc(sizeof(t_plane));
-	if(!p)
-		return(NULL);
+	if (!p)
+		return (NULL);
 	*p = plane;
-	// p->base.hit = hit_plane;
+	p->base.hit = hit_plane;
 	return (p);
 }
