@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/04 15:06:33 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 20:38:03 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/02 17:33:02 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ typedef struct s_cylinder
 	t_rgb		colour;
 }				t_cylinder;
 
-// bool			hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec);
-// t_cylinder		*make_cylinder(t_vec3 center, float radius, float height);
-t_cylinder *make_cylinder(t_cylinder cylinder);
+bool			hit_cylinder(void *base, t_ray ray, t_interval t,
+					t_hit_record *rec);
+t_cylinder		*make_cylinder(t_cylinder cylinder);
 
 #endif

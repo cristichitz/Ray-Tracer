@@ -17,7 +17,8 @@ typedef struct s_hit_record {
   t_vec3  p;
   t_vec3  normal;
   float   t;
-  bool    front_face; 
+  bool    front_face;
+  t_rgb   colour;
   void    (*set_face_normal)(struct s_hit_record *self, t_ray ray, t_vec3 outward_normal);
 } t_hit_record;
 

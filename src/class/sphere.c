@@ -19,7 +19,7 @@ bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	c = dot(oc, oc) - self->radius * self->radius;
 	discriminant = h * h - a * c;
 	if (discriminant < 0)
-		return (false);
+		return (false); // ray doesn't hit sphere.
 	sqrtd = sqrt(discriminant);
 	root = (h - sqrtd) / a;
 	if (!t.surrounds(&t, root))
