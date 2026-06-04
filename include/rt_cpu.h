@@ -34,6 +34,7 @@ typedef struct s_data
 	uint32_t					width;
 	uint32_t					height;
 
+	uint32_t					max_depth;
 	uint32_t					samples_per_pixel;
 	float						pixel_samples_scale;
 

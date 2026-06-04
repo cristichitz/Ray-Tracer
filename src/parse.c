@@ -230,19 +230,55 @@ int	set_light(t_data *data, char **params)
 	return (1);
 }
 
+int	get_normed_float(float *num, char *param, float min, float max)
+{
+	float	fnum;
+
+	fnum = ft_strtof(param, NULL); // TODO: Use endptr for check.
+	if (fnum > max)
+		return (return_print_error("Value too large.", 0));
+	if (fnum < min)
+		return (return_print_error("Value too low.", 0));
+	fnum = fnum / 255.0f;
+	*num = fnum;
+	return (1);
+}
+
+int	set_material(t_material *mat, char *params)
+{
+	char		**parts;
+	int			ok;
+	t_vec3		colour;
+
+	colour = make_vec(0.0f, 0.0f, 0.0f);		
+	parts = ft_split(params, ',');
+	if (!parts)
+		return (0);
+	ok = 1;
+	if (split_len(parts) != 3)
+		ok = 0;
+	else if (!get_normed_float(&colour.x, parts[0], 0, 255.0f) || !get_normed_float(&colour.y, parts[1], 0, 255.0f)
+		|| !get_normed_float(&colour.z, parts[2], 0, 255.0f))
+		ok = 0;
+	*mat = init_lambertian(colour); 
+	ft_free_split(parts);
+	return (ok);
+}
+
 int	set_sphere(t_data *data, char **params)
 {
 	t_sphere	sphere;
-	t_sphere	*object;
+	t_sphere	*object;				
 
 	if (!split_count(params, 4))
-		return (0);
+		return (0);	
 	if (!set_pts(&sphere.center, params[1], get_pt))
 		return (0);
 	if (!set_radius(&sphere.radius, params[2]))
 		return (0);
-	if (!set_colour(&sphere.colour, params[3]))
+	if (!set_material(&sphere.mat, params[3]))
 		return (0);
+
 	object = make_sphere(sphere);
 	if (!object)
 		return (return_print_error("Failed to allocate sphere.", 0));
@@ -269,7 +305,7 @@ int	set_cylinder(t_data *data, char **params)
 		return (0);
 	if (!set_height(&cylinder.height, params[4]))
 		return (0);
-	if (!set_colour(&cylinder.colour, params[5]))
+	if (!set_material(&cylinder.mat, params[5]))
 		return (0);
 	object = make_cylinder(cylinder);
 	if (!object)

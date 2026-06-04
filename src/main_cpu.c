@@ -52,8 +52,10 @@ void	initialize(t_data *data)
 	data->viewport_w = data->aspect_ratio * data->viewport_h;
 	data->focal_length = 1.0f;
 	// New. For Antialising
-	data->samples_per_pixel = 5;
+	data->samples_per_pixel = 30;
+	data->max_depth = 5;
 	data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
+
 	data->horizontal = make_vec(data->viewport_w, 0.0f, 0.0f);
 	data->vertical = make_vec(0.0f, -data->viewport_h, 0.0f);
 	data->px_w = scale(data->horizontal, (float)1 / (float)data->width);
