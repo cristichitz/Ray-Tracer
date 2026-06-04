@@ -1,5 +1,6 @@
 #include "parse.h"
 #include "rt_cpu.h"
+#include "movable.h"
 
 float	random_float(float min, float max)
 {
@@ -27,6 +28,8 @@ static void	update_viewport(t_data *data)
 					data->px_h), 0.5f));
 }
 
+
+
 void	game_loop(void *param)
 {
 	t_data	*data;
@@ -49,7 +52,27 @@ void	game_loop(void *param)
 	if (mlx_is_key_down(data->mlx, MLX_KEY_E))
 		data->cam.center.y += speed;
 
-		
+	//TODO: test get first object
+	if (data->world.objects->len > 0)
+	{
+		t_movable	*object;
+		object = (t_movable *)ft_vec_get(data->world.objects, 0);
+
+		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_6))
+			object->center.x += speed;
+		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_4))
+			object->center.x -= speed;
+		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_8))
+			object->center.z += speed;
+		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_5))
+			object->center.z -= speed;
+		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_9))
+			object->center.y += speed;
+		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_7))
+			object->center.y -= speed;
+	}
+
+
 	update_viewport(data);
 	render_frame(data);
 }
@@ -122,5 +145,3 @@ int	main(int ac, char **av)
 	mlx_terminate(data.mlx);
 	return (EXIT_SUCCESS);
 }
-
-
