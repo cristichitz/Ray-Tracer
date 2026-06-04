@@ -58,7 +58,7 @@ bool hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	rec->p = ray.at(&ray, rec->t);
 	outward_normal = norm(sub(sub(rec->p, self->center), scale(self->uvec, m)));
 	rec->set_face_normal(rec, ray, outward_normal);
-	rec->colour =  make_vec(self->colour.r, self->colour.g, self->colour.b);
+	rec->mat = self->mat;
 	return (true);
 }
 
