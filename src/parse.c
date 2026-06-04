@@ -230,10 +230,15 @@ int	set_light(t_data *data, char **params)
 	return (1);
 }
 
+t_vec3	rgb_to_vec3(t_rgb col) {
+	return make_vec((float)col.r, (float)col.g, (float)col.b);
+}
+
 int	set_sphere(t_data *data, char **params)
 {
 	t_sphere	sphere;
 	t_sphere	*object;
+	t_material	mat;
 
 	if (!split_count(params, 4))
 		return (0);
@@ -243,7 +248,12 @@ int	set_sphere(t_data *data, char **params)
 		return (0);
 	if (!set_colour(&sphere.colour, params[3]))
 		return (0);
-	object = make_sphere(sphere);
+
+	t_vec3 rgb = rgb_to_vec3(sphere.colour);
+	t_vec3 normalized_rgb = make_vec(rgb.x / 255.0f, rgb.y / 255.0f, rgb.z / 255.0f);
+	mat = init_lambertian(normalized_rgb);
+	printf("norm color: r->%f, g->%f, b->%f\n", normalized_rgb.x, normalized_rgb.y, normalized_rgb.z);
+	object = make_sphere(sphere, mat);
 	if (!object)
 		return (return_print_error("Failed to allocate sphere.", 0));
 	if (data->world.add(&data->world, object) != EXIT_SUCCESS)

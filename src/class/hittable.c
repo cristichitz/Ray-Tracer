@@ -5,7 +5,7 @@ t_vec3	ray_at(t_ray *self, float t)
 {
 	t_vec3	result;
 
-	// camera_center + t * dir
+	// origin + t * direction
 	result = add(self->origin, scale(self->dir, t));
 	return (result);
 }
@@ -57,6 +57,7 @@ bool	hit_objects(t_hittable_list *self, t_ray ray, t_interval t,
 	hit_anything = false;
 	closest_so_far = t.max;
 	i = 0;
+
 	while (i < self->objects->len)
 	{
 		object = ft_vec_get(self->objects, i);

@@ -1,13 +1,28 @@
 #include "rt_cpu.h"
 
-t_vec3 get_ray_color(t_hittable_list world, t_ray ray)
+t_vec3 get_ray_color(t_hittable_list world, int depth, t_ray ray)
 {
   //We define a nice sphere;
   t_hit_record  hit_record;
   hit_record.set_face_normal = ft_set_face_normal;
 
-  if (world.hit(&world, ray, interval_init(0, INFINITY), &hit_record))
-    return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
+  if (depth <= 0)
+    return  make_vec(0.0f, 0.0f, 0.0f);
+  
+  if (world.hit(&world, ray, interval_init(0.001f, INFINITY), &hit_record))
+  {
+    t_ray   scattered;
+    t_vec3  attenuation;
+
+    attenuation = make_vec(1.0f, 1.0f, 1.0f);
+
+    if (hit_record.mat.scatter(&(hit_record.mat), ray, hit_record, &attenuation, &scattered))
+      return mult(attenuation, get_ray_color(world, depth - 1, scattered));
+    return make_vec(0.0f, 0.0f, 0.0f);
+  }
+    // return (hit_record.colour);
+    // return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
+    // (normal + 1.0f) * 0.5f
 
   //Background 
 
@@ -38,6 +53,8 @@ t_ray get_ray(t_data *data, uint32_t x, uint32_t y)
   pixel_sample = add(pixel_sample, scale(data->px_h, y + offset.y));
   pixel_sample = add(pixel_sample, data->pixel00_loc);
 
+  // px_sample = (px_w * (x + off.x)) + (ph_h * (y + off.y)) + pixel00_loc;
+
   t_vec3 ray_origin = data->origin;
   t_vec3 ray_direction = sub(pixel_sample, ray_origin);
 
@@ -54,9 +71,9 @@ void  write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
 
   intensity = interval_init(0.0f, 0.999f);
 
-  r = (uint32_t)(256 * intensity.clamp(&intensity, color.x));
-  g = (uint32_t)(256 * intensity.clamp(&intensity, color.y));
-  b = (uint32_t)(256 * intensity.clamp(&intensity, color.z));
+  r = (uint32_t)(256 * intensity.clamp(&intensity, sqrtf(color.x)));
+  g = (uint32_t)(256 * intensity.clamp(&intensity, sqrtf(color.y)));
+  b = (uint32_t)(256 * intensity.clamp(&intensity, sqrtf(color.z)));
   pixel_color = (r <<  24) | (g << 16) | (b << 8) | 255;
   mlx_put_pixel(data->img, x, y, pixel_color);
 }
@@ -84,8 +101,10 @@ int render_frame(t_data* data)
       color = make_vec(0.0f, 0.0f, 0.0f);
       for (uint32_t sample = 0; sample < data->samples_per_pixel; sample++)
       {
+
         r = get_ray(data, x, y);
-        color = add(color, get_ray_color(data->world, r));
+        color = add(color, get_ray_color(data->world, data->max_depth, r));
+
       }
       write_color(data, x, y, scale(color, data->pixel_samples_scale));
     }

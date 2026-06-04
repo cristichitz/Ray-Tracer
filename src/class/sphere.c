@@ -31,15 +31,17 @@ bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	rec->t = root;
 	// point at t in the ray direction
 	rec->p = ray.at(&ray, rec->t);
+	rec->mat = self->mat;
 	// Point - sphere_center is already a normal vector
 	// Dividing by the radius makes it unit length aswell
 	outward_normal = divide(sub(rec->p, self->center), self->radius);
 	rec->set_face_normal(rec, ray, outward_normal);
+
 	return (true);
 }
 
 // t_sphere	*make_sphere(t_vec3 center, float radius)
-t_sphere	*make_sphere(t_sphere sphere)
+t_sphere	*make_sphere(t_sphere sphere, t_material material)
 {
 	t_sphere	*s;
 
@@ -48,5 +50,6 @@ t_sphere	*make_sphere(t_sphere sphere)
 		return (NULL);
 	*s = sphere;
 	s->base.hit = hit_sphere;
+	s->mat = material;
 	return (s);
 }
