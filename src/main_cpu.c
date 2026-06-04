@@ -1,6 +1,6 @@
+#include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
-#include "movable.h"
 
 float	random_float(float min, float max)
 {
@@ -29,50 +29,15 @@ static void	update_viewport(t_data *data)
 }
 
 
-
 void	game_loop(void *param)
 {
 	t_data	*data;
 	float	speed;
 
 	data = (t_data *)param;
-	speed = 1.0f;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
-		mlx_close_window(data->mlx);
-	if (mlx_is_key_down(data->mlx, MLX_KEY_W))
-		data->cam.center.z -= speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_S))
-		data->cam.center.z += speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_A))
-		data->cam.center.x -= speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_D))
-		data->cam.center.x += speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_Q))
-		data->cam.center.y -= speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_E))
-		data->cam.center.y += speed;
-
-	//TODO: test get first object
-	if (data->world.objects->len > 0)
-	{
-		t_movable	*object;
-		object = (t_movable *)ft_vec_get(data->world.objects, 0);
-
-		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_6))
-			object->center.x += speed;
-		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_4))
-			object->center.x -= speed;
-		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_8))
-			object->center.z += speed;
-		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_5))
-			object->center.z -= speed;
-		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_9))
-			object->center.y += speed;
-		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_7))
-			object->center.y -= speed;
-	}
-
-
+	speed = 0.5f;
+	move_cam(data, &speed);
+	move_object(data, &speed);
 	update_viewport(data);
 	render_frame(data);
 }
@@ -93,6 +58,7 @@ void	initialize(t_data *data)
 	data->vertical = make_vec(0.0f, -data->viewport_h, 0.0f);
 	data->px_w = scale(data->horizontal, (float)1 / (float)data->width);
 	data->px_h = scale(data->vertical, (float)1 / (float)data->height);
+	data->object_i = 0;
 	update_viewport(data);
 }
 
@@ -116,7 +82,7 @@ int	main(int ac, char **av)
 	}
 	if (!parse_input(&data, ac, av))
 	{
-		//TODO: free memory
+		// TODO: free memory
 		return (EXIT_FAILURE);
 	}
 	initialize(&data);

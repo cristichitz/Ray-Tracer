@@ -5,14 +5,14 @@
 # include "cam.h"
 # include "cylinder.h"
 # include "light.h"
-# include "sphere.h"
 # include "plane.h"
+# include "sphere.h"
 # include "types.h"
 
 # define WIDTH 640
-#ifndef M_PI
-# define M_PI 3.14159265358979323846
-#endif
+# ifndef M_PI
+#  define M_PI 3.14159265358979323846
+# endif
 
 typedef t_vec					t_list;
 
@@ -61,6 +61,7 @@ typedef struct s_data
 
 	// List of objects
 	t_hittable_list				world;
+	unsigned int				object_i;
 }								t_data;
 
 // World
@@ -76,5 +77,8 @@ int								key_hook(int keycode, t_data *data);
 float							random_float(float min, float max);
 // Constants
 float							degrees_to_radians(float degrees);
+
+void							move_cam(t_data *data, float *speed);
+void							move_object(t_data *data, float *speed);
 
 #endif
