@@ -244,6 +244,8 @@ void game_loop(void *param)
   if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam_z += speed;
   if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam_x -= speed;
   if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam_x += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_E)) data->cam_y += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_Q)) data->cam_y -= speed;
 
   data->frame.origin = make_float3(data->cam_x, data->cam_y, data->cam_z);
   cl_float3 upper_left_corner = sub(data->frame.origin, scale(data->frame.horizontal, 0.5f));

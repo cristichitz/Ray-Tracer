@@ -44,6 +44,12 @@ void	game_loop(void *param)
 		data->cam.center.x -= speed;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_D))
 		data->cam.center.x += speed;
+	if (mlx_is_key_down(data->mlx, MLX_KEY_Q))
+		data->cam.center.y -= speed;
+	if (mlx_is_key_down(data->mlx, MLX_KEY_E))
+		data->cam.center.y += speed;
+
+		
 	update_viewport(data);
 	render_frame(data);
 }
