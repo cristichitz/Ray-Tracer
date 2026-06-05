@@ -29,6 +29,7 @@ static void	update_viewport(t_data *data)
 }
 
 
+
 void	game_loop(void *param)
 {
 	t_data	*data;
@@ -52,7 +53,7 @@ void	initialize(t_data *data)
 	data->viewport_w = data->aspect_ratio * data->viewport_h;
 	data->focal_length = 1.0f;
 	// New. For Antialising
-	data->samples_per_pixel = 30;
+	data->samples_per_pixel = 10;
 	data->max_depth = 5;
 	data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
 
@@ -109,6 +110,7 @@ int	main(int ac, char **av)
 		return (EXIT_FAILURE);
 	}
 	mlx_loop_hook(data.mlx, game_loop, &data);
+	mlx_key_hook(data.mlx, &object_selector, &data);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
 	return (EXIT_SUCCESS);

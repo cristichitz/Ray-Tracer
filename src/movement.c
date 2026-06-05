@@ -6,13 +6,27 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 18:40:31 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/04 18:52:18 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/05 14:09:05 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "MLX42/MLX42.h"
 #include "movable.h"
 #include "rt_cpu.h"
+
+
+void object_selector(mlx_key_data_t keydata, void *param)
+{
+	t_data *data;
+
+	data = (t_data *)param;
+
+	if(keydata.key == MLX_KEY_C && keydata.action == MLX_RELEASE)
+	{
+		data->object_i++;
+		puts("hello\n");
+	}
+}
 
 void	move_cam(t_data *data, float *speed)
 {
@@ -38,10 +52,6 @@ void	move_object(t_data *data, float *speed)
 
 	if (data->world.objects->len > 0)
 	{
-		if (mlx_is_key_down(data->mlx, MLX_KEY_C))
-		{
-			data->object_i++;
-		}
 		object = (t_movable *)ft_vec_get(data->world.objects, data->object_i
 				% data->world.objects->len);
 		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_6))
