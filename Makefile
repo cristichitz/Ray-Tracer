@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/04 18:47:28 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/05 17:25:43 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ src/error.c \
 src/main_cpu.c \
 src/render_cpu2.c \
 src/movement.c \
+src/resize.c \
 src/class/vec3.c \
 src/class/sphere.c \
 src/class/hittable.c \

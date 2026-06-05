@@ -40,6 +40,16 @@ bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	return (true);
 }
 
+void resize_sphere(void *base, float scalar)
+{
+	t_sphere	*self;
+
+	self = (t_sphere *)base;
+	self->radius += scalar;
+	if(self->radius < 0.1f)
+		self->radius = 0.1f;
+}
+
 // t_sphere	*make_sphere(t_vec3 center, float radius)
 t_sphere	*make_sphere(t_sphere sphere)
 {
@@ -50,5 +60,6 @@ t_sphere	*make_sphere(t_sphere sphere)
 		return (NULL);
 	*s = sphere;
 	s->base.hit = hit_sphere;
+	s->base.resize = resize_sphere;
 	return (s);
 }

@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 18:40:31 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/05 14:18:02 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/05 17:24:47 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,5 @@ void	move_object(t_data *data, float *speed)
 			object->center.y += *speed;
 		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_7))
 			object->center.y -= *speed;
-	}
+	}	
 }

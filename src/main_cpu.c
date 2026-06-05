@@ -39,6 +39,7 @@ void	game_loop(void *param)
 	speed = 0.5f;
 	move_cam(data, &speed);
 	move_object(data, &speed);
+	// resize_object(data, &speed);
 	update_viewport(data);
 	render_frame(data);
 }

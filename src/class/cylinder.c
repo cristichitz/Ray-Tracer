@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/05 13:01:08 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 12:13:26 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/05 16:48:06 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,19 @@ bool hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	return (true);
 }
 
+void resize_cylinder(void *base, float scalar)
+{
+	t_cylinder *self;
+
+	self = (t_cylinder *)base;
+	self->height += scalar;
+	if(self->height < 0.1f)
+		self->height = 0.1f;
+	self->radius += scalar;
+	if(self->radius < 0.1f)
+		self->radius = 0.1f;
+}
+
 t_cylinder *make_cylinder(t_cylinder cylinder)
 {
 	t_cylinder *c;
@@ -71,5 +84,6 @@ t_cylinder *make_cylinder(t_cylinder cylinder)
 		return (NULL);
 	*c = cylinder;
 	c->base.hit = hit_cylinder;
+	c->base.resize = resize_cylinder;
 	return (c);
 }

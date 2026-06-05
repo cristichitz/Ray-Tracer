@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 17:05:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 19:37:00 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/05 16:46:35 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,6 @@ t_plane	*make_plane(t_plane plane)
 		return (NULL);
 	*p = plane;
 	p->base.hit = hit_plane;
+	p->base.resize = NULL;
 	return (p);
 }
