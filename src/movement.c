@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 18:40:31 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/05 14:09:05 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/05 14:18:02 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,14 @@
 #include "movable.h"
 #include "rt_cpu.h"
 
-
-void object_selector(mlx_key_data_t keydata, void *param)
+void	object_selector(mlx_key_data_t keydata, void *param)
 {
-	t_data *data;
+	t_data	*data;
 
 	data = (t_data *)param;
-
-	if(keydata.key == MLX_KEY_C && keydata.action == MLX_RELEASE)
+	if (keydata.key == MLX_KEY_C && keydata.action == MLX_RELEASE)
 	{
 		data->object_i++;
-		puts("hello\n");
 	}
 }
 
