@@ -14,6 +14,12 @@
 #  define M_PI 3.14159265358979323846
 # endif
 
+typedef enum e_quality
+{
+	LOW,
+	HIGH
+}								t_quality;
+
 typedef t_vec					t_list;
 
 typedef struct s_hittable_list	t_hittable_list;
@@ -60,30 +66,29 @@ typedef struct s_data
 	bool						set_ambient_light;
 	bool						set_light;
 
-	// List of objects
 	t_hittable_list				world;
 	unsigned int				object_i;
 	bool						render_check;
 }								t_data;
 
-// World
+
 int								init_world(t_hittable_list *world);
 
-// MLX Loop
+
 int								render_frame(t_data *data);
 int								close_app(t_data *data);
 int								key_hook(int keycode, t_data *data);
 
-// Can be made inline if we add -O1 optimization for the compilation
-// Random number generator
 float							random_float(float min, float max);
-// Constants
 float							degrees_to_radians(float degrees);
+float							deg_to_rad(float degrees);
 
 bool							move_cam(t_data *data, float *speed);
 bool							move_object(t_data *data, float *speed);
 void							object_selector(mlx_key_data_t keydata,
 									void *param);
 bool							resize_object(t_data *data, float *scalar);
+
+void							set_quality(t_data *data, t_quality quality);
 
 #endif

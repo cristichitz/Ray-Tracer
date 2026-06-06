@@ -1,18 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main_cpu.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/06 17:54:13 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
-
-float	random_float(float min, float max)
-{
-	// random is a number between 0 and 1
-	return (min + (max - min) * ((rand() / ((double)RAND_MAX + 1))));
-}
-
-// Constants
-float	deg_to_rad(float degrees)
-{
-	return (degrees * M_PI / 180.0f);
-}
 
 static void	update_viewport(t_data *data)
 {
@@ -28,35 +28,25 @@ static void	update_viewport(t_data *data)
 					data->px_h), 0.5f));
 }
 
-
 void	game_loop(void *param)
 {
 	t_data	*data;
 	float	speed;
-	bool scene_changed;
+	bool	scene_changed;
 
 	data = (t_data *)param;
-	speed = 0.5f;
+	speed = 0.2f;
 	scene_changed = false;
-	if(move_cam(data, &speed))
+	if (move_cam(data, &speed))
 		scene_changed = true;
-	if(move_object(data, &speed))
+	if (move_object(data, &speed))
 		scene_changed = true;
-	if(resize_object(data, &speed))
+	if (resize_object(data, &speed))
 		scene_changed = true;
 	if (scene_changed)
-	{
-		data->samples_per_pixel = 1;
-		data->pixel_samples_scale = 1.0f;
-		data->max_depth = 2;
-	}
+		set_quality(data, LOW);
 	else if (data->samples_per_pixel == 1)
-	{
-		data->samples_per_pixel = 30;
-		data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
-		data->max_depth = 5;
-		data->render_check = true;
-	}
+		set_quality(data, HIGH);
 	if (scene_changed || data->render_check)
 	{
 		update_viewport(data);
@@ -69,16 +59,13 @@ void	initialize(t_data *data)
 {
 	data->width = WIDTH;
 	data->height = (int)(data->width / (16.0 / 9.0));
-	data->height = (data->height < 1) ? 1 : data->height; //TODO: can't use ternary.
+	if (data->height < 1)
+		data->height = 1;
 	data->aspect_ratio = (float)data->width / (float)data->height;
 	data->viewport_h = 2.0f * tanf(deg_to_rad((float)data->cam.fov) / 2.0f);
 	data->viewport_w = data->aspect_ratio * data->viewport_h;
 	data->focal_length = 1.0f;
-
-	data->samples_per_pixel = 30;
-	data->max_depth = 5;
-	data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
-
+	set_quality(data, HIGH);
 	data->horizontal = make_vec(data->viewport_w, 0.0f, 0.0f);
 	data->vertical = make_vec(0.0f, -data->viewport_h, 0.0f);
 	data->px_w = scale(data->horizontal, (float)1 / (float)data->width);

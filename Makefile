@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/06 13:54:28 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/06 17:53:20 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = miniRT
 NAME_BONUS = miniRT_bonus
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -O3 -march=native
+CFLAGS = -Wall -Wextra -Werror -O3
 VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
@@ -26,14 +26,15 @@ src/main_cpu.c \
 src/render_cpu2.c \
 src/movement.c \
 src/resize.c \
+src/utils.c \
+src/quality.c \
 src/class/vec3.c \
 src/class/sphere.c \
 src/class/hittable.c \
 src/class/plane.c \
 src/class/cylinder.c \
 src/class/interval.c \
-src/class/material.c \
-src/utils.c
+src/class/material.c 
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./include
 
