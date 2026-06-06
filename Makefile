@@ -31,6 +31,8 @@ src/class/plane.c \
 src/class/cylinder.c \
 src/class/interval.c \
 src/class/material.c \
+src/class/texture.c \
+src/bench.c \
 src/utils.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./include
@@ -74,6 +76,12 @@ ifeq ($(debug), 2)
 	CFLAGS += $(SFLAGS)
 endif
 
+# Optimised build for benchmarking: make optimize=1
+optimize ?= 0
+ifeq ($(optimize), 1)
+	CFLAGS += -O3 -march=native -funroll-loops -flto -DNDEBUG
+endif
+
 
 all: $(NAME)
 
@@ -90,7 +98,7 @@ $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(OBJ_DIR)/%_bonus.o: %_bonus.c
-	@mkdir -p $(@D)
+	@mkdir -p $(@D)		
 	$(CC) $(CFLAGS) $(BONUS_CFLAGS) $(BONUS_INCLUDES) -c $< -o $@
 
 $(LIBFT):
@@ -115,4 +123,11 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all bonus clean fclean re
+# Emit annotated Intel assembly of the hot render path (inspect render_cpu2.s)
+ASM_SRC = src/render_cpu2.c src/class/vec3.c
+asm:
+	$(CC) -Wall -Wextra -O3 -march=native -fverbose-asm -masm=intel \
+		$(INCLUDES) -S $(ASM_SRC)
+	@echo "wrote render_cpu2.s vec3.s"
+
+.PHONY: all bonus clean fclean re asm

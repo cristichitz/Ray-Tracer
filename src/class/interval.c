@@ -20,6 +20,12 @@ float	clamp(t_interval *self, float x)
 	return (x);
 }
 
+t_interval	expand(t_interval *self, float delta) {
+	float padding = delta / 2;
+
+	return interval_init(self->min - padding, self->max + padding);
+}
+
 t_interval	interval_init(float t_min, float t_max)
 {
 	t_interval	i;
@@ -30,5 +36,6 @@ t_interval	interval_init(float t_min, float t_max)
 	i.contains = contains;
 	i.surrounds = surrounds;
 	i.clamp = clamp;
+	i.expand = expand;
 	return (i);
 }

@@ -1,5 +1,20 @@
 #include "sphere.h"
 
+static void	get_sphere_uv(const t_vec3 p, float *u, float *v)
+{
+	// p: a given point on the sphere of radius one, centered at the origin.
+	// u: returned value [0,1] of angle around the Y axis from X=-1.
+	// v: returned value [0,1] of angle from Y=-1 to Y=+1.
+	//     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
+	//     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
+	//     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
+	float	theta = acosf(-p.y);
+	float	phi = atan2f(-p.z, p.x) + M_PI;
+
+	*u = phi / (2 * M_PI);
+	*v = theta / M_PI;
+}
+
 bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
 	t_sphere	*self;
@@ -20,7 +35,7 @@ bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	discriminant = h * h - a * c;
 	if (discriminant < 0)
 		return (false); // ray doesn't hit sphere.
-	sqrtd = sqrt(discriminant);
+	sqrtd = sqrtf(discriminant);
 	root = (h - sqrtd) / a;
 	if (!t.surrounds(&t, root))
 	{
@@ -31,11 +46,13 @@ bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	rec->t = root;
 	// point at t in the ray direction
 	rec->p = ray.at(&ray, rec->t);
+
 	rec->mat = self->mat;
 	// Point - sphere_center is already a normal vector
 	// Dividing by the radius makes it unit length aswell
 	outward_normal = divide(sub(rec->p, self->center), self->radius);
 	rec->set_face_normal(rec, ray, outward_normal);
+	get_sphere_uv(outward_normal, &rec->u, &rec->v);
 
 	return (true);
 }

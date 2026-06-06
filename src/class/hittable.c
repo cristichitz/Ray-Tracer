@@ -78,5 +78,7 @@ int	init_world(t_hittable_list *world)
 	world->add = add_object;
 	world->destroy = destroy_objects;
 	world->hit = hit_objects;
+	world->background = make_vec(0.0f, 0.0f, 0.0f);
+	world->ambient = make_vec(0.0f, 0.0f, 0.0f);
 	return (EXIT_SUCCESS);
 }

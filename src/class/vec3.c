@@ -77,8 +77,9 @@ float	dot(t_vec3 a, t_vec3 b)
 
 t_vec3	cross(t_vec3 a, t_vec3 b)
 {
-	return (make_vec(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y
-			- a.y * b.x));
+	return (make_vec(a.y * b.z - a.z * b.y,
+                   a.z * b.x - a.x * b.z,
+                   a.x * b.y - a.y * b.x));
 }
 
 t_vec3	norm(t_vec3 a)

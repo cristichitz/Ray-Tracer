@@ -18,14 +18,14 @@
 typedef struct s_ambient_light
 {
 	float	brightness;
-	t_rgb	colour;
+	t_vec3	colour;
 }			t_ambient_light;
 
 typedef struct s_light
 {
 	t_vec3	center;
 	float	brightness;
-	t_rgb	colour;
+	t_vec3	colour;
 }			t_light;
 
 #endif

@@ -6,36 +6,48 @@ t_vec3 get_ray_color(t_hittable_list world, int depth, t_ray ray)
   t_hit_record  hit_record;
   hit_record.set_face_normal = ft_set_face_normal;
 
+  g_ray_count++;
   if (depth <= 0)
     return  make_vec(0.0f, 0.0f, 0.0f);
   
-  if (world.hit(&world, ray, interval_init(0.001f, INFINITY), &hit_record))
-  {
-    t_ray   scattered;
-    t_vec3  attenuation;
+  if (!world.hit(&world, ray, interval_init(0.001f, INFINITY), &hit_record))
+    return (world.background);
+  
+  t_ray   scattered;
+  t_vec3  attenuation;
+  t_vec3  color_from_emmision = hit_record.mat.emmited(&hit_record.mat, hit_record.u, hit_record.v, hit_record.p);
+  t_vec3  color_from_ambient = mult(world.ambient, hit_record.mat.tex.albedo);
 
-    attenuation = make_vec(1.0f, 1.0f, 1.0f);
+  color_from_emmision = add(color_from_emmision, color_from_ambient);
+  if (!hit_record.mat.scatter(&hit_record.mat, ray, hit_record, &attenuation, &scattered))
+    return (color_from_emmision);
 
-    if (hit_record.mat.scatter(&(hit_record.mat), ray, hit_record, &attenuation, &scattered))
-      return mult(attenuation, get_ray_color(world, depth - 1, scattered));
-    return make_vec(0.0f, 0.0f, 0.0f);
-  }
-    // return (hit_record.colour);
-    // return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
-    // (normal + 1.0f) * 0.5f
+  t_vec3 color_from_scatter = mult(attenuation, get_ray_color(world, depth - 1, scattered));
+
+  return (add(color_from_emmision, color_from_scatter));
+
+  // attenuation = make_vec(1.0f, 1.0f, 1.0f);
+
+  // if (hit_record.mat.scatter(&(hit_record.mat), ray, hit_record, &attenuation, &scattered))
+  //   return mult(attenuation, get_ray_color(world, depth - 1, scattered));
+  // return make_vec(0.0f, 0.0f, 0.0f);
+
+  // return (hit_record.colour);
+  // return scale(add(hit_record.normal, make_vec(1.0f, 1.0f, 1.0f)), 0.5f);
+  // (normal + 1.0f) * 0.5f
 
   //Background 
 
   // We normalize the direction vector meaning it's length is 1
-  t_vec3 unit_dir = norm(ray.dir);
+  // t_vec3 unit_dir = norm(ray.dir);
   
-  // make it between 0 and 1 rather than -1 to 1
-  float t = 0.5f * (unit_dir.y + 1.0f);
-  t_vec3 white = make_vec(1.0f, 1.0f, 1.0f);
-  t_vec3 blue = make_vec(0.5f, 0.7f, 1.0f);
+  // // make it between 0 and 1 rather than -1 to 1
+  // float t = 0.5f * (unit_dir.y + 1.0f);
+  // t_vec3 white = make_vec(1.0f, 1.0f, 1.0f);
+  // t_vec3 blue = make_vec(0.5f, 0.7f, 1.0f);
 
-  // (1 - t)white + t(blue);
-  return add(scale(white, 1.0f - t), scale(blue, t));
+  // // (1 - t)white + t(blue);
+  // return add(scale(white, 1.0f - t), scale(blue, t));
 }
 
 t_vec3  sample_square(void)
@@ -75,7 +87,10 @@ void  write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
   g = (uint32_t)(256 * intensity.clamp(&intensity, sqrtf(color.y)));
   b = (uint32_t)(256 * intensity.clamp(&intensity, sqrtf(color.z)));
   pixel_color = (r <<  24) | (g << 16) | (b << 8) | 255;
-  mlx_put_pixel(data->img, x, y, pixel_color);
+  if (data->headless)
+    data->fb[(size_t)y * data->width + x] = pixel_color;
+  else
+    mlx_put_pixel(data->img, x, y, pixel_color);
 }
 
 int render_frame(t_data* data)
