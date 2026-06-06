@@ -16,15 +16,15 @@ float	deg_to_rad(float degrees)
 
 static void	update_viewport(t_data *data)
 {
-	t_vec3	upper_left_cornerr;
+	t_vec3	upper_left_corner;
 
 	data->origin = make_vec(data->cam.center.x, data->cam.center.y,
 			data->cam.center.z);
-	upper_left_cornerr = sub(data->origin, scale(data->horizontal, 0.5f));
-	upper_left_cornerr = sub(upper_left_cornerr, scale(data->vertical, 0.5f));
-	upper_left_cornerr = sub(upper_left_cornerr, make_vec(0.0f, 0.0f,
+	upper_left_corner = sub(data->origin, scale(data->horizontal, 0.5f));
+	upper_left_corner = sub(upper_left_corner, scale(data->vertical, 0.5f));
+	upper_left_corner = sub(upper_left_corner, make_vec(0.0f, 0.0f,
 				data->focal_length));
-	data->pixel00_loc = add(upper_left_cornerr, scale(add(data->px_w,
+	data->pixel00_loc = add(upper_left_corner, scale(add(data->px_w,
 					data->px_h), 0.5f));
 }
 

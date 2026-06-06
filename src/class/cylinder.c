@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/05 13:01:08 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/05 16:48:06 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/06 11:27:20 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,11 @@ void resize_cylinder(void *base, float scalar)
 
 	self = (t_cylinder *)base;
 	self->height += scalar;
-	if(self->height < 0.1f)
-		self->height = 0.1f;
+	if(self->height < 0.01f)
+		self->height = 0.01f;
 	self->radius += scalar;
-	if(self->radius < 0.1f)
-		self->radius = 0.1f;
+	if(self->radius < 0.01f)
+		self->radius = 0.01f;
 }
 
 t_cylinder *make_cylinder(t_cylinder cylinder)

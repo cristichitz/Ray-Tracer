@@ -81,7 +81,8 @@ float							degrees_to_radians(float degrees);
 
 void							move_cam(t_data *data, float *speed);
 void							move_object(t_data *data, float *speed);
-void 							object_selector(mlx_key_data_t keydata, void *param);
-void resize_object(t_data *data, float *scalar);
+void							object_selector(mlx_key_data_t keydata,
+									void *param);
+void							resize_object(t_data *data, float *scalar);
 
 #endif

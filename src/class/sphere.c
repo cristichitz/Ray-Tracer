@@ -46,8 +46,8 @@ void resize_sphere(void *base, float scalar)
 
 	self = (t_sphere *)base;
 	self->radius += scalar;
-	if(self->radius < 0.1f)
-		self->radius = 0.1f;
+	if(self->radius < 0.01f)
+		self->radius = 0.01f;
 }
 
 // t_sphere	*make_sphere(t_vec3 center, float radius)
