@@ -12,9 +12,6 @@ typedef struct s_sphere
 	t_material	mat;
 }				t_sphere;
 
-bool			hit_sphere(void *base, t_ray ray, t_interval t,
-					t_hit_record *rec);
-					
-t_sphere	*make_sphere(t_sphere sphere);
+t_sphere		*make_sphere(t_sphere sphere);
 
 #endif
