@@ -2,7 +2,6 @@
 - TODO: colours. Already parsed but not yet used.
 - TODO: Three simple geometric objects: plane, sphere, cylinder.
 - TODO: If applicable, all possible intersections and the insides of the objects must be handled correctly.
-- TODO: resize the unique properties of objects: diameter for a sphere and the width and height for a cylinder. ONGOING.
 - TODO: rotation transformations to objects (except spheres). 
 - TODO: Translation of lights.
 - TODO: Rotations of cameras.
