@@ -1,6 +1,6 @@
 #include "rt_cpu.h"
 
-t_vec3 get_ray_color(t_hittable_list world, int depth, t_ray ray)
+t_vec3 get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 {
   //We define a nice sphere;
   t_hit_record  hit_record;
@@ -9,7 +9,7 @@ t_vec3 get_ray_color(t_hittable_list world, int depth, t_ray ray)
   if (depth <= 0)
     return  make_vec(0.0f, 0.0f, 0.0f);
   
-  if (world.hit(&world, ray, interval_init(0.001f, INFINITY), &hit_record))
+  if (world->hit(world, ray, interval_init(0.001f, INFINITY), &hit_record))
   {
     t_ray   scattered;
     t_vec3  attenuation;
@@ -103,7 +103,7 @@ int render_frame(t_data* data)
       {
 
         r = get_ray(data, x, y);
-        color = add(color, get_ray_color(data->world, data->max_depth, r));
+        color = add(color, get_ray_color(&data->world, data->max_depth, r));
 
       }
       write_color(data, x, y, scale(color, data->pixel_samples_scale));

@@ -63,6 +63,7 @@ typedef struct s_data
 	// List of objects
 	t_hittable_list				world;
 	unsigned int				object_i;
+	bool						render_check;
 }								t_data;
 
 // World
@@ -79,10 +80,10 @@ float							random_float(float min, float max);
 // Constants
 float							degrees_to_radians(float degrees);
 
-void							move_cam(t_data *data, float *speed);
-void							move_object(t_data *data, float *speed);
+bool							move_cam(t_data *data, float *speed);
+bool							move_object(t_data *data, float *speed);
 void							object_selector(mlx_key_data_t keydata,
 									void *param);
-void							resize_object(t_data *data, float *scalar);
+bool							resize_object(t_data *data, float *scalar);
 
 #endif

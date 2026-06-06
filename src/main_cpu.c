@@ -29,32 +29,53 @@ static void	update_viewport(t_data *data)
 }
 
 
-
 void	game_loop(void *param)
 {
 	t_data	*data;
 	float	speed;
+	bool scene_changed;
 
 	data = (t_data *)param;
 	speed = 0.5f;
-	move_cam(data, &speed);
-	move_object(data, &speed);
-	resize_object(data, &speed);
-	update_viewport(data);
-	render_frame(data);
+	scene_changed = false;
+	if(move_cam(data, &speed))
+		scene_changed = true;
+	if(move_object(data, &speed))
+		scene_changed = true;
+	if(resize_object(data, &speed))
+		scene_changed = true;
+	if (scene_changed)
+	{
+		data->samples_per_pixel = 1;
+		data->pixel_samples_scale = 1.0f;
+		data->max_depth = 2;
+	}
+	else if (data->samples_per_pixel == 1)
+	{
+		data->samples_per_pixel = 30;
+		data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
+		data->max_depth = 5;
+		data->render_check = true;
+	}
+	if (scene_changed || data->render_check)
+	{
+		update_viewport(data);
+		render_frame(data);
+		data->render_check = false;
+	}
 }
 
 void	initialize(t_data *data)
 {
 	data->width = WIDTH;
 	data->height = (int)(data->width / (16.0 / 9.0));
-	data->height = (data->height < 1) ? 1 : data->height;
+	data->height = (data->height < 1) ? 1 : data->height; //TODO: can't use ternary.
 	data->aspect_ratio = (float)data->width / (float)data->height;
 	data->viewport_h = 2.0f * tanf(deg_to_rad((float)data->cam.fov) / 2.0f);
 	data->viewport_w = data->aspect_ratio * data->viewport_h;
 	data->focal_length = 1.0f;
-	// New. For Antialising
-	data->samples_per_pixel = 10;
+
+	data->samples_per_pixel = 30;
 	data->max_depth = 5;
 	data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
 
@@ -63,6 +84,7 @@ void	initialize(t_data *data)
 	data->px_w = scale(data->horizontal, (float)1 / (float)data->width);
 	data->px_h = scale(data->vertical, (float)1 / (float)data->height);
 	data->object_i = 0;
+	data->render_check = true;
 	update_viewport(data);
 }
 
@@ -90,7 +112,6 @@ int	main(int ac, char **av)
 		return (EXIT_FAILURE);
 	}
 	initialize(&data);
-	// Init MlX42
 	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
 	if (!data.mlx)
 	{
