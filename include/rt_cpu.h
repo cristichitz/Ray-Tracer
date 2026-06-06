@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:07:55 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/06 18:12:06 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ int								close_app(t_data *data);
 int								key_hook(int keycode, t_data *data);
 
 float							random_float(float min, float max);
-float							degrees_to_radians(float degrees);
 float							deg_to_rad(float degrees);
 
 bool							move_cam(t_data *data, float *speed);

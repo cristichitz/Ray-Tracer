@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:08:21 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:08:27 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/06 18:15:02 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <types.h>
 
 float	random_float(float min, float max);
-float	degrees_to_radians(float degrees);
+float	deg_to_rad(float degrees);
 
 float	length_squared(t_vec3 a);
 t_vec3	random_vec_between(float min, float max);
@@ -36,6 +36,7 @@ t_vec3	scale(t_vec3 a, float b);
 t_vec3	divide(t_vec3 a, float b);
 float	dot(t_vec3 a, t_vec3 b);
 t_vec3	norm(t_vec3 a);
+t_vec3	cross(t_vec3 a, t_vec3 b);
 void	print_vec(t_vec3 a);
 
 #endif
