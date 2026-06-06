@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:32:45 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 16:34:06 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/06 18:03:56 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 float	random_float(float min, float max)
 {
-	// random is a number between 0 and 1
 	return (min + (max - min) * ((rand() / ((double)RAND_MAX + 1))));
 }
 

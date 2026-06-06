@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   rt_cpu.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/06 18:07:55 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef RT_CPU_H
 # define RT_CPU_H
 
@@ -71,9 +83,7 @@ typedef struct s_data
 	bool						render_check;
 }								t_data;
 
-
 int								init_world(t_hittable_list *world);
-
 
 int								render_frame(t_data *data);
 int								close_app(t_data *data);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hittable.h                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/06 18:06:51 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/06 18:06:55 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef HITTABLE_H
 # define HITTABLE_H
 
@@ -50,9 +62,8 @@ typedef struct s_hittable
 }							t_hittable;
 
 t_vec3						make_vec(float a, float b, float c);
-// Ray
 t_ray						make_ray(t_vec3 origin, t_vec3 direction);
-// Hittable
+
 void						ft_set_face_normal(t_hit_record *self, t_ray r,
 								t_vec3 outward_normal);
 #endif

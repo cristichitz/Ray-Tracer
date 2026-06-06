@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/20 19:09:39 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/20 19:11:04 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/06 18:06:21 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,6 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-
-// ERROR
-void					print_error(char *msg);
+void	print_error(char *msg);
 
 #endif
