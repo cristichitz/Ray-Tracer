@@ -81,7 +81,7 @@ void	initialize(t_data *data)
 	v = cross(w, u);
 
 	data->horizontal = scale(u, data->viewport_w);
-	data->vertical = scale(v, - data->viewport_h);
+	data->vertical = scale(v, -data->viewport_h);
 
 	data->px_w = scale(data->horizontal, (float)1 / (float)data->width);
 	data->px_h = scale(data->vertical, (float)1 / (float)data->height);

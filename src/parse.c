@@ -320,11 +320,12 @@ int	set_cylinder(t_data *data, char **params)
 	t_cylinder	cylinder;
 	t_cylinder	*object;
 
+
 	if (!split_count(params, 6))
 		return (0);
 	if (!set_pts(&cylinder.center, params[1], get_pt))
 		return (0);
-	if (!set_pts(&cylinder.uvec, params[2], get_uvec_pt))
+	if (!set_pts(&cylinder.normal, params[2], get_uvec_pt))
 		return (0);
 	if (!set_radius(&cylinder.radius, params[3]))
 		return (0);

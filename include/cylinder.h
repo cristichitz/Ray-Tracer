@@ -20,10 +20,11 @@ typedef struct s_cylinder
 {
 	t_hittable	base;
 	t_vec3		center;		
-	t_vec3		uvec;
+	t_vec3		normal;
 	float		radius;
 	float		height;
 	t_material	mat;
+	float		D_top;
 }				t_cylinder;
 
 bool			hit_cylinder(void *base, t_ray ray, t_interval t,
