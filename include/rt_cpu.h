@@ -20,6 +20,7 @@
 # include "plane.h"
 # include "sphere.h"
 # include "types.h"
+# include "cam.h"
 
 # define WIDTH 640
 
@@ -43,12 +44,17 @@ typedef struct s_hittable_list
 	void						(*destroy)(t_hittable_list *self);
 	bool						(*hit)(t_hittable_list *self, t_ray r,
 								t_interval t, t_hit_record *rec);
+	t_vec3						background;
+	t_vec3						ambient;
 }								t_hittable_list;
 
 typedef struct s_data
 {
 	void						*mlx;
 	void						*img;
+
+	uint32_t					*fb;
+	bool						headless;
 
 	uint32_t					width;
 	uint32_t					height;
@@ -89,6 +95,11 @@ typedef struct s_data
 
 int								init_world(t_hittable_list *world);
 
+// Benchmark
+int							run_benchmark(t_data *data, int frames);
+extern unsigned long long	g_ray_count;
+
+// MLX Loop
 int								render_frame(t_data *data);
 // int								close_app(t_data *data);
 // int								key_hook(int keycode, t_data *data);

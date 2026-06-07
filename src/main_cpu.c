@@ -13,6 +13,9 @@
 #include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
+#include "bench.h"
+#include <string.h>
+#include <stdlib.h>
 
 static void	camera_setup(t_data *data)
 {
@@ -42,7 +45,7 @@ static void	update_viewport(t_data *data)
 			data->cam.center.z);
 	upper_left_corner = sub(data->origin, scale(data->horizontal, 0.5f));
 	upper_left_corner = sub(upper_left_corner, scale(data->vertical, 0.5f));
-	upper_left_corner = sub(upper_left_corner, scale(data->cam_forward,
+	upper_left_corner = add(upper_left_corner, scale(data->cam_forward,
 				data->focal_length));
 	data->pixel00_loc = add(upper_left_corner, scale(add(data->px_w,
 					data->px_h), 0.5f));
@@ -111,30 +114,72 @@ void	initialize(t_data *data)
 	update_viewport(data);
 }
 
+void	make_cornell_box(t_hittable_list *world)
+{
+	t_material  red = init_lambertian(make_vec(0.65f, 0.05f, 0.05f));
+	t_material  white = init_lambertian(make_vec(0.73f, 0.73f, 0.73f));
+	t_material  green = init_lambertian(make_vec(0.12f, 0.45f, 0.15f));
+	t_material  difflight = init_diffuse_light(make_vec(15.0f, 15.0f, 15.0f));
+
+	world->add(world, make_quad(make_vec(555, 0, 0), make_vec(0, 555, 0), make_vec(0, 0, 555), green));
+	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(0, 555, 0), make_vec(0, 0, 555), red));
+	world->add(world, make_quad(make_vec(343, 554, 332), make_vec(-130, 0, 0), make_vec(0, 0, -105), difflight));
+	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(555, 0, 0), make_vec(0, 0, 555), white));
+	world->add(world, make_quad(make_vec(555, 555, 555), make_vec(-555, 0, 0), make_vec(0, 0, -555), white));
+	world->add(world, make_quad(make_vec(0, 0, 555), make_vec(555, 0, 0), make_vec(0, 555, 0), white));
+}
+
 int	main(int ac, char **av)
 {
 	t_data			data;
 	t_hittable_list	world;
 	t_list			obj;
 
+	int				frames;
+	int				bench;
+	char			*scene;
+	char			*pav[2];
+
 	data.set_ambient_light = false;
 	data.set_cam = false;
 	data.set_light = false;
+	data.headless = false;
+	data.fb = NULL;
 	world.objects = &obj;
 	if (init_world(&world))
 		return (EXIT_FAILURE);
 	data.world = world;
-	if (ac != 2)
+	frames = 30;
+	bench = 0;
+	scene = NULL;
+	for (int i = 1; i < ac; i++)
+	{
+		if (!strcmp(av[i], "--bench"))
+		{
+			bench = 1;
+			if (i + 1 < ac && av[i + 1][0] >= '0' && av[i + 1][0] <= '9')
+				frames = atoi(av[++i]);
+		}
+		else if (!scene)
+			scene = av[i];
+	}
+	if (!scene)
 	{
 		print_error("No scene file given.");
 		return (0);
 	}
-	if (!parse_input(&data, ac, av))
+	pav[0] = av[0];
+	pav[1] = scene;
+	if (!parse_input(&data, 2, pav))
 	{
 		// TODO: free memory
 		return (EXIT_FAILURE);
 	}
+
+	// make_cornell_box(&world);
 	initialize(&data);
+	if (bench)
+		return (run_benchmark(&data, frames));
 	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
 	if (!data.mlx)
 	{

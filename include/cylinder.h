@@ -20,7 +20,7 @@ typedef struct s_cylinder
 {
 	t_hittable	base;
 	t_vec3		center;
-	t_vec3		uvec;
+	t_vec3		normal;
 	float		radius;
 	float		height;
 	t_material	mat;

@@ -47,13 +47,13 @@ bool	rotate_cam(t_data *data, float *rotation_speed)
 
 	rotated = false;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_LEFT))
-		rotated = (data->cam.yaw += *rotation_speed, true);
-	if (mlx_is_key_down(data->mlx, MLX_KEY_RIGHT))
 		rotated = (data->cam.yaw -= *rotation_speed, true);
+	if (mlx_is_key_down(data->mlx, MLX_KEY_RIGHT))
+		rotated = (data->cam.yaw += *rotation_speed, true);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_UP))
-		rotated = (data->cam.pitch -= *rotation_speed, true);
-	if (mlx_is_key_down(data->mlx, MLX_KEY_DOWN))
 		rotated = (data->cam.pitch += *rotation_speed, true);
+	if (mlx_is_key_down(data->mlx, MLX_KEY_DOWN))
+		rotated = (data->cam.pitch -= *rotation_speed, true);
 	if (data->cam.pitch > (float)M_PI / 2.0f - 0.01f)
 		data->cam.pitch = (float)M_PI / 2.0f - 0.01f;
 	if (data->cam.pitch < (float)-M_PI / 2.0f + 0.01f)

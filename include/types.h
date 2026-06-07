@@ -13,13 +13,6 @@
 #ifndef TYPES_H
 # define TYPES_H
 
-typedef struct s_rgb
-{
-	int		r;
-	int		g;
-	int		b;
-}			t_rgb;
-
 typedef struct s_vec3
 {
 	float	x;

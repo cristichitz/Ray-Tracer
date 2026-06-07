@@ -23,6 +23,8 @@
 
 # define COORD_MAX 2000.0  // TODO: What should max be?
 # define COORD_MIN -2000.0 // TODO: What should min be?
+# define LIGHT_QUAD_SIZE 20.0f // side length of the emissive quad spawned for L
+# define LIGHT_QUAD_GAIN 4.0f  // emission multiplier so the quad lights the scene
 
 void	print_error(char *msg);
 int		parse_input(t_data *data, int ac, char **av);

@@ -16,16 +16,19 @@
 # include <stdbool.h>
 # include <stdio.h>
 
+typedef struct s_interval	t_interval;
+
 typedef struct s_interval
 {
-	float	min;
-	float	max;
-	float	size;
-	bool	(*contains)(struct s_interval *self, float x);
-	bool	(*surrounds)(struct s_interval *self, float x);
-	float	(*clamp)(struct s_interval *self, float x);
-}			t_interval;
+	float					min;
+	float					max;
+	float					size;
+	bool					(*contains)(t_interval *self, float x);
+	bool					(*surrounds)(t_interval *self, float x);
+	float					(*clamp)(t_interval *self, float x);
+	t_interval				(*expand)(t_interval *self, float x);
+}							t_interval;
 
-t_interval	interval_init(float min, float max);
+t_interval					interval_init(float min, float max);
 
 #endif

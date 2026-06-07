@@ -18,6 +18,10 @@
 # include <stdio.h>
 # include <types.h>
 
+# ifndef M_PI
+#  define M_PI 3.14159265358979323846
+# endif
+
 float	random_float(float min, float max);
 float	deg_to_rad(float degrees);
 
@@ -30,6 +34,7 @@ bool	near_zero(t_vec3 a);
 t_vec3	mult(t_vec3 a, t_vec3 b);
 
 t_vec3	make_vec(float a, float b, float c);
+t_vec3	cross(t_vec3 a, t_vec3 b);
 t_vec3	add(t_vec3 a, t_vec3 b);
 t_vec3	sub(t_vec3 a, t_vec3 b);
 t_vec3	scale(t_vec3 a, float b);

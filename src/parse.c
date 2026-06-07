@@ -126,14 +126,21 @@ int	set_fov(int *num, char *param)
 	return (1);
 }
 
-int	set_rgb(int *num, char *param)
+int	get_normed_float(float *num, char *param, float min, float max)
 {
-	if (!get_int(num, param, 0, 255))
-		return (0);
+	float	fnum;
+
+	fnum = ft_strtof(param, NULL); // TODO: Use endptr for check.
+	if (fnum > max)
+		return (return_print_error("Value too large.", 0));
+	if (fnum < min)
+		return (return_print_error("Value too low.", 0));
+	fnum = fnum / 255.0f;
+	*num = fnum;
 	return (1);
 }
 
-int	set_colour(t_rgb *colour, char *params)
+int	set_colour(t_vec3 *colour, char *params)
 {
 	char	**parts;
 	int		ok;
@@ -144,8 +151,9 @@ int	set_colour(t_rgb *colour, char *params)
 	ok = 1;
 	if (split_len(parts) != 3)
 		ok = 0;
-	else if (!set_rgb(&colour->r, parts[0]) || !set_rgb(&colour->g, parts[1])
-		|| !set_rgb(&colour->b, parts[2]))
+	else if (!get_normed_float(&colour->x, parts[0], 0, 255.0f)
+		|| !get_normed_float(&colour->y, parts[1], 0, 255.0f)
+		|| !get_normed_float(&colour->z, parts[2], 0, 255.0f))
 		ok = 0;
 	ft_free_split(parts);
 	return (ok);
@@ -196,6 +204,8 @@ int	set_cam(t_data *data, char **params)
 
 int	set_ambient_light(t_data *data, char **params)
 {
+	t_vec3 ambient;
+
 	if (!split_count(params, 3))
 		return (0);
 	if (data->set_ambient_light == true)
@@ -207,7 +217,34 @@ int	set_ambient_light(t_data *data, char **params)
 		return (0);
 	if (!set_colour(&data->ambient_light.colour, params[2]))
 		return (0);
+	ambient = scale(data->ambient_light.colour, data->ambient_light.brightness);
+	data->world.ambient = ambient;
+	// data->world.background = ambient;
 	data->set_ambient_light = true;
+	return (1);
+}
+
+int	add_light_quad(t_data *data, t_light light)
+{
+	t_vec3		u;
+	t_vec3		v;
+	t_vec3		corner;
+	t_material	difflight;
+	t_quad		*object;
+
+	u = make_vec(LIGHT_QUAD_SIZE, 0.0f, 0.0f);
+	v = make_vec(0.0f, 0.0f, LIGHT_QUAD_SIZE);
+	corner = sub(light.center, scale(add(u, v), 0.5f));
+	difflight = init_diffuse_light(scale(light.colour,
+				light.brightness * LIGHT_QUAD_GAIN));
+	object = make_quad(corner, u, v, difflight);
+	if (!object)
+		return (return_print_error("Failed to allocate light quad.", 0));
+	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
+	{
+		free(object);
+		return (return_print_error("Failed to add light quad to world.", 0));
+	}
 	return (1);
 }
 
@@ -226,21 +263,9 @@ int	set_light(t_data *data, char **params)
 		return (0);
 	if (!set_colour(&data->light.colour, params[3]))
 		return (0);
+	if (!add_light_quad(data, data->light))
+		return (0);
 	data->set_light = true;
-	return (1);
-}
-
-int	get_normed_float(float *num, char *param, float min, float max)
-{
-	float	fnum;
-
-	fnum = ft_strtof(param, NULL); // TODO: Use endptr for check.
-	if (fnum > max)
-		return (return_print_error("Value too large.", 0));
-	if (fnum < min)
-		return (return_print_error("Value too low.", 0));
-	fnum = fnum / 255.0f;
-	*num = fnum;
 	return (1);
 }
 
@@ -295,11 +320,12 @@ int	set_cylinder(t_data *data, char **params)
 	t_cylinder	cylinder;
 	t_cylinder	*object;
 
+
 	if (!split_count(params, 6))
 		return (0);
 	if (!set_pts(&cylinder.center, params[1], get_pt))
 		return (0);
-	if (!set_pts(&cylinder.uvec, params[2], get_uvec_pt))
+	if (!set_pts(&cylinder.normal, params[2], get_uvec_pt))
 		return (0);
 	if (!set_radius(&cylinder.radius, params[3]))
 		return (0);
@@ -320,18 +346,20 @@ int	set_cylinder(t_data *data, char **params)
 
 int	set_plane(t_data *data, char **params)
 {
-	t_plane plane;
 	t_plane *object;
+	t_vec3	center;
+	t_vec3	normal;
+	t_vec3	colour = make_vec(0.5, 0.5, 0.5);
 
 	if (!split_count(params, 4))
 		return (0);
-	if(!set_pts(&plane.center, params[1], get_pt))
+	if(!set_pts(&center, params[1], get_pt))
 		return (0);
-	if(!set_pts(&plane.uvec,params[2], get_uvec_pt))
+	if(!set_pts(&normal,params[2], get_uvec_pt))
 		return (0);
-	if(!set_colour(&plane.colour, params[3]))
-		return (0);
-	object = make_plane(plane);
+	// if(!set_colour(&colour, params[3]))
+	// 	return (0);
+	object = make_infinite_plane(center, normal, colour);
 	if (!object)
 		return (return_print_error("Failed to allocate plane.", 0));
 	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
