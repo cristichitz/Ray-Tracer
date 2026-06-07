@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:12:06 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/07 15:33:28 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include "types.h"
 
 # define WIDTH 640
+
 # ifndef M_PI
 #  define M_PI 3.14159265358979323846
 # endif
@@ -74,30 +75,37 @@ typedef struct s_data
 	t_vec3						px_w;
 	t_vec3						px_h;
 
+	t_vec3						cam_forward;
+
 	bool						set_cam;
 	bool						set_ambient_light;
 	bool						set_light;
 
 	t_hittable_list				world;
 	unsigned int				object_i;
+	uint32_t					wait_frames;
 	bool						render_check;
 }								t_data;
 
 int								init_world(t_hittable_list *world);
 
 int								render_frame(t_data *data);
-int								close_app(t_data *data);
-int								key_hook(int keycode, t_data *data);
+// int								close_app(t_data *data);
+// int								key_hook(int keycode, t_data *data);
 
 float							random_float(float min, float max);
 float							deg_to_rad(float degrees);
 
 bool							move_cam(t_data *data, float *speed);
-bool							move_object(t_data *data, float *speed);
+bool							rotate_cam(t_data *data, float *rot_speed);
+
 void							object_selector(mlx_key_data_t keydata,
 									void *param);
+bool							move_object(t_data *data, float *speed);
 bool							resize_object(t_data *data, float *scalar);
+//TODO: rotate object.
 
+float							clampf(float val, float min, float max);
 void							set_quality(t_data *data, t_quality quality);
 
 #endif

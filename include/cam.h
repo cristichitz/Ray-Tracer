@@ -19,6 +19,8 @@ typedef struct s_cam
 {
 	t_vec3	center;
 	t_vec3	uvec;
+	float	yaw;
+	float	pitch;
 	int		fov;
 	bool	assigned;
 }			t_cam;

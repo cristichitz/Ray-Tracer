@@ -114,7 +114,7 @@ int	get_pt(float *num, char *param)
 
 int	get_uvec_pt(float *num, char *param)
 {
-	if (!get_float(num, param, 0.0, 1.0))
+	if (!get_float(num, param, -1.0, 1.0))
 		return (0);
 	return (1);
 }

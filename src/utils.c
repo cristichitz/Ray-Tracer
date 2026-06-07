@@ -21,3 +21,12 @@ float	deg_to_rad(float degrees)
 {
 	return (degrees * M_PI / 180.0f);
 }
+
+float	clampf(float val, float min, float max)
+{
+	if (val < min)
+		return (min);
+	if (val > max)
+		return (max);
+	return (val);
+}

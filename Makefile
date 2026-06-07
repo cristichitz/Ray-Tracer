@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/06 17:53:20 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/07 16:54:13 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,10 +24,10 @@ src/parse.c \
 src/error.c \
 src/main_cpu.c \
 src/render_cpu2.c \
-src/movement.c \
-src/resize.c \
+src/obj_control.c \
 src/utils.c \
 src/quality.c \
+src/cam_control.c \
 src/class/vec3.c \
 src/class/sphere.c \
 src/class/hittable.c \
