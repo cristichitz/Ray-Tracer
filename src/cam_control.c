@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 15:23:10 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/07 17:00:24 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/08 18:55:51 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ bool	move_cam(t_data *data, float *speed)
 	up = norm(cross(data->cam_forward, right));
 	step = make_vec(0.0f, 0.0f, 0.0f);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_W))
-		step = add(step, scale(data->cam_forward, -*speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_S))
 		step = add(step, scale(data->cam_forward, *speed));
+	if (mlx_is_key_down(data->mlx, MLX_KEY_S))
+		step = add(step, scale(data->cam_forward, -*speed));
 	if (mlx_is_key_down(data->mlx, MLX_KEY_A))
 		step = add(step, scale(right, -*speed));
 	if (mlx_is_key_down(data->mlx, MLX_KEY_D))

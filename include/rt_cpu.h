@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/07 15:33:28 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:38:47 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@
 # include "plane.h"
 # include "sphere.h"
 # include "types.h"
-# include "cam.h"
 
 # define WIDTH 640
 
@@ -96,8 +95,8 @@ typedef struct s_data
 int								init_world(t_hittable_list *world);
 
 // Benchmark
-int							run_benchmark(t_data *data, int frames);
-extern unsigned long long	g_ray_count;
+int								run_benchmark(t_data *data, int frames);
+extern unsigned long long		g_ray_count;
 
 // MLX Loop
 int								render_frame(t_data *data);
@@ -114,7 +113,8 @@ void							object_selector(mlx_key_data_t keydata,
 									void *param);
 bool							move_object(t_data *data, float *speed);
 bool							resize_object(t_data *data, float *scalar);
-//TODO: rotate object.
+bool							rotate_object(t_data *data,
+									float *rotation_speed);
 
 float							clampf(float val, float min, float max);
 void							set_quality(t_data *data, t_quality quality);

@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/07 17:04:35 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:38:14 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ void	game_loop(void *param)
 		if (move_object(data, &speed))
 			scene_changed = true;
 		if (resize_object(data, &speed))
+			scene_changed = true;
+		if(rotate_object(data, &rotation_speed))
 			scene_changed = true;
 	}
 	if (scene_changed)

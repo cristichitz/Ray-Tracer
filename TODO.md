@@ -1,11 +1,11 @@
 # Main
 
 - TODO: If applicable, all possible intersections and the insides of the objects must be handled correctly.
-
-- TODO: rotation transformations to objects (except spheres). 
+- TODO: inside of objects?
 
 - TODO: Light management: spot brightness.
 - TODO: Light management: hard shadows.
+- TODO: light shouldn't be able to rotate.
 
 - TODO: Normalised vector check in parsing.
 
@@ -17,4 +17,3 @@
 
 # Bonus
 - TODO: Parsing converter for bonus types.
-- 

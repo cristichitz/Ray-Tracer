@@ -6,12 +6,13 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/05 13:01:08 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 11:27:20 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:27:13 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cylinder.h"
 #include "plane.h"
+#include "quarternion.h"
 
 static bool	hit_cap(t_cylinder *self, t_ray ray, t_interval ray_t,
 				t_hit_record *rec, float offset)
@@ -133,6 +134,16 @@ void resize_cylinder(void *base, float scalar)
 		self->radius = 0.01f;
 }
 
+void rotate_cylinder(void *base, t_vec3 axis, float angle)
+{
+	t_cylinder *self;
+	t_quarternion q;
+
+	self = (t_cylinder *)base;
+	q = make_quarternion(axis, angle);
+	self->normal = norm(rotate_vec_by_quarternion(q, self->normal));
+}
+
 t_cylinder	*make_cylinder(t_cylinder cylinder)
 {
 	t_cylinder	*c;
@@ -142,6 +153,8 @@ t_cylinder	*make_cylinder(t_cylinder cylinder)
 		return (NULL);
 	*c = cylinder;
 	c->base.hit = hit_cylinder;
+	c->base.destroy = NULL;
 	c->base.resize = resize_cylinder;
+	c->base.rotate = rotate_cylinder;
 	return (c);
 }

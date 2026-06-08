@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:06:51 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:06:55 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:24:37 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ typedef struct s_hittable
 							t_hit_record *rec);
 	void					(*destroy)(void *object);
 	void					(*resize)(void *object, float scalar);
+	void					(*rotate)(void *object, t_vec3 axis, float angle);
 }							t_hittable;
 
 t_vec3						make_vec(float a, float b, float c);

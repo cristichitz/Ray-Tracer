@@ -6,11 +6,12 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 17:05:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/05 16:46:35 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/08 17:32:30 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "plane.h"
+#include "quarternion.h"
 
 static void pad_to_minimums(t_aabb *p)
 {
@@ -77,7 +78,7 @@ bool hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	if (fabs(denom) < 1e-8)
 		return (false);
 
-	t = (self->D - dot(self->normal, ray.origin)) / denom;
+	t = (dot(self->normal, self->Q) - dot(self->normal, ray.origin)) / denom;
 
 	if (!ray_t.contains(&ray_t, t))
 		return (false);
@@ -96,6 +97,22 @@ bool hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	rec->mat = self->mat;
 	rec->set_face_normal(rec, ray, self->normal);
 	return (true);
+}
+
+void	rotate_quad(void *base, t_vec3 axis, float angle)
+{
+	t_quad			*self;
+	t_quarternion	q;
+	t_vec3			n;
+
+	self = (t_quad *)base;
+	q = make_quarternion(axis, angle);
+	self->u = rotate_vec_by_quarternion(q, self->u);
+	self->v = rotate_vec_by_quarternion(q, self->v);
+	n = cross(self->u, self->v);
+	self->normal = norm(n);
+	self->D = dot(self->normal, self->Q);
+	self->w = divide(n, dot(n, n));
 }
 
 t_quad *make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
@@ -117,6 +134,9 @@ t_quad *make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
 	bbox_diagonal2 = make_aabb(add(Q, u), add(Q, v));
 	quad->bbox = make_aabb_from_aabbs(bbox_diagonal1, bbox_diagonal2);
 	quad->base.hit = hit_quad;
+	quad->base.destroy = NULL;
+	quad->base.resize = NULL;
+	quad->base.rotate = rotate_quad;
 
 	n = cross(u, v);
 	quad->normal = norm(n);
@@ -154,6 +174,17 @@ bool hit_plane(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	return (true);
 }
 
+void rotate_plane(void *base, t_vec3 axis, float angle)
+{
+	t_plane *self;
+	t_quarternion q;
+
+	self = (t_plane *)base;
+	q = make_quarternion(axis, angle);
+	self->normal = norm(rotate_vec_by_quarternion(q, self->normal));
+}
+
+
 t_plane *make_infinite_plane(t_vec3 center, t_vec3 normal, t_vec3 colour)
 {
 	t_plane *p;
@@ -166,6 +197,8 @@ t_plane *make_infinite_plane(t_vec3 center, t_vec3 normal, t_vec3 colour)
 	p->base.hit = hit_quad;
 	p->D = dot(p->normal, p->Q);
 	p->base.hit = hit_plane;
+	p->base.destroy = NULL;
 	p->base.resize = NULL;
+	p->base.rotate = rotate_plane;
 	return (p);
 }

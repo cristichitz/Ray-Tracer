@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 18:40:31 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/07 16:54:02 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/08 18:59:04 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,26 @@ bool	resize_object(t_data *data, float *scalar)
 	return (resized);
 }
 
-// bool rotate_object()
+bool	rotate_object(t_data *data, float *rotation_speed)
+{
+	t_hittable	*object;
+	t_vec3		right;
+	t_vec3		up;
+	bool		rotated;
+
+	rotated = false;
+	object = (t_hittable *)ft_vec_get(data->world.objects, data->object_i);
+	if (!object->rotate)
+		return (false);
+	right = norm(cross(make_vec(0.0f, 1.0f, 0.0f), data->cam_forward));
+	up = norm(cross(data->cam_forward, right));
+	if (mlx_is_key_down(data->mlx, MLX_KEY_L))
+		rotated = (object->rotate(object, up, *rotation_speed), true);
+	if (mlx_is_key_down(data->mlx, MLX_KEY_J))
+		rotated = (object->rotate(object, up, -*rotation_speed), true);
+	if (mlx_is_key_down(data->mlx, MLX_KEY_I))
+		rotated = (object->rotate(object, right, *rotation_speed), true);
+	if (mlx_is_key_down(data->mlx, MLX_KEY_K))
+		rotated = (object->rotate(object, right, -*rotation_speed), true);
+	return (rotated);
+}

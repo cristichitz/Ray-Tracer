@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/07 16:54:13 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/08 17:13:22 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ src/class/cylinder.c \
 src/class/interval.c \
 src/class/material.c \
 src/class/texture.c \
+src/class/quaternion.c \
 src/bench.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./include
