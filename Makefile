@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/08 17:13:22 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/09 14:40:18 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = miniRT
 NAME_BONUS = miniRT_bonus
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -O3
+CFLAGS = -Wall -Wextra -Werror
 VFLAGS = -g -O0
 SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 

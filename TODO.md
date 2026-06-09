@@ -13,6 +13,7 @@
 - TODO: File splitting.
 - TODO: Norminette.
 
+## Nice to have
 - TODO: parse cu for cube.
 
 # Bonus
