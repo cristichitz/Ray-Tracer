@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   interval.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/09 14:52:06 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/09 14:55:10 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "interval.h"
 
 bool	contains(t_interval *self, float x)
@@ -10,7 +22,6 @@ bool	surrounds(t_interval *self, float x)
 	return (self->min < x && x < self->max);
 }
 
-// Keeps the number strictly between the intervals min and max
 float	clamp(t_interval *self, float x)
 {
 	if (x < self->min)
@@ -20,10 +31,12 @@ float	clamp(t_interval *self, float x)
 	return (x);
 }
 
-t_interval	expand(t_interval *self, float delta) {
-	float padding = delta / 2;
+t_interval	expand(t_interval *self, float delta)
+{
+	float	padding;
 
-	return interval_init(self->min - padding, self->max + padding);
+	padding = delta / 2;
+	return (interval_init(self->min - padding, self->max + padding));
 }
 
 t_interval	interval_init(float t_min, float t_max)

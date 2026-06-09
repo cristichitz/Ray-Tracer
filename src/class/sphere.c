@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sphere.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/09 14:55:51 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/09 14:56:25 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "sphere.h"
 
 static void	get_sphere_uv(const t_vec3 p, float *u, float *v)
@@ -10,7 +22,7 @@ static void	get_sphere_uv(const t_vec3 p, float *u, float *v)
 	*u = phi / (2 * M_PI);
 	*v = theta / M_PI;
 }
-
+// TODO: too many variables, too big function
 bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
 	t_sphere	*self;

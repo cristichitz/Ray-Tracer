@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/05 13:01:08 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 17:27:13 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:54:08 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 #include "plane.h"
 #include "quarternion.h"
 
+// TODO: 4 MAx parameters.
 static bool	hit_cap(t_cylinder *self, t_ray ray, t_interval ray_t,
-				t_hit_record *rec, float offset)
+		t_hit_record *rec, float offset)
 {
 	float	denom;
 	float	t;
@@ -41,8 +42,7 @@ static bool	hit_cap(t_cylinder *self, t_ray ray, t_interval ray_t,
 	return (true);
 }
 
-static bool	hit_caps(void *base, t_ray ray, t_interval ray_t,
-				t_hit_record *rec)
+static bool	hit_caps(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 {
 	t_cylinder		*self;
 	t_hit_record	tmp;
@@ -66,7 +66,7 @@ static bool	hit_caps(void *base, t_ray ray, t_interval ray_t,
 	}
 	return (hit_any);
 }
-
+// TODO: 5 max variables per function. Function too long.
 bool	hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
 	t_cylinder	*self;
@@ -97,14 +97,14 @@ bool	hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 		sqrtd = sqrt(discriminant);
 		root = (-half_b - sqrtd) / a;
 		m = wv + root * dv;
-		if (!t.surrounds(&t, root) || m < -self->height / 2
-			|| m > self->height / 2)
+		if (!t.surrounds(&t, root) || m < -self->height / 2 || m > self->height
+			/ 2)
 		{
 			root = (-half_b + sqrtd) / a;
 			m = wv + root * dv;
 		}
-		if (t.surrounds(&t, root) && m >= -self->height / 2
-			&& m <= self->height / 2)
+		if (t.surrounds(&t, root) && m >= -self->height / 2 && m <= self->height
+			/ 2)
 		{
 			rec->t = root;
 			rec->p = ray.at(&ray, root);
@@ -121,23 +121,23 @@ bool	hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	return (hit_body);
 }
 
-void resize_cylinder(void *base, float scalar)
+void	resize_cylinder(void *base, float scalar)
 {
-	t_cylinder *self;
+	t_cylinder	*self;
 
 	self = (t_cylinder *)base;
 	self->height += scalar;
-	if(self->height < 0.01f)
+	if (self->height < 0.01f)
 		self->height = 0.01f;
 	self->radius += scalar;
-	if(self->radius < 0.01f)
+	if (self->radius < 0.01f)
 		self->radius = 0.01f;
 }
 
-void rotate_cylinder(void *base, t_vec3 axis, float angle)
+void	rotate_cylinder(void *base, t_vec3 axis, float angle)
 {
-	t_cylinder *self;
-	t_quarternion q;
+	t_cylinder		*self;
+	t_quarternion	q;
 
 	self = (t_cylinder *)base;
 	q = make_quarternion(axis, angle);
@@ -146,7 +146,7 @@ void rotate_cylinder(void *base, t_vec3 axis, float angle)
 
 t_cylinder	*make_cylinder(t_cylinder cylinder)
 {
-	t_cylinder	*c;
+	t_cylinder *c;
 
 	c = malloc(sizeof(t_cylinder));
 	if (!c)
