@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 18:40:31 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 18:59:04 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/09 21:32:58 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,17 @@ bool	move_object(t_data *data, float *speed)
 	right = norm(cross(make_vec(0.0f, 1.0f, 0.0f), data->cam_forward));
 	up = norm(cross(data->cam_forward, right));
 	step = make_vec(0.0f, 0.0f, 0.0f);
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_6))
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_6) || mlx_is_key_down(data->mlx, MLX_KEY_H))
 		step = add(step, scale(right, *speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_4))
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_4) || mlx_is_key_down(data->mlx, MLX_KEY_F))
 		step = add(step, scale(right, -*speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_5))
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_5) || mlx_is_key_down(data->mlx, MLX_KEY_G))
 		step = add(step, scale(data->cam_forward, *speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_8))
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_8) || mlx_is_key_down(data->mlx, MLX_KEY_T))
 		step = add(step, scale(data->cam_forward, -*speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_9))
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_9) || mlx_is_key_down(data->mlx, MLX_KEY_Y))
 		step = add(step, scale(up, *speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_7))
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_7) || mlx_is_key_down(data->mlx, MLX_KEY_R))
 		step = add(step, scale(up, -*speed));
 	if (step.x == 0.0f && step.y == 0.0f && step.z == 0.0f)
 		return (false);
