@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "vec3.h"
+#include <stdio.h>
 
 t_vec3	make_vec(float a, float b, float c)
 {

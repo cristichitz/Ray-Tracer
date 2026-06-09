@@ -14,6 +14,7 @@
 # define CAM_H
 
 # include "types.h"
+# include <stdbool.h>
 
 typedef struct s_cam
 {

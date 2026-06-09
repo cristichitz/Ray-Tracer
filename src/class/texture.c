@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "hittable.h"
+#include "material.h"
 
 t_vec3	color_value(t_texture *self, float u, float v, t_vec3 p)
 {

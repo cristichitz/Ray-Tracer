@@ -15,8 +15,7 @@
 
 # include <math.h>
 # include <stdbool.h>
-# include <stdio.h>
-# include <types.h>
+# include "types.h"
 
 # ifndef M_PI
 #  define M_PI 3.14159265358979323846
@@ -41,7 +40,6 @@ t_vec3	scale(t_vec3 a, float b);
 t_vec3	divide(t_vec3 a, float b);
 float	dot(t_vec3 a, t_vec3 b);
 t_vec3	norm(t_vec3 a);
-t_vec3	cross(t_vec3 a, t_vec3 b);
 void	print_vec(t_vec3 a);
 
 #endif

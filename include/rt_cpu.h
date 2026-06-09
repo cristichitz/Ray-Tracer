@@ -19,13 +19,9 @@
 # include "light.h"
 # include "plane.h"
 # include "sphere.h"
-# include "types.h"
+# include "libft.h"
 
 # define WIDTH 640
-
-# ifndef M_PI
-#  define M_PI 3.14159265358979323846
-# endif
 
 typedef enum e_quality
 {
@@ -102,9 +98,6 @@ extern unsigned long long		g_ray_count;
 int								render_frame(t_data *data);
 // int								close_app(t_data *data);
 // int								key_hook(int keycode, t_data *data);
-
-float							random_float(float min, float max);
-float							deg_to_rad(float degrees);
 
 bool							move_cam(t_data *data, float *speed);
 bool							rotate_cam(t_data *data, float *rot_speed);

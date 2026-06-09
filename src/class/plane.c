@@ -12,6 +12,7 @@
 
 #include "plane.h"
 #include "quarternion.h"
+#include <stdlib.h>
 
 static void	pad_to_minimums(t_aabb *p)
 {

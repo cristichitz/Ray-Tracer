@@ -13,6 +13,7 @@
 #include "cylinder.h"
 #include "plane.h"
 #include "quarternion.h"
+#include <stdlib.h>
 
 // TODO: 4 MAx parameters.
 static bool	hit_cap(t_cylinder *self, t_ray ray, t_interval ray_t,

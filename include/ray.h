@@ -1,24 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   movable.h                                          :+:      :+:    :+:   */
+/*   ray.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/04 15:23:51 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 13:40:22 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/09 17:35:00 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/09 17:35:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MOVABLE_H
-# define MOVABLE_H
+#ifndef RAY_H
+# define RAY_H
 
-# include "hittable.h"
+# include "vec3.h"
 
-typedef struct s_movable
+typedef struct s_ray
 {
-	t_hittable	base;
-	t_vec3		center;
-}				t_movable;
+	t_vec3					origin;
+	t_vec3					dir;
+	t_vec3					(*at)(struct s_ray *self, float t);
+}							t_ray;
+
+t_ray						make_ray(t_vec3 origin, t_vec3 direction);
 
 #endif

@@ -14,7 +14,6 @@
 # define SPHERE_H
 
 # include "hittable.h"
-# include "types.h"
 
 typedef struct s_sphere
 {

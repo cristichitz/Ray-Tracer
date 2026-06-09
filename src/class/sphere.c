@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "sphere.h"
+#include <stdlib.h>
 
 static void	get_sphere_uv(const t_vec3 p, float *u, float *v)
 {

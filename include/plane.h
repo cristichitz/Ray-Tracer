@@ -14,7 +14,6 @@
 # define PLANE_H
 
 # include "hittable.h"
-# include "types.h"
 
 typedef struct s_aabb {
 	t_interval	x;
