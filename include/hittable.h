@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:06:51 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 17:24:37 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:44:47 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 
 typedef struct s_texture
 {
-	t_vec3					(*value)(struct s_texture *self, float u,
-							float v, t_vec3 p);
+	t_vec3					(*value)(struct s_texture *self, float u, float v,
+							t_vec3 p);
 	t_vec3					albedo;
 }							t_texture;
 
@@ -38,8 +38,8 @@ typedef struct s_material
 	bool					(*scatter)(t_material *self, t_ray r_in,
 							t_hit_record rec, t_vec3 *attenuation,
 							t_ray *scattered);
-	t_vec3					(*emmited)(t_material *self, float u,
-							float v, t_vec3 p);
+	t_vec3					(*emmited)(t_material *self, float u, float v,
+							t_vec3 p);
 }							t_material;
 
 t_material					init_lambertian(t_vec3 col);
@@ -67,7 +67,6 @@ typedef struct s_hit_record
 							t_ray ray, t_vec3 outward_normal);
 }							t_hit_record;
 
-// Base class
 typedef struct s_hittable
 {
 	bool					(*hit)(void *object, t_ray ray, t_interval t,

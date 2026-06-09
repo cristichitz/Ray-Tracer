@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 17:38:47 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:45:48 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,5 +118,8 @@ bool							rotate_object(t_data *data,
 
 float							clampf(float val, float min, float max);
 void							set_quality(t_data *data, t_quality quality);
+
+
+void							print_error(char *msg);
 
 #endif
