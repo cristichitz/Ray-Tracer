@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:55:51 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 14:56:25 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/10 16:59:26 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,36 +23,38 @@ static void	get_sphere_uv(const t_vec3 p, float *u, float *v)
 	*u = phi / (2 * M_PI);
 	*v = theta / M_PI;
 }
-// TODO: too many variables, too big function
+
+static float	get_sphere_root(t_sphere_var *v, t_interval *t)
+{
+	v->discriminant = v->h * v->h - v->a * v->c;
+	if (v->discriminant < 0)
+		return (-1);
+	v->sqrtd = sqrtf(v->discriminant);
+	v->root = (v->h - v->sqrtd) / v->a;
+	if (!t->surrounds(t, v->root))
+	{
+		v->root = (v->h + v->sqrtd) / v->a;
+		if (!t->surrounds(t, v->root))
+			return (-1);
+	}
+	return (v->root);
+}
+
 bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
-	t_sphere	*self;
-	t_vec3		oc;
-	float		a;
-	float		h;
-	float		c;
-	float		discriminant;
-	float		sqrtd;
-	float		root;
-	t_vec3		outward_normal;
+	t_sphere		*self;
+	t_vec3			oc;
+	t_sphere_var	v;
+	t_vec3			outward_normal;
 
 	self = (t_sphere *)base;
 	oc = sub(self->center, ray.origin);
-	a = dot(ray.dir, ray.dir);
-	h = dot(ray.dir, oc);
-	c = dot(oc, oc) - self->radius * self->radius;
-	discriminant = h * h - a * c;
-	if (discriminant < 0)
+	v.a = dot(ray.dir, ray.dir);
+	v.h = dot(ray.dir, oc);
+	v.c = dot(oc, oc) - self->radius * self->radius;
+	if (get_sphere_root(&v, &t) < 0)
 		return (false);
-	sqrtd = sqrtf(discriminant);
-	root = (h - sqrtd) / a;
-	if (!t.surrounds(&t, root))
-	{
-		root = (h + sqrtd) / a;
-		if (!t.surrounds(&t, root))
-			return (false);
-	}
-	rec->t = root;
+	rec->t = v.root;
 	rec->p = ray.at(&ray, rec->t);
 	rec->mat = self->mat;
 	outward_normal = divide(sub(rec->p, self->center), self->radius);

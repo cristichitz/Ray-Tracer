@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:59 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:08:02 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/10 16:46:47 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,17 @@ typedef struct s_sphere
 	float		radius;
 	t_material	mat;
 }				t_sphere;
+
+typedef struct s_sphere_var
+{
+	float		a;
+	float		h;
+	float		c;
+	float		discriminant;
+	float		sqrtd;
+	float		root;
+} t_sphere_var;
+
 
 t_sphere		*make_sphere(t_sphere sphere);
 
