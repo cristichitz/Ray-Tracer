@@ -382,8 +382,8 @@ int	set_plane(t_data *data, char **params)
 		return (0);
 	if (!ensure_normalized(&normal))
 		return (0);
-	// if(!set_colour(&colour, params[3]))
-	// 	return (0);
+	if (!set_colour(&colour, params[3]))
+		return (0);
 	object = make_infinite_plane(center, normal, colour);
 	if (!object)
 		return (return_print_error("Failed to allocate plane.", 0));

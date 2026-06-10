@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/05 13:01:08 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 14:54:08 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/10 16:02:47 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,15 +72,15 @@ bool	hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
 	t_cylinder	*self;
 	t_vec3		w;
+	float		a;
+	float		c;
+	float		discriminant;
+	float		root;
+	float		sqrtd;
 	float		dv;
 	float		wv;
-	float		a;
 	float		half_b;
-	float		c;
 	float		m;
-	float		discriminant;
-	float		sqrtd;
-	float		root;
 	t_vec3		outward_normal;
 	bool		hit_body;
 
