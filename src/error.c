@@ -14,7 +14,7 @@
 
 void print_error(char *msg)
 {
-	ft_printfd(2,"Error\n %s\n",msg);
+	ft_printfd(2,"Error\n%s\n",msg);
 }
 
 int return_print_error(char *msg, int err)
