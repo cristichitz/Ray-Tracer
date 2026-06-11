@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   quarternion.h                                      :+:      :+:    :+:   */
+/*   ray.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/08 17:11:19 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 18:57:45 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/11 15:02:00 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/11 15:02:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef QUARTERNION_H
-# define QUARTERNION_H
+#include "ray.h"
 
-# include "vec3.h"
-
-typedef struct s_quarternion
+t_vec3	ray_at(t_ray *self, float t)
 {
-	float		w;
-	float		x;
-	float		y;
-	float		z;
-}				t_quarternion;
+	t_vec3	result;
 
-t_quarternion	make_quarternion(t_vec3 axis, float angle);
-t_quarternion	mult_quarternion(t_quarternion a, t_quarternion b);
-t_quarternion	inverse_quartenion(t_quarternion q);
-t_vec3			rotate_vec_by_quarternion(t_quarternion q, t_vec3 v);
+	result = add(self->origin, scale(self->dir, t));
+	return (result);
+}
 
-#endif
+t_ray	make_ray(t_vec3 origin, t_vec3 direction)
+{
+	t_ray	r;
+
+	r.origin = origin;
+	r.dir = direction;
+	r.at = ray_at;
+	return (r);
+}

@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "plane.h"
-#include "quarternion.h"
+#include "quaternion.h"
 #include <stdlib.h>
 
 static void	pad_to_minimums(t_aabb *p)
@@ -97,13 +97,13 @@ bool	hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 void	rotate_quad(void *base, t_vec3 axis, float angle)
 {
 	t_quad			*self;
-	t_quarternion	q;
+	t_quaternion	q;
 	t_vec3			n;
 
 	self = (t_quad *)base;
-	q = make_quarternion(axis, angle);
-	self->u = rotate_vec_by_quarternion(q, self->u);
-	self->v = rotate_vec_by_quarternion(q, self->v);
+	q = make_quaternion(axis, angle);
+	self->u = rotate_vec_by_quaternion(q, self->u);
+	self->v = rotate_vec_by_quaternion(q, self->v);
 	n = cross(self->u, self->v);
 	self->normal = norm(n);
 	self->D = dot(self->normal, self->Q);
@@ -164,11 +164,11 @@ bool	hit_plane(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 void	rotate_plane(void *base, t_vec3 axis, float angle)
 {
 	t_plane			*self;
-	t_quarternion	q;
+	t_quaternion	q;
 
 	self = (t_plane *)base;
-	q = make_quarternion(axis, angle);
-	self->normal = norm(rotate_vec_by_quarternion(q, self->normal));
+	q = make_quaternion(axis, angle);
+	self->normal = norm(rotate_vec_by_quaternion(q, self->normal));
 }
 
 t_plane	*make_infinite_plane(t_vec3 center, t_vec3 normal, t_vec3 colour)

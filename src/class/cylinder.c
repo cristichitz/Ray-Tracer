@@ -12,7 +12,7 @@
 
 #include "cylinder.h"
 #include "plane.h"
-#include "quarternion.h"
+#include "quaternion.h"
 #include <stdlib.h>
 
 //TODO: too many params
@@ -138,11 +138,11 @@ void	resize_cylinder(void *base, float scalar)
 void	rotate_cylinder(void *base, t_vec3 axis, float angle)
 {
 	t_cylinder		*self;
-	t_quarternion	q;
+	t_quaternion	q;
 
 	self = (t_cylinder *)base;
-	q = make_quarternion(axis, angle);
-	self->normal = norm(rotate_vec_by_quarternion(q, self->normal));
+	q = make_quaternion(axis, angle);
+	self->normal = norm(rotate_vec_by_quaternion(q, self->normal));
 }
 
 t_cylinder	*make_cylinder(t_cylinder cylinder)

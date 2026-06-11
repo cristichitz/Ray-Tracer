@@ -16,7 +16,7 @@ static bool	is_emissive(t_hit_record *rec)
 {
 	t_vec3	emission;
 
-	emission = rec->mat.emmited(&rec->mat, 0, 0, rec->p);
+	emission = rec->mat.emitted(&rec->mat, 0, 0, rec->p);
 	return (emission.x > 0.0f || emission.y > 0.0f || emission.z > 0.0f);
 }
 

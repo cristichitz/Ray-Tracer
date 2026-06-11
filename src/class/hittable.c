@@ -12,24 +12,6 @@
 
 #include "rt_cpu.h"
 
-t_vec3	ray_at(t_ray *self, float t)
-{
-	t_vec3	result;
-
-	result = add(self->origin, scale(self->dir, t));
-	return (result);
-}
-
-t_ray	make_ray(t_vec3 origin, t_vec3 direction)
-{
-	t_ray	r;
-
-	r.origin = origin;
-	r.dir = direction;
-	r.at = ray_at;
-	return (r);
-}
-
 void	ft_set_face_normal(t_hit_record *self, t_ray r, t_vec3 outward_normal)
 {
 	self->front_face = dot(r.dir, outward_normal) < 0;

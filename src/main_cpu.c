@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/10 16:53:20 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/11 15:03:06 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,7 +203,7 @@ int	main(int ac, char **av)
 	initialize(&data);
 	if (bench)
 		return (run_benchmark(&data, frames));
-	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
+	data.mlx = mlx_init(data.width, data.height, "MiniRT", true);
 	if (!data.mlx)
 	{
 		puts(mlx_strerror(mlx_errno));

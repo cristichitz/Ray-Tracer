@@ -34,7 +34,7 @@ typedef struct s_material
 	bool					(*scatter)(t_material *self, t_ray r_in,
 							t_hit_record rec, t_vec3 *attenuation,
 							t_ray *scattered);
-	t_vec3					(*emmited)(t_material *self, float u, float v,
+	t_vec3					(*emitted)(t_material *self, float u, float v,
 							t_vec3 p);
 }							t_material;
 

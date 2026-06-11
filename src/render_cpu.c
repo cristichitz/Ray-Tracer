@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   render_cpu2.c                                      :+:      :+:    :+:   */
+/*   render_cpu.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 10:44:35 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/10 10:44:52 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/11 14:59:28 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 	t_hit_record	hit_record;
 	t_ray			scattered;
 	t_vec3			attenuation;
-	t_vec3			color_from_emmision;
+	t_vec3			color_from_emission;
 	t_vec3			color_from_ambient;
 	t_vec3			color_from_scatter;
 
@@ -28,16 +28,16 @@ t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 		return (make_vec(0.0f, 0.0f, 0.0f));
 	if (!world->hit(world, ray, interval_init(0.001f, INFINITY), &hit_record))
 		return (world->background);
-	color_from_emmision = hit_record.mat.emmited(&hit_record.mat, hit_record.u,
+	color_from_emission = hit_record.mat.emitted(&hit_record.mat, hit_record.u,
 			hit_record.v, hit_record.p);
 	color_from_ambient = mult(world->ambient, hit_record.mat.tex.albedo);
-	color_from_emmision = add(color_from_emmision, color_from_ambient);
+	color_from_emission = add(color_from_emission, color_from_ambient);
 	if (!hit_record.mat.scatter(&hit_record.mat, ray, hit_record, &attenuation,
 			&scattered))
-		return (color_from_emmision);
+		return (color_from_emission);
 	color_from_scatter = mult(attenuation, get_ray_color(world, depth - 1,
 				scattered));
-	return (add(color_from_emmision, color_from_scatter));
+	return (add(color_from_emission, color_from_scatter));
 }
 
 t_vec3	sample_square(void)
