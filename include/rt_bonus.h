@@ -101,6 +101,7 @@ typedef struct s_rubik {
   int        frames_left;       // frames remaining in the active turn
   t_move     current;           // turn being animated
   float      step;              // per-frame angle of the active turn (radians)
+  int        explode_active;
 } t_rubik;
 
 typedef struct s_data {
@@ -155,6 +156,8 @@ void       make_rubick_cube(t_data *data);
 void       rubik_stage(t_data *data);
 
 // Rubik's cube: build + move engine (rubick_*_bonus.c)
+void       rot_vec_axis(cl_float3 *v, int axis, float ct, float st);
+void       explode_rubik(t_rubik *r, t_object *objs, t_data *data);
 void       build_rubik(t_data *data);
 void       rotate_quad_axis(t_object *o, int axis, cl_float3 pivot, float ang);
 void       rotate_layer(t_rubik *r, t_object *objs, float ang);

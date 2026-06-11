@@ -11,7 +11,7 @@ static void  rubik_camera(t_data *data)
   cl_float3  dir;
   float      dist;
 
-  dir = norm(make_float3(0.0f, 0.0f, 1.0f));
+  dir = norm(make_float3(1.0f, -1.0f, 1.0f));
   dist = 18.0f;
   data->cam_center = sub(data->rubik.center, scale(dir, dist));
   data->cam_dir = dir;
@@ -108,6 +108,7 @@ void  build_rubik(t_data *data)
     }
     pos[0]++;
   }
+  data->rubik.explode_active = 0;
   // rubik_stage(data);
   rubik_camera(data);
 }

@@ -91,6 +91,7 @@ cl_float3 cross(cl_float3 a, cl_float3 b)
 cl_float3 norm(cl_float3 a)
 {
   float len = sqrtf(a.x *a.x + a.y * a.y + a.z * a.z);
+  len += 1e-8f;
   return make_float3(a.x / len, a.y / len, a.z / len);
 }
 

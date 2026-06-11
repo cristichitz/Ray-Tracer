@@ -21,7 +21,7 @@ static void  rot_pair(float *a, float *b, float ct, float st)
 ** Rotate a vector about a coordinate axis (right-hand rule), in place. The
 ** cyclic pairing (x->y->z->x) matches the standard rotation matrices.
 */
-static void  rot_vec_axis(cl_float3 *v, int axis, float ct, float st)
+void  rot_vec_axis(cl_float3 *v, int axis, float ct, float st)
 {
   if (axis == 0)
     rot_pair(&v->y, &v->z, ct, st);
