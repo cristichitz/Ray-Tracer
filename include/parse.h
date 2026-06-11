@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 18:24:15 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/11 13:20:38 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,43 @@
 # define LIGHT_QUAD_SIZE 20.0f // side length of the emissive quad spawned for L
 # define LIGHT_QUAD_GAIN 4.0f  // emission multiplier so the quad lights the scene
 
-void	print_error(char *msg);
+
 int		parse_input(t_data *data, int ac, char **av);
-int		return_print_error(char *msg, int err);
+
+int	process_scene(t_data *data, int fd);
+int	valid_scene(t_data *data);
+int	add_to_world(t_data *data, void *object);
+
+int	process_line(t_data *data, char *line);
+int	process_type(t_data *data, char **params);
+
+size_t	split_len(char **split);
+int	split_count(char **params, size_t expected);
+int	force_normalised(t_vec3 *v);
+
+int	get_float(float *num, char *param, float min, float max);
+int	get_int(int *num, char *param, int min, int max);
+int	get_pt(float *num, char *param);
+int	get_uvec_pt(float *num, char *param);
+int	get_normed_float(float *num, char *param, float min, float max);
+
+int	valid_filename(char *filename, const char *ext);
+int	set_pts(t_vec3 *pt, char *params, int (*f)(float *n, char *p));
+
+int	set_colour(t_vec3 *colour, char *params);
+int	set_material(t_material *mat, char *params);
+int	set_radius(float *num, char *param);
+int	set_height(float *num, char *param);
+int	set_fov(int *num, char *param);
+
+int	set_ambient_light(t_data *data, char **params);
+int	add_light_quad(t_data *data, t_light light);
+int	set_brightness(float *fnum, char *param);
+
+int	set_cam(t_data *data, char **params);
+int	set_light(t_data *data, char **params);
+int	set_sphere(t_data *data, char **params);
+int	set_cylinder(t_data *data, char **params);
+int	set_plane(t_data *data, char **params);
 
 #endif

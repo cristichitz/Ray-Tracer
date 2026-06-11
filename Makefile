@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/09 14:40:18 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/11 13:32:52 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,6 @@ SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 # MANDATORY FILES
 SRCS = \
-src/parse.c \
 src/error.c \
 src/main_cpu.c \
 src/render_cpu2.c \
@@ -37,6 +36,17 @@ src/class/interval.c \
 src/class/material.c \
 src/class/texture.c \
 src/class/quaternion.c \
+src/parse/checks.c \
+src/parse/getters.c \
+src/parse/parse_utils.c \
+src/parse/parse.c \
+src/parse/process.c \
+src/parse/scene.c \
+src/parse/set_lights.c \
+src/parse/set_obj.c \
+src/parse/set_obj_2.c \
+src/parse/set_params.c \
+src/parse/set_params_2.c \
 src/bench.c \
 src/render_direct.c
 

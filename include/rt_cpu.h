@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 14:45:48 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/11 13:21:19 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 # include "MLX42/MLX42.h"
 # include "cam.h"
 # include "cylinder.h"
+# include "libft.h"
 # include "light.h"
 # include "plane.h"
 # include "sphere.h"
-# include "libft.h"
 
 # define WIDTH 640
 
@@ -105,8 +105,8 @@ extern unsigned long long		g_ray_count;
 int								render_frame(t_data *data);
 int								render_frame_direct(t_data *data);
 t_ray							get_ray(t_data *data, uint32_t x, uint32_t y);
-void							write_color(t_data *data, uint32_t x, uint32_t y,
-									t_vec3 color);
+void							write_color(t_data *data, uint32_t x,
+									uint32_t y, t_vec3 color);
 // int								close_app(t_data *data);
 // int								key_hook(int keycode, t_data *data);
 
@@ -122,8 +122,10 @@ bool							rotate_object(t_data *data,
 
 float							clampf(float val, float min, float max);
 void							set_quality(t_data *data, t_quality quality);
-
-
+void							set_render_mode(t_data *data,
+									t_render_mode mode);
+									
 void							print_error(char *msg);
+int								return_print_error(char *msg, int err);
 
 #endif
