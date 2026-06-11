@@ -101,6 +101,10 @@ void	make_cornell_box(t_hittable_list *world)
 	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(555, 0, 0), make_vec(0, 0, 555), white));
 	world->add(world, make_quad(make_vec(555, 555, 555), make_vec(-555, 0, 0), make_vec(0, 0, -555), white));
 	world->add(world, make_quad(make_vec(0, 0, 555), make_vec(555, 0, 0), make_vec(0, 555, 0), white));
+
+	world->add(world, make_box(make_vec(130, 0, 65), make_vec(295, 165, 230), white));
+	world->add(world, make_box(make_vec(265, 0, 295), make_vec(430, 330, 460), white));
+
 }
 
 int	main(int ac, char **av)
@@ -150,7 +154,8 @@ int	main(int ac, char **av)
 		return (EXIT_FAILURE);
 	}
 
-	// make_cornell_box(&world);
+	make_cornell_box(&world);
+
 	initialize(&data);
 	if (bench)
 		return (run_benchmark(&data, frames));

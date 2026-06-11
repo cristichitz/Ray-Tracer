@@ -41,7 +41,23 @@ INCLUDES = -I. -I./MLX42/include -I./libft -I./include
 BONUS_SRCS = \
 src/main_bonus.c \
 src/cl_util_bonus.c \
-src/class/vec3_bonus.c
+src/init_gpu_bonus.c \
+src/cleanup_bonus.c \
+src/utils_bonus.c \
+src/view_bonus.c \
+src/scene_bonus.c \
+src/parse_bonus.c \
+src/parse_utils_bonus.c \
+src/parse_obj_bonus.c \
+src/parse_world_bonus.c \
+src/class/vec3_bonus.c \
+src/class/sphere_bonus.c \
+src/class/material_bonus.c \
+src/class/plane_bonus.c \
+src/class/cylinder_bonus.c \
+src/rubick_build_bonus.c \
+src/rubick_move_bonus.c \
+src/rubick_engine_bonus.c
 
 BONUS_INCLUDES = -I. -I./MLX42/include -I./libft -I./include -I./kernels
 BONUS_CFLAGS = -DCL_TARGET_OPENCL_VERSION=300

@@ -1,8 +1,22 @@
 #ifndef RT_BONUS_H
 #define RT_BONUS_H
 
-#include "CL/cl.h" 
+#include "CL/cl.h"
 #include "MLX42/MLX42.h"
+
+// Lower resolution = the biggest realtime win (cost is ~quadratic in width).
+// Bump these back up for final stills; these values target a smooth animation.
+#define BONUS_WIDTH 1920
+// Samples taken per rendered frame. Kept low because frames accumulate when
+// the camera is still (progressive refinement); this is also the quality used
+// while moving.
+#define BONUS_SPP 1
+#define BONUS_MAX_DEPTH 2
+// Stop re-rendering once this many frames have accumulated (converged -> idle).
+#define ACCUM_MAX 512
+// L spawns an emissive sphere; tune size/strength per scene scale
+#define LIGHT_RADIUS 5.0f
+#define LIGHT_GAIN 30.0f
 //Sphere inclues hittable...
 // #include "shape.h"
 #include "cl_util_bonus.h"
@@ -39,6 +53,7 @@ cl_float3  sub(cl_float3 a, cl_float3 b);
 cl_float3  scale(cl_float3 a, float b);
 cl_float3  divide(cl_float3 a, float b);
 float      dot(cl_float3 a, cl_float3 b);
+cl_float3  cross(cl_float3 a, cl_float3 b);
 cl_float3  norm(cl_float3 a);
 void       print_vec(cl_float3 a);
 
@@ -48,35 +63,117 @@ typedef struct s_gpu {
   cl_program        program;
   cl_kernel         kernel;
   cl_mem            buffer;
-  cl_mem            sphere_buffer;
+  cl_mem            object_buffer;
+  cl_mem            accum_buffer;
 } t_gpu;
+
+// --- Rubik's cube demo (host side) -----------------------------------------
+// A real 3x3x3: 27 cubies, each built as a 6-quad box. A "move" turns one
+// outer slice 90/180 degrees. "Solve" replays the inverse of every move that
+// has been applied since the cube was last solved (reverse-scramble), so no
+// solving algorithm is needed and the cube always returns to the start state.
+# define CUBIES 27
+# define FACES 6
+# define MOVE_FRAMES 6      // animation frames spent on one 90-degree turn
+# define SCRAMBLE_LEN 20     // random moves added by one scramble
+# define MAX_MOVES 1024      // ring-buffer / history capacity
+
+typedef struct s_move {
+  int  axis;   // rotation axis: 0 = x, 1 = y, 2 = z
+  int  layer;  // which outer slice: -1 or +1
+  int  turns;  // +1 = 90, -1 = -90, +2 = 180 (about axis, right-hand rule)
+} t_move;
+
+typedef struct s_cubie {
+  int  pos[3]; // current grid coordinate, each component in {-1, 0, 1}
+  int  obj;    // index of this cubie's first quad in data->objects
+} t_cubie;
+
+typedef struct s_rubik {
+  t_cubie    cubies[CUBIES];
+  cl_float3  center;            // world-space pivot of the whole cube
+  t_move     queue[MAX_MOVES];  // moves waiting to play (ring buffer)
+  int        q_head;
+  int        q_count;
+  t_move     history[MAX_MOVES];// moves applied since solved (for solve)
+  int        h_count;
+  int        active;            // 1 while a turn is animating
+  int        frames_left;       // frames remaining in the active turn
+  t_move     current;           // turn being animated
+  float      step;              // per-frame angle of the active turn (radians)
+} t_rubik;
 
 typedef struct s_data {
     void          *mlx;
     mlx_image_t   *img;
+    t_rubik       rubik;
 
-    float cam_x;
-    float cam_y;
-    float cam_z;
+    // Camera as parsed from the .rt file (drives the view basis in initialize)
+    cl_float3 cam_center;
+    cl_float3 cam_dir;
+    float     cam_fov;
 
     t_gpu     gpu;
     cl_int    err;
-    
+
     t_image   frame;
- 
-    // List of objects
-    t_sphere  *spheres;
-    uint32_t  sphere_count;
+
+    // Flat list of every primitive in the scene (uploaded as one buffer)
+    t_object  *objects;
+    uint32_t  obj_count;
+
+    // Number of frames accumulated since the last camera move (progressive)
+    int       frame_index;
 } t_data;
 
-// World
-// int       init_world(t_hittable_list  *world);
+// GPU setup / teardown (init_gpu_bonus.c, cleanup_bonus.c)
+cl_int     init_gpu(t_data *data);
+void       render_frame(t_data *data);
+void       game_loop(void *param);
+void       clean_gpu(t_data *data);
+void       cleanup(void *param);
 
-// MLX Loop
-// int       render_frame(t_data *data);
-int       close_app(t_data *data);
-int       key_hook(int keycode, t_data *data);
+// Camera / view (view_bonus.c)
+void       initialize(t_data *data);
+void       update_view(t_data *data);
 
-//SPHERE
-t_sphere make_sphere(cl_float3 center, float radius, t_material mat);
+// Object + material builders (host side)
+t_material material_init(cl_float3 color, int type);
+t_object   make_obj_sphere(cl_float3 center, float radius, t_material mat);
+t_object   make_obj_plane(cl_float3 point, cl_float3 normal, t_material mat);
+t_object   make_obj_quad(cl_float3 q, cl_float3 u, cl_float3 v, t_material mat);
+t_object   make_obj_cylinder(cl_float3 center, cl_float3 axis, float radius,
+                             float height, t_material mat);
+
+// Scene assembly (scene_bonus.c)
+int        add_object(t_data *data, t_object obj);
+int        make_box(t_data *data, cl_float3 a, cl_float3 b, t_material mat);
+void       make_cornell_box(t_data *data);
+void       make_rubick_cube(t_data *data);
+void       rubik_stage(t_data *data);
+
+// Rubik's cube: build + move engine (rubick_*_bonus.c)
+void       build_rubik(t_data *data);
+void       rotate_quad_axis(t_object *o, int axis, cl_float3 pivot, float ang);
+void       rotate_layer(t_rubik *r, t_object *objs, float ang);
+void       snap_layer(t_rubik *r);
+void       step_rubik(t_data *data);
+void       scramble_rubik(t_rubik *r);
+void       solve_rubik(t_rubik *r);
+
+cl_int     init_objects(t_data *data);
+
+// Parsing (parse_*_bonus.c)
+int        load_scene(t_data *data, int argc, char **argv);
+int        parse_scene(t_data *data, char *file);
+int        parse_err(char *msg);
+size_t     split_len(char **s);
+int        set_vec3(cl_float3 *v, char *s);
+int        set_color(cl_float3 *c, char *s);
+int        set_cam(t_data *data, char **p);
+int        set_ambient(t_data *data, char **p);
+int        set_light(t_data *data, char **p);
+int        set_sphere(t_data *data, char **p);
+int        set_plane(t_data *data, char **p);
+int        set_cylinder(t_data *data, char **p);
 #endif

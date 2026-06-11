@@ -9,6 +9,7 @@ miniRT
 miniRT_bonus
 
 cp3a/*
+rubick_solver/*
 
 *.pdf
 .gitignore

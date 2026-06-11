@@ -15,91 +15,104 @@
 
 // TODO: hollow cyclinder... Should be a closed cyclinder.
 
-bool hit_circle(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
+bool hit_cap(t_cylinder *self, t_vec3 center, t_vec3 normal, t_ray ray, t_interval ray_t, t_hit_record *rec)
 {
-	t_cylinder *self;
-	float denom;
-	float t;
-	t_vec3 intersec;
-	t_vec3 c;
-	t_vec3 to_hit;
+    float denom;
+    float t;
+    t_vec3 p;
+    t_vec3 to_center;
 
-	self = (t_cylinder *)base;
+    denom = dot(normal, ray.dir);
+    if (fabs(denom) < 1e-8)
+        return (false);
 
-	c = add(self->center, scale(self->normal, self->height / 2.0f));
+    // t = dot(normal, center - ray.origin) / denom
+    t = dot(normal, sub(center, ray.origin)) / denom;
 
-	denom = dot(self->normal, ray.dir);
-	if (fabs(denom) < 1e-8)
-		return (false);
+    if (!ray_t.surrounds(&ray_t, t))
+        return (false);
+    
+    p = ray.at(&ray, t);
+    to_center = sub(p, center);
 
-	t = (self->D_top - dot(self->normal, ray.origin)) / denom;
+    // Check if the intersection point is within the cylinder's radius
+    if (dot(to_center, to_center) > (self->radius * self->radius))
+        return (false);
 
-	if (!ray_t.contains(&ray_t, t))
-		return (false);
-	
-	intersec = ray.at(&ray, t);
-
-	to_hit = sub(intersec, c);
-
-	if (dot(to_hit, to_hit) > (self->radius * self->radius))
-		return (false);
-	rec->p = intersec;
-	rec->t = t;
-
-	rec->mat = init_lambertian(make_vec(0.0, 0.0, 1.0));
-	rec->set_face_normal(rec, ray, self->normal);
-	return (true);
+    rec->t = t;
+    rec->p = p;
+    rec->mat = self->mat;
+    rec->set_face_normal(rec, ray, normal);
+    
+    return (true);
 }
-
-bool hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
+bool hit_cylinder(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 {
-	t_cylinder *self;
-	t_vec3 w;
+    t_cylinder *self = (t_cylinder *)base;
+    t_hit_record temp_rec;
+    bool hit_anything = false;
+    float closest_so_far = ray_t.max;
 
-	float dv;
-	float wv;
-	float a;
-	float half_b;
-	float c;
-	float m;
+	temp_rec = *rec;
+    
+    t_vec3 w = sub(ray.origin, self->center);
+    float dv = dot(ray.dir, self->normal);
+    float wv = dot(w, self->normal);
+    float a = dot(ray.dir, ray.dir) - dv * dv;
+    float half_b = dot(ray.dir, w) - dv * wv;
+    float c = dot(w, w) - wv * wv - self->radius * self->radius;
+    float discriminant = half_b * half_b - a * c;
 
-	float discriminant;
-	float sqrtd;
-	float root;
-	t_vec3 outward_normal;
+    if (discriminant >= 0)
+    {
+        float sqrtd = sqrt(discriminant);
+        float root = (-half_b - sqrtd) / a;
+        float m = wv + root * dv;
+        bool valid_lateral = false;
 
-	self = (t_cylinder *)base;
-	w = sub(ray.origin, self->center);
-	dv = dot(ray.dir, self->normal);
-	wv = dot(w, self->normal);
+        if (ray_t.surrounds(&ray_t, root) && m >= -self->height / 2 && m <= self->height / 2)
+            valid_lateral = true;
+        else
+        {
+            root = (-half_b + sqrtd) / a;
+            m = wv + root * dv;
+            if (ray_t.surrounds(&ray_t, root) && m >= -self->height / 2 && m <= self->height / 2)
+                valid_lateral = true;
+        }
 
-	a = dot(ray.dir, ray.dir) - dv * dv;
-	half_b = dot(ray.dir, w) - dv * wv;
-	c = dot(w, w) - wv *wv - self->radius * self->radius;
-	
-	discriminant = half_b * half_b - a * c;
-	if (discriminant < 0)
-		return (false);
-	
-	sqrtd = sqrt(discriminant);
-	
-	root = (-half_b - sqrtd) / a;
-	m  = wv + root *dv;
-	if(!t.surrounds(&t, root) || m < -self->height / 2 || m > self->height / 2)
-	{
-		root = (-half_b + sqrtd) / a;
-		m = wv + root *dv;
-		if (!t.surrounds(&t, root) || m < -self->height / 2 || m > self->height / 2)
-			return (false);
-	}
-	if (hit_circle(base, ray, t, rec))
-		return (true);
-	rec->t = root;
-	rec->p = ray.at(&ray, rec->t);
-	outward_normal = norm(sub(sub(rec->p, self->center), scale(self->normal, m)));
-	rec->set_face_normal(rec, ray, outward_normal);
-	rec->mat = self->mat;
-	return (true);
+        if (valid_lateral)
+        {
+            hit_anything = true;
+            closest_so_far = root;
+            
+            rec->t = root;
+            rec->p = ray.at(&ray, root);
+            t_vec3 outward_normal = norm(sub(sub(rec->p, self->center), scale(self->normal, m)));
+            rec->set_face_normal(rec, ray, outward_normal);
+            rec->mat = self->mat;
+        }
+    }
+    t_interval cap_interval = ray_t;
+    cap_interval.max = closest_so_far;
+
+    t_vec3 top_center = add(self->center, scale(self->normal, self->height / 2.0f));
+    if (hit_cap(self, top_center, self->normal, ray, cap_interval, &temp_rec))
+    {
+        hit_anything = true;
+        closest_so_far = temp_rec.t;
+        cap_interval.max = closest_so_far; // Shrink interval again for bottom cap
+        *rec = temp_rec;
+    }
+
+    t_vec3 bottom_center = sub(self->center, scale(self->normal, self->height / 2.0f));
+    t_vec3 bottom_normal = scale(self->normal, -1.0f);
+    if (hit_cap(self, bottom_center, bottom_normal, ray, cap_interval, &temp_rec))
+    {
+        hit_anything = true;
+        *rec = temp_rec;
+    }
+
+    return (hit_anything);
 }
 
 t_cylinder *make_cylinder(t_cylinder cylinder)

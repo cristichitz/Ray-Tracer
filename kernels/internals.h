@@ -25,7 +25,10 @@ typedef struct s_hit_record {
   cl_float3  p;
   cl_float3  normal;
   float   t;
+  float   u;
+  float   v;
   bool    front_face;
+  int     obj_type;
   t_material      mat;
 } t_hit_record;
 

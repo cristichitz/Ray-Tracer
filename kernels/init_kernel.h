@@ -10,11 +10,30 @@
 
 #define RAND_MAX 2147483647
 
-typedef struct s_sphere {
-  cl_float3   center;
-  float       radius;
-  t_material  material;
-} t_sphere;
+/*
+** One tagged struct for every primitive. The render kernel branches on `type`
+** instead of using function pointers (unavailable in OpenCL 1.2). The host
+** fills a flat array of these and uploads it as a single buffer, so the scene
+** is driven entirely by the parser/terminal with no kernel changes needed.
+*/
+#define OBJ_SPHERE   0
+#define OBJ_PLANE    1
+#define OBJ_CYLINDER 2
+#define OBJ_QUAD     3
+
+typedef struct s_object {
+  int        type;
+  cl_float3  center;   // sphere center / plane,quad Q / cylinder midpoint
+  cl_float3  normal;   // plane, cylinder axis, quad normal
+  cl_float3  u;        // quad edge 1
+  cl_float3  v;        // quad edge 2
+  cl_float3  w;        // quad: n / dot(n, n)
+  float      radius;   // sphere, cylinder
+  float      height;   // cylinder
+  float      d;        // plane/quad: dot(normal, Q)
+  float      d_top;    // cylinder top cap (reserved)
+  t_material material;
+} t_object;
 
 typedef struct s_image
 {
@@ -32,43 +51,15 @@ typedef struct s_image
   int       samples_per_pixel;
   float     pixel_samples_scale;
   int       max_depth;
-  
+
   // PREVIOUSLY T_CAMERA STRUCT
   cl_float3   origin;
   cl_float3   pixel00_loc;
   cl_float3   pixel_delta_u;
   cl_float3   pixel_delta_v;
+
+  // Flat colour returned when a ray hits nothing (ambient sky / Cornell black)
+  cl_float3   background;
 } t_image;
 
-/* float3  refract(float3 uv, float3 n, float etai_over_etat) */
-/* { */
-/*   float   cos_theta; */
-/*   float3  r_out_perp; */
-/*   float3  r_out_parallel; */
-/*   float   sqrt_ray; */
-/**/
-/*   cos_theta = fmin(dot(-uv, n), 1.0f); */
-/*   r_out_perp = etai_over_etat * (uv + cos_theta*n); */
-/*   sqrt_ray = -sqrt(fabs(1.0 - dot(r_out_perp, r_out_perp))); */
-/*   r_out_parallel = (float3)(n.x * sqrt_ray, n.y * sqrt_ray, n.z * sqrt_ray); */
-/*   return (r_out_perp + r_out_parallel); */
-/* } */
-/**/
-/* bool scatter_dielectric(t_material *self, t_ray r_in, t_hit_record rec, float3 *attenuation, t_ray *scattered) */
-/* { */
-/*   float   ri; */
-/*   float3  unit_direction; */
-/*   float3  refracted; */
-/**/
-/*   *attenuation = (float3)(1.0, 1.0, 1.0); */
-/*   if (rec.front_face) */
-/*     ri = 1.0 / self->albedo.x; */
-/*   else */
-/*     ri = self->albedo.x; */
-/**/
-/*   unit_direction = normalize(r_in.dir); */
-/*   refracted = refract(unit_direction, rec.normal, ri); */
-/*   *scattered = make_ray(rec.p, refracted); */
-/*   return (true); */
-/* } */
 #endif

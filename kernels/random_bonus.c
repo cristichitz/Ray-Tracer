@@ -16,8 +16,8 @@ float random_float(float min, float max, uint *seed)
 float3 random_vec_between(float min, float max, uint *seed)
 {
     return (float3)(
-        random_float(min, max, seed), 
-        random_float(min, max, seed), 
+        random_float(min, max, seed),
+        random_float(min, max, seed),
         random_float(min, max, seed)
     );
 }
@@ -36,7 +36,7 @@ float3 random_unit_vector(uint *seed)
 bool  near_zero(float3 a)
 {
   float s;
-  
+
   s = 1e-8;
   return (fabs(a.x) < s) && (fabs(a.y) < s) && (fabs(a.z) < s);
 }

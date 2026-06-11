@@ -197,8 +197,9 @@ cl_command_queue  CreateOpenCLQueue(cl_device_id device, cl_context context)
 {
   cl_int            clError;
   cl_command_queue  queue;
+  cl_queue_properties props[] = {CL_QUEUE_PROPERTIES, CL_QUEUE_PROFILING_ENABLE, 0};
 
-  queue = clCreateCommandQueueWithProperties(context, device, 0, &clError);
+  queue = clCreateCommandQueueWithProperties(context, device, props, &clError);
   CHECK_OCL_ERR("clCreateCommandQueue", clError);
 
   return (queue);
