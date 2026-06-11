@@ -153,6 +153,7 @@ void	make_cornell_box(t_hittable_list *world)
 			make_vec(0, 555, 0), white));
 }
 
+//TODO: too many vars
 int	main(int ac, char **av)
 {
 	t_data			data;

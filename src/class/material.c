@@ -12,6 +12,7 @@
 
 #include "hittable.h"
 
+//TODO: too many params
 bool	scatter_lambertian(t_material *self, t_ray r_in, t_hit_record rec,
 		t_vec3 *attenuation, t_ray *scattered)
 {
@@ -34,6 +35,7 @@ t_vec3	reflect(t_vec3 v, t_vec3 n)
 	return (sub(v, b));
 }
 
+//TODO: too many params
 bool	scatter_metal(t_material *self, t_ray r_in, t_hit_record rec,
 		t_vec3 *attenuation, t_ray *scattered)
 {
@@ -45,6 +47,7 @@ bool	scatter_metal(t_material *self, t_ray r_in, t_hit_record rec,
 	return (true);
 }
 
+//TODO: too many params
 bool	scatter_light(t_material *self, t_ray r_in, t_hit_record rec,
 		t_vec3 *attenuation, t_ray *scattered)
 {

@@ -63,6 +63,7 @@ bool	is_interior(float a, float b, t_hit_record *rec)
 	return (true);
 }
 
+//TODO: too many vars
 bool	hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 {
 	t_quad	*self;

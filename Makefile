@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/11 13:32:52 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/11 13:37:21 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 SRCS = \
 src/error.c \
 src/main_cpu.c \
-src/render_cpu2.c \
+src/render_cpu.c \
 src/obj_control.c \
 src/utils.c \
 src/quality.c \

@@ -15,7 +15,7 @@
 #include "quarternion.h"
 #include <stdlib.h>
 
-// TODO: 4 MAx parameters.
+//TODO: too many params
 static bool	hit_cap(t_cylinder *self, t_ray ray, t_interval ray_t,
 		t_hit_record *rec, float offset)
 {
@@ -67,7 +67,7 @@ static bool	hit_caps(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	}
 	return (hit_any);
 }
-// TODO: 5 max variables per function. Function too long.
+//TODO: too many vars
 bool	hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
 	t_cylinder	*self;
