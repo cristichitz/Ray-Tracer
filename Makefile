@@ -37,7 +37,8 @@ src/class/interval.c \
 src/class/material.c \
 src/class/texture.c \
 src/class/quaternion.c \
-src/bench.c
+src/bench.c \
+src/render_direct.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./include
 

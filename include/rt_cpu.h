@@ -29,6 +29,12 @@ typedef enum e_quality
 	HIGH
 }								t_quality;
 
+typedef enum e_render_mode
+{
+	RENDER_PATH_TRACE,
+	RENDER_DIRECT
+}								t_render_mode;
+
 typedef t_vec					t_list;
 
 typedef struct s_hittable_list	t_hittable_list;
@@ -86,6 +92,7 @@ typedef struct s_data
 	unsigned int				object_i;
 	uint32_t					wait_frames;
 	bool						render_check;
+	t_render_mode				render_mode;
 }								t_data;
 
 int								init_world(t_hittable_list *world);
@@ -96,6 +103,10 @@ extern unsigned long long		g_ray_count;
 
 // MLX Loop
 int								render_frame(t_data *data);
+int								render_frame_direct(t_data *data);
+t_ray							get_ray(t_data *data, uint32_t x, uint32_t y);
+void							write_color(t_data *data, uint32_t x, uint32_t y,
+									t_vec3 color);
 // int								close_app(t_data *data);
 // int								key_hook(int keycode, t_data *data);
 

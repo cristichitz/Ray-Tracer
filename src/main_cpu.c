@@ -6,16 +6,16 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 17:38:14 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/10 16:53:20 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "bench.h"
 #include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
-#include "bench.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 static void	camera_setup(t_data *data)
 {
@@ -72,8 +72,16 @@ void	game_loop(void *param)
 			scene_changed = true;
 		if (resize_object(data, &speed))
 			scene_changed = true;
-		if(rotate_object(data, &rotation_speed))
+		if (rotate_object(data, &rotation_speed))
 			scene_changed = true;
+	}
+	if (mlx_is_key_down(data->mlx, MLX_KEY_M))
+	{
+		if (data->render_mode == RENDER_PATH_TRACE)
+			data->render_mode = RENDER_DIRECT;
+		else
+			data->render_mode = RENDER_PATH_TRACE;
+		scene_changed = true;
 	}
 	if (scene_changed)
 	{
@@ -89,7 +97,10 @@ void	game_loop(void *param)
 	if (scene_changed || data->render_check)
 	{
 		update_viewport(data);
-		render_frame(data);
+		if (data->render_mode == RENDER_DIRECT)
+			render_frame_direct(data);
+		else
+			render_frame(data);
 		data->render_check = false;
 	}
 }
@@ -106,29 +117,40 @@ void	initialize(t_data *data)
 	data->viewport_h = 2.0f * tanf(deg_to_rad((float)data->cam.fov) / 2.0f);
 	data->viewport_w = data->aspect_ratio * data->viewport_h;
 	data->focal_length = 1.0f;
-	set_quality(data, HIGH);
+	set_quality(data, LOW);
 	dir = norm(data->cam.uvec);
 	data->cam.yaw = atan2f(dir.x, dir.z);
 	data->cam.pitch = asinf(clampf(dir.y, -1.0f, 1.0f));
 	data->object_i = 0;
 	data->wait_frames = 0;
 	data->render_check = true;
+	data->render_mode = RENDER_PATH_TRACE;
 	update_viewport(data);
 }
 
 void	make_cornell_box(t_hittable_list *world)
 {
-	t_material  red = init_lambertian(make_vec(0.65f, 0.05f, 0.05f));
-	t_material  white = init_lambertian(make_vec(0.73f, 0.73f, 0.73f));
-	t_material  green = init_lambertian(make_vec(0.12f, 0.45f, 0.15f));
-	t_material  difflight = init_diffuse_light(make_vec(15.0f, 15.0f, 15.0f));
+	t_material	red;
+	t_material	white;
+	t_material	green;
+	t_material	difflight;
 
-	world->add(world, make_quad(make_vec(555, 0, 0), make_vec(0, 555, 0), make_vec(0, 0, 555), green));
-	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(0, 555, 0), make_vec(0, 0, 555), red));
-	world->add(world, make_quad(make_vec(343, 554, 332), make_vec(-130, 0, 0), make_vec(0, 0, -105), difflight));
-	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(555, 0, 0), make_vec(0, 0, 555), white));
-	world->add(world, make_quad(make_vec(555, 555, 555), make_vec(-555, 0, 0), make_vec(0, 0, -555), white));
-	world->add(world, make_quad(make_vec(0, 0, 555), make_vec(555, 0, 0), make_vec(0, 555, 0), white));
+	red = init_lambertian(make_vec(0.65f, 0.05f, 0.05f));
+	white = init_lambertian(make_vec(0.73f, 0.73f, 0.73f));
+	green = init_lambertian(make_vec(0.12f, 0.45f, 0.15f));
+	difflight = init_diffuse_light(make_vec(15.0f, 15.0f, 15.0f));
+	world->add(world, make_quad(make_vec(555, 0, 0), make_vec(0, 555, 0),
+			make_vec(0, 0, 555), green));
+	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(0, 555, 0),
+			make_vec(0, 0, 555), red));
+	world->add(world, make_quad(make_vec(343, 554, 332), make_vec(-130, 0, 0),
+			make_vec(0, 0, -105), difflight));
+	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(555, 0, 0),
+			make_vec(0, 0, 555), white));
+	world->add(world, make_quad(make_vec(555, 555, 555), make_vec(-555, 0, 0),
+			make_vec(0, 0, -555), white));
+	world->add(world, make_quad(make_vec(0, 0, 555), make_vec(555, 0, 0),
+			make_vec(0, 555, 0), white));
 }
 
 int	main(int ac, char **av)
@@ -136,7 +158,6 @@ int	main(int ac, char **av)
 	t_data			data;
 	t_hittable_list	world;
 	t_list			obj;
-
 	int				frames;
 	int				bench;
 	char			*scene;
@@ -177,7 +198,6 @@ int	main(int ac, char **av)
 		// TODO: free memory
 		return (EXIT_FAILURE);
 	}
-
 	// make_cornell_box(&world);
 	initialize(&data);
 	if (bench)
