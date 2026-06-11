@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/11 13:37:21 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/11 13:54:46 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,10 +23,10 @@ SRCS = \
 src/error.c \
 src/main_cpu.c \
 src/render_cpu.c \
-src/obj_control.c \
 src/utils.c \
 src/quality.c \
-src/cam_control.c \
+src/control/cam_control.c \
+src/control/obj_control.c \
 src/class/vec3.c \
 src/class/sphere.c \
 src/class/hittable.c \
