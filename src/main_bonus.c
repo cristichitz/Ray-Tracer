@@ -13,6 +13,11 @@ void  key_hook(mlx_key_data_t key, void *param)
     scramble_rubik(&data->rubik);
   else if (key.key == MLX_KEY_ENTER)
     solve_rubik(&data->rubik);
+  else if (key.key == MLX_KEY_R)
+  {
+    data->rubik.explode_active = 1;
+    data->rubik.q_count = 120;
+  }
 }
 
 void game_loop(void *param)
@@ -49,7 +54,7 @@ void game_loop(void *param)
   if (mlx_is_key_down(data->mlx, MLX_KEY_E)) { step = add(step, scale(up, speed)); moved = 1; }
   if (mlx_is_key_down(data->mlx, MLX_KEY_Q)) { step = add(step, scale(up, -speed)); moved = 1; }
 
-  if (moved || data->rubik.active)
+  if (moved || data->rubik.active || data->rubik.explode_active)
   {
     if (moved)
       data->cam_center = add(data->cam_center, step);
