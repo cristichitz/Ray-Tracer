@@ -18,7 +18,9 @@ void  key_hook(mlx_key_data_t key, void *param)
 void game_loop(void *param)
 {
   t_data  *data = (t_data *)param;
-  float   speed = 1.0f;
+  float   speed = 0.5f;
+  float   rot_speed = 0.05f;
+  int     moved = 0;
 
   if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
   {
@@ -26,13 +28,35 @@ void game_loop(void *param)
     mlx_close_window(data->mlx);
     return ;
   }
-  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) data->cam_z -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam_z += speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam_x -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam_x += speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_E)) data->cam_y += speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_Q)) data->cam_y -= speed;
-  update_view(data);
+
+  if (mlx_is_key_down(data->mlx, MLX_KEY_LEFT))  { data->cam_yaw -= rot_speed; moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_RIGHT)) { data->cam_yaw += rot_speed; moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_UP))    { data->cam_pitch += rot_speed; moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_DOWN))  { data->cam_pitch -= rot_speed; moved = 1; }
+
+  if (data->cam_pitch > (float)CL_M_PI / 2.0f - 0.01f) data->cam_pitch = (float)CL_M_PI / 2.0f - 0.01f;
+  if (data->cam_pitch < (float)-CL_M_PI / 2.0f + 0.01f) data->cam_pitch = (float)-CL_M_PI / 2.0f + 0.01f;
+
+  cl_float3 forward = data->cam_dir;
+  cl_float3 right = norm(cross(make_float3(0.0f, 1.0f, 0.0f), forward));
+  cl_float3 up = norm(cross(forward, right));
+  cl_float3 step = make_float3(0.0f, 0.0f, 0.0f);
+
+  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) { step = add(step, scale(forward, speed)); moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) { step = add(step, scale(forward, -speed)); moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) { step = add(step, scale(right, -speed)); moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) { step = add(step, scale(right, speed)); moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_E)) { step = add(step, scale(up, speed)); moved = 1; }
+  if (mlx_is_key_down(data->mlx, MLX_KEY_Q)) { step = add(step, scale(up, -speed)); moved = 1; }
+
+  if (moved || data->rubik.active)
+  {
+    if (moved)
+      data->cam_center = add(data->cam_center, step);
+    data->frame_index = 0; // Restart path tracing accumulations!
+    update_view(data);
+  }
+
   step_rubik(data);
 
   render_frame(data);

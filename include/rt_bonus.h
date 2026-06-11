@@ -111,6 +111,8 @@ typedef struct s_data {
     // Camera as parsed from the .rt file (drives the view basis in initialize)
     cl_float3 cam_center;
     cl_float3 cam_dir;
+    float     cam_yaw;
+    float     cam_pitch;
     float     cam_fov;
 
     t_gpu     gpu;

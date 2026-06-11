@@ -7,14 +7,33 @@
 */
 void  update_view(t_data *data)
 {
+  cl_float3 vup;
   cl_float3 w;
+  cl_float3 u;
+  cl_float3 v;
   cl_float3 ulc;
 
-  w = scale(data->cam_dir, -1.0f);
+  data->cam_dir.x = sinf(data->cam_yaw) * cosf(data->cam_pitch);
+  data->cam_dir.y = sinf(data->cam_pitch);
+  data->cam_dir.z = cosf(data->cam_yaw) * cosf(data->cam_pitch);
+  data->cam_dir = norm(data->cam_dir);
+
+  vup = make_float3(0.0f, 1.0f, 0.0f);
+  w = data->cam_dir;
+  if (fabs(w.x) < 1e-5 && fabs(w.z) < 1e-5)
+    vup = make_float3(0.0f, 0.0f, 1.0f);
+  u = norm(cross(vup, w));
+  v = cross(w, u);
+
+  data->frame.horizontal = scale(u, data->frame.viewport_width);
+  data->frame.vertical = scale(v, -data->frame.viewport_height);
+  data->frame.pixel_delta_u = scale(data->frame.horizontal, 1.0f / (float)data->frame.width);
+  data->frame.pixel_delta_v = scale(data->frame.vertical, 1.0f / (float)data->frame.height);
+
   data->frame.origin = data->cam_center;
   ulc = sub(data->frame.origin, scale(data->frame.horizontal, 0.5f));
   ulc = sub(ulc, scale(data->frame.vertical, 0.5f));
-  ulc = sub(ulc, scale(w, data->frame.focal_length));
+  ulc = add(ulc, scale(w, data->frame.focal_length));
   data->frame.pixel00_loc = add(ulc, scale(add(data->frame.pixel_delta_u,
           data->frame.pixel_delta_v), 0.5f));
 }
@@ -25,10 +44,7 @@ void  update_view(t_data *data)
 */
 void  initialize(t_data *data)
 {
-  cl_float3 vup;
-  cl_float3 w;
-  cl_float3 u;
-  cl_float3 v;
+  cl_float3 dir;
 
   data->frame.width = BONUS_WIDTH;
   data->frame.height = (int)(data->frame.width / (16.0 / 9.0));
@@ -41,15 +57,10 @@ void  initialize(t_data *data)
   data->frame.samples_per_pixel = BONUS_SPP;
   data->frame.pixel_samples_scale = 1.0f / data->frame.samples_per_pixel;
   data->frame.max_depth = BONUS_MAX_DEPTH;
-  vup = make_float3(0.0f, 1.0f, 0.0f);
-  w = scale(data->cam_dir, 1.0f);
-  if (fabs(w.x) < 1e-5 && fabs(w.z) < 1e-5)
-    vup = make_float3(0.0f, 0.0f, 1.0f);
-  u = norm(cross(vup, w));
-  v = cross(w, u);
-  data->frame.horizontal = scale(u, data->frame.viewport_width);
-  data->frame.vertical = scale(v, -data->frame.viewport_height);
-  data->frame.pixel_delta_u = scale(data->frame.horizontal, 1.0f / (float)data->frame.width);
-  data->frame.pixel_delta_v = scale(data->frame.vertical, 1.0f / (float)data->frame.height);
+
+  dir = norm(data->cam_dir);
+  data->cam_yaw = atan2f(dir.x, dir.z);
+  data->cam_pitch = asinf(fmaxf(-1.0f, fminf(1.0f, dir.y)));
+
   update_view(data);
 }
