@@ -1,19 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vec3.h                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/06 18:08:21 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/06 18:15:02 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef VEC3_H
 # define VEC3_H
 
 # include <math.h>
-# include <stdio.h>
-# include <types.h>
 # include <stdbool.h>
+# include "types.h"
 
-#ifndef M_PI
-# define M_PI 3.14159265358979323846
-#endif
+# ifndef M_PI
+#  define M_PI 3.14159265358979323846
+# endif
 
-// Random number generator
 float	random_float(float min, float max);
-// Constants
-float	degrees_to_radians(float degrees);
+float	deg_to_rad(float degrees);
 
 float	length_squared(t_vec3 a);
 t_vec3	random_vec_between(float min, float max);

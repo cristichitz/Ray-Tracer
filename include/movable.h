@@ -1,31 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minirt.h                                           :+:      :+:    :+:   */
+/*   movable.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/20 19:09:39 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/20 19:11:04 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/04 15:23:51 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/06 13:40:22 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINIRT_H
-# define MINIRT_H
+#ifndef MOVABLE_H
+# define MOVABLE_H
 
-# include "MLX42/MLX42.h"
-# include "math.h"
-# include "parse.h"
-# include "stdio.h"
-# include "vec3.h"
-# include <limits.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <sys/time.h>
-# include <unistd.h>
+# include "hittable.h"
 
-
-// ERROR
-void					print_error(char *msg);
+typedef struct s_movable
+{
+	t_hittable	base;
+	t_vec3		center;
+}				t_movable;
 
 #endif

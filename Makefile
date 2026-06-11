@@ -6,7 +6,7 @@
 #    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/05/27 18:50:00 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/09 14:40:18 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,6 +24,10 @@ src/parse.c \
 src/error.c \
 src/main_cpu.c \
 src/render_cpu2.c \
+src/obj_control.c \
+src/utils.c \
+src/quality.c \
+src/cam_control.c \
 src/class/vec3.c \
 src/class/sphere.c \
 src/class/hittable.c \
@@ -32,8 +36,9 @@ src/class/cylinder.c \
 src/class/interval.c \
 src/class/material.c \
 src/class/texture.c \
+src/class/quaternion.c \
 src/bench.c \
-src/utils.c
+src/render_direct.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./include
 

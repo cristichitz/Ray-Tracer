@@ -1,34 +1,53 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main_cpu.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/10 16:53:20 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "bench.h"
+#include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
-#include "bench.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-float	random_float(float min, float max)
+static void	camera_setup(t_data *data)
 {
-	// random is a number between 0 and 1
-	return (min + (max - min) * ((rand() / ((double)RAND_MAX + 1))));
-}
+	t_vec3	world_up;
+	t_vec3	right;
+	t_vec3	up;
 
-// Constants
-float	deg_to_rad(float degrees)
-{
-	return (degrees * M_PI / 180.0f);
+	world_up = make_vec(0.0f, 1.0f, 0.0f);
+	data->cam_forward.x = sinf(data->cam.yaw) * cosf(data->cam.pitch);
+	data->cam_forward.y = sinf(data->cam.pitch);
+	data->cam_forward.z = cosf(data->cam.yaw) * cosf(data->cam.pitch);
+	data->cam_forward = norm(data->cam_forward);
+	right = norm(cross(world_up, data->cam_forward));
+	up = cross(data->cam_forward, right);
+	data->horizontal = scale(right, data->viewport_w);
+	data->vertical = scale(up, -data->viewport_h);
+	data->px_w = scale(data->horizontal, 1.0f / (float)data->width);
+	data->px_h = scale(data->vertical, 1.0f / (float)data->height);
 }
 
 static void	update_viewport(t_data *data)
 {
-	t_vec3	upper_left_cornerr;
-	t_vec3	w;
+	t_vec3	upper_left_corner;
 
+	camera_setup(data);
 	data->origin = make_vec(data->cam.center.x, data->cam.center.y,
 			data->cam.center.z);
-	
-	w = scale(data->cam.dir, -1.0f);
-	upper_left_cornerr = sub(data->origin, scale(data->horizontal, 0.5f));
-	upper_left_cornerr = sub(upper_left_cornerr, scale(data->vertical, 0.5f));
-	upper_left_cornerr = sub(upper_left_cornerr, scale(w, data->focal_length));
-	data->pixel00_loc = add(upper_left_cornerr, scale(add(data->px_w,
+	upper_left_corner = sub(data->origin, scale(data->horizontal, 0.5f));
+	upper_left_corner = sub(upper_left_corner, scale(data->vertical, 0.5f));
+	upper_left_corner = add(upper_left_corner, scale(data->cam_forward,
+				data->focal_length));
+	data->pixel00_loc = add(upper_left_corner, scale(add(data->px_w,
 					data->px_h), 0.5f));
 }
 
@@ -36,75 +55,102 @@ void	game_loop(void *param)
 {
 	t_data	*data;
 	float	speed;
+	float	rotation_speed;
+	bool	scene_changed;
 
 	data = (t_data *)param;
-	speed = 1.0f;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
-		mlx_close_window(data->mlx);
-	if (mlx_is_key_down(data->mlx, MLX_KEY_W))
-		data->cam.center.z -= speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_S))
-		data->cam.center.z += speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_A))
-		data->cam.center.x -= speed;
-	if (mlx_is_key_down(data->mlx, MLX_KEY_D))
-		data->cam.center.x += speed;
-	update_viewport(data);
-	render_frame(data);
+	speed = 0.2f;
+	rotation_speed = 0.03f;
+	scene_changed = false;
+	if (move_cam(data, &speed))
+		scene_changed = true;
+	if (rotate_cam(data, &rotation_speed))
+		scene_changed = true;
+	if (data->world.objects->len > 0)
+	{
+		if (move_object(data, &speed))
+			scene_changed = true;
+		if (resize_object(data, &speed))
+			scene_changed = true;
+		if (rotate_object(data, &rotation_speed))
+			scene_changed = true;
+	}
+	if (mlx_is_key_down(data->mlx, MLX_KEY_M))
+	{
+		if (data->render_mode == RENDER_PATH_TRACE)
+			data->render_mode = RENDER_DIRECT;
+		else
+			data->render_mode = RENDER_PATH_TRACE;
+		scene_changed = true;
+	}
+	if (scene_changed)
+	{
+		set_quality(data, LOW);
+		data->wait_frames = 0;
+	}
+	else if (data->samples_per_pixel == 1)
+	{
+		data->wait_frames++;
+		if (data->wait_frames > 15)
+			set_quality(data, HIGH);
+	}
+	if (scene_changed || data->render_check)
+	{
+		update_viewport(data);
+		if (data->render_mode == RENDER_DIRECT)
+			render_frame_direct(data);
+		else
+			render_frame(data);
+		data->render_check = false;
+	}
 }
 
 void	initialize(t_data *data)
 {
-	t_vec3 vup;
-	t_vec3 w, u, v;
-
+	t_vec3	dir;
 
 	data->width = WIDTH;
 	data->height = (int)(data->width / (16.0 / 9.0));
-	data->height = (data->height < 1) ? 1 : data->height;
+	if (data->height < 1)
+		data->height = 1;
 	data->aspect_ratio = (float)data->width / (float)data->height;
 	data->viewport_h = 2.0f * tanf(deg_to_rad((float)data->cam.fov) / 2.0f);
 	data->viewport_w = data->aspect_ratio * data->viewport_h;
 	data->focal_length = 1.0f;
-	// New. For Antialising
-	data->samples_per_pixel = 50;
-	data->max_depth = 3;
-	data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
-	
-	vup = make_vec(0.0f, 1.0f, 0.0f);
-	w = scale(data->cam.dir, -1.0f);
-
-	if (fabs(w.x) < 1e-5 && fabs(w.z) < 1e-5)
-        vup = make_vec(0.0f, 0.0f, 1.0f);
-
-	u = norm(cross(vup, w));
-	v = cross(w, u);
-
-	data->horizontal = scale(u, data->viewport_w);
-	data->vertical = scale(v, -data->viewport_h);
-
-	data->px_w = scale(data->horizontal, (float)1 / (float)data->width);
-	data->px_h = scale(data->vertical, (float)1 / (float)data->height);
+	set_quality(data, LOW);
+	dir = norm(data->cam.uvec);
+	data->cam.yaw = atan2f(dir.x, dir.z);
+	data->cam.pitch = asinf(clampf(dir.y, -1.0f, 1.0f));
+	data->object_i = 0;
+	data->wait_frames = 0;
+	data->render_check = true;
+	data->render_mode = RENDER_PATH_TRACE;
 	update_viewport(data);
 }
 
 void	make_cornell_box(t_hittable_list *world)
 {
-	t_material  red = init_lambertian(make_vec(0.65f, 0.05f, 0.05f));
-	t_material  white = init_lambertian(make_vec(0.73f, 0.73f, 0.73f));
-	t_material  green = init_lambertian(make_vec(0.12f, 0.45f, 0.15f));
-	t_material  difflight = init_diffuse_light(make_vec(15.0f, 15.0f, 15.0f));
+	t_material	red;
+	t_material	white;
+	t_material	green;
+	t_material	difflight;
 
-	world->add(world, make_quad(make_vec(555, 0, 0), make_vec(0, 555, 0), make_vec(0, 0, 555), green));
-	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(0, 555, 0), make_vec(0, 0, 555), red));
-	world->add(world, make_quad(make_vec(343, 554, 332), make_vec(-130, 0, 0), make_vec(0, 0, -105), difflight));
-	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(555, 0, 0), make_vec(0, 0, 555), white));
-	world->add(world, make_quad(make_vec(555, 555, 555), make_vec(-555, 0, 0), make_vec(0, 0, -555), white));
-	world->add(world, make_quad(make_vec(0, 0, 555), make_vec(555, 0, 0), make_vec(0, 555, 0), white));
-
-	world->add(world, make_box(make_vec(130, 0, 65), make_vec(295, 165, 230), white));
-	world->add(world, make_box(make_vec(265, 0, 295), make_vec(430, 330, 460), white));
-
+	red = init_lambertian(make_vec(0.65f, 0.05f, 0.05f));
+	white = init_lambertian(make_vec(0.73f, 0.73f, 0.73f));
+	green = init_lambertian(make_vec(0.12f, 0.45f, 0.15f));
+	difflight = init_diffuse_light(make_vec(15.0f, 15.0f, 15.0f));
+	world->add(world, make_quad(make_vec(555, 0, 0), make_vec(0, 555, 0),
+			make_vec(0, 0, 555), green));
+	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(0, 555, 0),
+			make_vec(0, 0, 555), red));
+	world->add(world, make_quad(make_vec(343, 554, 332), make_vec(-130, 0, 0),
+			make_vec(0, 0, -105), difflight));
+	world->add(world, make_quad(make_vec(0, 0, 0), make_vec(555, 0, 0),
+			make_vec(0, 0, 555), white));
+	world->add(world, make_quad(make_vec(555, 555, 555), make_vec(-555, 0, 0),
+			make_vec(0, 0, -555), white));
+	world->add(world, make_quad(make_vec(0, 0, 555), make_vec(555, 0, 0),
+			make_vec(0, 555, 0), white));
 }
 
 int	main(int ac, char **av)
@@ -112,7 +158,6 @@ int	main(int ac, char **av)
 	t_data			data;
 	t_hittable_list	world;
 	t_list			obj;
-
 	int				frames;
 	int				bench;
 	char			*scene;
@@ -150,16 +195,13 @@ int	main(int ac, char **av)
 	pav[1] = scene;
 	if (!parse_input(&data, 2, pav))
 	{
-		//TODO: free memory
+		// TODO: free memory
 		return (EXIT_FAILURE);
 	}
-
-	make_cornell_box(&world);
-
+	// make_cornell_box(&world);
 	initialize(&data);
 	if (bench)
 		return (run_benchmark(&data, frames));
-	// Init MlX42
 	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
 	if (!data.mlx)
 	{
@@ -180,9 +222,8 @@ int	main(int ac, char **av)
 		return (EXIT_FAILURE);
 	}
 	mlx_loop_hook(data.mlx, game_loop, &data);
+	mlx_key_hook(data.mlx, &object_selector, &data);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
 	return (EXIT_SUCCESS);
 }
-
-

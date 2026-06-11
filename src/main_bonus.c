@@ -26,16 +26,15 @@ void game_loop(void *param)
     mlx_close_window(data->mlx);
     return ;
   }
-  if (mlx_is_key_down(data->mlx, MLX_KEY_W))
-    data->cam_center.z += speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_S))
-    data->cam_center.z -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_A))
-    data->cam_center.x -= speed;
-  if (mlx_is_key_down(data->mlx, MLX_KEY_D))
-    data->cam_center.x += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_W)) data->cam_z -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_S)) data->cam_z += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_A)) data->cam_x -= speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_D)) data->cam_x += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_E)) data->cam_y += speed;
+  if (mlx_is_key_down(data->mlx, MLX_KEY_Q)) data->cam_y -= speed;
   update_view(data);
   step_rubik(data);
+
   render_frame(data);
 }
 

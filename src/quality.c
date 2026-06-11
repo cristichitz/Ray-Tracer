@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   quality.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/06 16:32:45 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:03:56 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/06 16:34:21 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/06 16:34:39 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_cpu.h"
 
-float	random_float(float min, float max)
+void	set_quality(t_data *data, t_quality quality)
 {
-	return (min + (max - min) * ((rand() / ((double)RAND_MAX + 1))));
-}
-
-float	deg_to_rad(float degrees)
-{
-	return (degrees * M_PI / 180.0f);
-}
-
-float	clampf(float val, float min, float max)
-{
-	if (val < min)
-		return (min);
-	if (val > max)
-		return (max);
-	return (val);
+	if (quality == HIGH)
+	{
+		data->samples_per_pixel = 30;
+		data->max_depth = 5;
+		data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
+		data->render_check = true;
+		return ;
+	}
+	if (quality == LOW)
+	{
+		data->samples_per_pixel = 1;
+		data->pixel_samples_scale = 1.0f;
+		data->max_depth = 2;
+		return ;
+	}
 }

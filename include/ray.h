@@ -1,32 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   ray.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/06 16:32:45 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:03:56 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/09 17:35:00 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/09 17:35:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rt_cpu.h"
+#ifndef RAY_H
+# define RAY_H
 
-float	random_float(float min, float max)
-{
-	return (min + (max - min) * ((rand() / ((double)RAND_MAX + 1))));
-}
+# include "vec3.h"
 
-float	deg_to_rad(float degrees)
+typedef struct s_ray
 {
-	return (degrees * M_PI / 180.0f);
-}
+	t_vec3					origin;
+	t_vec3					dir;
+	t_vec3					(*at)(struct s_ray *self, float t);
+}							t_ray;
 
-float	clampf(float val, float min, float max)
-{
-	if (val < min)
-		return (min);
-	if (val > max)
-		return (max);
-	return (val);
-}
+t_ray						make_ray(t_vec3 origin, t_vec3 direction);
+
+#endif

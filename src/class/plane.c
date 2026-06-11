@@ -6,16 +6,19 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 17:05:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 19:37:00 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:55:32 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "plane.h"
+#include "quarternion.h"
+#include <stdlib.h>
 
-static void pad_to_minimums(t_aabb *p)
+static void	pad_to_minimums(t_aabb *p)
 {
-	float delta = 0.0001;
+	float	delta;
 
+	delta = 0.0001;
 	if (p->x.size < delta)
 		p->x = p->x.expand(&(p->x), delta);
 	if (p->y.size < delta)
@@ -24,71 +27,63 @@ static void pad_to_minimums(t_aabb *p)
 		p->z = p->z.expand(&(p->z), delta);
 }
 
-t_aabb make_aabb_from_aabbs(t_aabb box0, t_aabb box1)
+t_aabb	make_aabb_from_aabbs(t_aabb box0, t_aabb box1)
 {
-	t_aabb merged;
+	t_aabb	merged;
 
-	merged.x = interval_init(fmin(box0.x.min, box1.x.min), fmax(box0.x.max, box1.x.max));
-	merged.y = interval_init(fmin(box0.y.min, box1.y.min), fmax(box0.y.max, box1.y.max));
-	merged.z = interval_init(fmin(box0.z.min, box1.z.min), fmax(box0.z.max, box1.z.max));
-
-	return merged;
+	merged.x = interval_init(fmin(box0.x.min, box1.x.min), fmax(box0.x.max,
+				box1.x.max));
+	merged.y = interval_init(fmin(box0.y.min, box1.y.min), fmax(box0.y.max,
+				box1.y.max));
+	merged.z = interval_init(fmin(box0.z.min, box1.z.min), fmax(box0.z.max,
+				box1.z.max));
+	return (merged);
 }
 
-t_aabb make_aabb(t_vec3 a, t_vec3 b)
+t_aabb	make_aabb(t_vec3 a, t_vec3 b)
 {
-	t_aabb ab;
+	t_aabb	ab;
 
 	ab.x = interval_init(fmin(a.x, b.x), fmax(a.x, b.x));
 	ab.y = interval_init(fmin(a.y, b.y), fmax(a.y, b.y));
 	ab.z = interval_init(fmin(a.z, b.z), fmax(a.z, b.z));
-
 	pad_to_minimums(&ab);
-
 	return (ab);
 }
 
 bool	is_interior(float a, float b, t_hit_record *rec)
 {
-	// Unit Interval
-	t_interval ui;
+	t_interval	ui;
 
 	ui = interval_init(0, 1);
-
 	if (!ui.contains(&ui, a) || !ui.contains(&ui, b))
 		return (false);
-
 	rec->u = a;
 	rec->v = b;
 	return (true);
 }
 
-bool hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
+bool	hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 {
-	t_quad *self;
-	float denom;
-	float t;
-	t_vec3 intersection;
-	t_vec3 p;
+	t_quad	*self;
+	float	denom;
+	float	t;
+	t_vec3	intersection;
+	t_vec3	p;
+	float	alpha;
+	float	beta;
 
 	self = (t_quad *)base;
-
 	denom = dot(self->normal, ray.dir);
 	if (fabs(denom) < 1e-8)
 		return (false);
-
-	t = (self->D - dot(self->normal, ray.origin)) / denom;
-
+	t = (dot(self->normal, self->Q) - dot(self->normal, ray.origin)) / denom;
 	if (!ray_t.contains(&ray_t, t))
 		return (false);
-
 	intersection = ray.at(&ray, t);
-
 	p = sub(intersection, self->Q);
-
-	float alpha = dot(self->w, cross(p, self->v));
-	float beta = dot(self->w, cross(self->u, p));
-
+	alpha = dot(self->w, cross(p, self->v));
+	beta = dot(self->w, cross(self->u, p));
 	if (!is_interior(alpha, beta, rec))
 		return (false);
 	rec->t = t;
@@ -98,17 +93,32 @@ bool hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	return (true);
 }
 
-t_quad *make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
+void	rotate_quad(void *base, t_vec3 axis, float angle)
 {
-	t_quad *quad;
-	t_aabb bbox_diagonal1;
-	t_aabb bbox_diagonal2;
-	t_vec3 n;
+	t_quad			*self;
+	t_quarternion	q;
+	t_vec3			n;
+
+	self = (t_quad *)base;
+	q = make_quarternion(axis, angle);
+	self->u = rotate_vec_by_quarternion(q, self->u);
+	self->v = rotate_vec_by_quarternion(q, self->v);
+	n = cross(self->u, self->v);
+	self->normal = norm(n);
+	self->D = dot(self->normal, self->Q);
+	self->w = divide(n, dot(n, n));
+}
+
+t_quad	*make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
+{
+	t_quad	*quad;
+	t_aabb	bbox_diagonal1;
+	t_aabb	bbox_diagonal2;
+	t_vec3	n;
 
 	quad = malloc(sizeof(t_quad));
 	if (!quad)
 		return (NULL);
-
 	quad->Q = Q;
 	quad->u = u;
 	quad->v = v;
@@ -117,36 +127,32 @@ t_quad *make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
 	bbox_diagonal2 = make_aabb(add(Q, u), add(Q, v));
 	quad->bbox = make_aabb_from_aabbs(bbox_diagonal1, bbox_diagonal2);
 	quad->base.hit = hit_quad;
-
+	quad->base.destroy = NULL;
+	quad->base.resize = NULL;
+	quad->base.rotate = rotate_quad;
 	n = cross(u, v);
 	quad->normal = norm(n);
 	quad->D = dot(quad->normal, Q);
 	quad->w = divide(n, dot(n, n));
-
 	pad_to_minimums(&quad->bbox);
 	return (quad);
 }
 
-bool hit_plane(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
+bool	hit_plane(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 {
-	t_plane *self;
-	float denom;
-	float t;
-	t_vec3 intersection;
+	t_plane	*self;
+	float	denom;
+	float	t;
+	t_vec3	intersection;
 
 	self = (t_plane *)base;
-
 	denom = dot(self->normal, ray.dir);
 	if (fabs(denom) < 1e-8)
 		return (false);
-
-	t = (self->D - dot(self->normal, ray.origin)) / denom;
-
+	t = (dot(self->normal, self->Q) - dot(self->normal, ray.origin)) / denom;
 	if (!ray_t.contains(&ray_t, t))
 		return (false);
-	
 	intersection = ray.at(&ray, t);
-
 	rec->p = intersection;
 	rec->t = t;
 	rec->mat = self->mat;
@@ -154,7 +160,17 @@ bool hit_plane(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	return (true);
 }
 
-t_plane *make_infinite_plane(t_vec3 center, t_vec3 normal, t_vec3 colour)
+void	rotate_plane(void *base, t_vec3 axis, float angle)
+{
+	t_plane			*self;
+	t_quarternion	q;
+
+	self = (t_plane *)base;
+	q = make_quarternion(axis, angle);
+	self->normal = norm(rotate_vec_by_quarternion(q, self->normal));
+}
+
+t_plane	*make_infinite_plane(t_vec3 center, t_vec3 normal, t_vec3 colour)
 {
 	t_plane *p;
 
@@ -168,7 +184,9 @@ t_plane *make_infinite_plane(t_vec3 center, t_vec3 normal, t_vec3 colour)
 	p->base.hit = hit_quad;
 	p->D = dot(p->normal, p->Q);
 	p->base.hit = hit_plane;
-
+	p->base.destroy = NULL;
+	p->base.resize = NULL;
+	p->base.rotate = rotate_plane;
 	return (p);
 }
 

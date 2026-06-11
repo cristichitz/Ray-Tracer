@@ -1,13 +1,20 @@
 # Main
-- TODO: colours. Already parsed but not yet used.
-- TODO: Three simple geometric objects: plane, sphere, cylinder.
+
 - TODO: If applicable, all possible intersections and the insides of the objects must be handled correctly.
-- TODO: resize the unique properties of objects: diameter for a sphere and the width and height for a cylinder.
-- TODO: must be able to apply translation and rotation transformations to objects, lights, and cameras (except for spheres and lights that cannot be rotated).
-- TODO: Light management: spot brightness, hard shadows, ambient lighting (objects are never completely in the dark). You must implement ambient and diffuse lighting.
+- TODO: inside of objects?
+
+- TODO: Light management: spot brightness.
+- TODO: Light management: hard shadows.
+- TODO: light shouldn't be able to rotate.
+
+- TODO: Normalised vector check in parsing.
+
+- TODO: Review header file inclusions and structure. It is a bit all over the place right now.
 - TODO: File splitting.
 - TODO: Norminette.
 
+## Nice to have
+- TODO: parse cu for cube.
+
 # Bonus
-- TODO: Parsing converter
-- 
+- TODO: Parsing converter for bonus types.

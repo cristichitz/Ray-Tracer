@@ -1,32 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   quarternion.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/06 16:32:45 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/06 18:03:56 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/08 17:11:19 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/08 18:57:45 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rt_cpu.h"
+#ifndef QUARTERNION_H
+# define QUARTERNION_H
 
-float	random_float(float min, float max)
-{
-	return (min + (max - min) * ((rand() / ((double)RAND_MAX + 1))));
-}
+# include "vec3.h"
 
-float	deg_to_rad(float degrees)
+typedef struct s_quarternion
 {
-	return (degrees * M_PI / 180.0f);
-}
+	float		w;
+	float		x;
+	float		y;
+	float		z;
+}				t_quarternion;
 
-float	clampf(float val, float min, float max)
-{
-	if (val < min)
-		return (min);
-	if (val > max)
-		return (max);
-	return (val);
-}
+t_quarternion	make_quarternion(t_vec3 axis, float angle);
+t_quarternion	mult_quarternion(t_quarternion a, t_quarternion b);
+t_quarternion	inverse_quartenion(t_quarternion q);
+t_vec3			rotate_vec_by_quarternion(t_quarternion q, t_vec3 v);
+
+#endif

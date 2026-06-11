@@ -1,63 +1,78 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sphere.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/09 14:55:51 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/10 16:59:26 by timurray         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "sphere.h"
+#include <stdlib.h>
 
 static void	get_sphere_uv(const t_vec3 p, float *u, float *v)
 {
-	// p: a given point on the sphere of radius one, centered at the origin.
-	// u: returned value [0,1] of angle around the Y axis from X=-1.
-	// v: returned value [0,1] of angle from Y=-1 to Y=+1.
-	//     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
-	//     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
-	//     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
-	float	theta = acosf(-p.y);
-	float	phi = atan2f(-p.z, p.x) + M_PI;
+	float	theta;
+	float	phi;
 
+	theta = acosf(-p.y);
+	phi = atan2f(-p.z, p.x) + M_PI;
 	*u = phi / (2 * M_PI);
 	*v = theta / M_PI;
 }
 
+static float	get_sphere_root(t_sphere_var *v, t_interval *t)
+{
+	v->discriminant = v->h * v->h - v->a * v->c;
+	if (v->discriminant < 0)
+		return (-1);
+	v->sqrtd = sqrtf(v->discriminant);
+	v->root = (v->h - v->sqrtd) / v->a;
+	if (!t->surrounds(t, v->root))
+	{
+		v->root = (v->h + v->sqrtd) / v->a;
+		if (!t->surrounds(t, v->root))
+			return (-1);
+	}
+	return (v->root);
+}
+
 bool	hit_sphere(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
-	t_sphere	*self;
-	t_vec3		oc;
-	float		a;
-	float		h;
-	float		c;
-	float		discriminant;
-	float		sqrtd;
-	float		root;
-	t_vec3		outward_normal;
+	t_sphere		*self;
+	t_vec3			oc;
+	t_sphere_var	v;
+	t_vec3			outward_normal;
 
 	self = (t_sphere *)base;
 	oc = sub(self->center, ray.origin);
-	a = dot(ray.dir, ray.dir);
-	h = dot(ray.dir, oc);
-	c = dot(oc, oc) - self->radius * self->radius;
-	discriminant = h * h - a * c;
-	if (discriminant < 0)
-		return (false); // ray doesn't hit sphere.
-	sqrtd = sqrtf(discriminant);
-	root = (h - sqrtd) / a;
-	if (!t.surrounds(&t, root))
-	{
-		root = (h + sqrtd) / a;
-		if (!t.surrounds(&t, root))
-			return (false);
-	}
-	rec->t = root;
-	// point at t in the ray direction
+	v.a = dot(ray.dir, ray.dir);
+	v.h = dot(ray.dir, oc);
+	v.c = dot(oc, oc) - self->radius * self->radius;
+	if (get_sphere_root(&v, &t) < 0)
+		return (false);
+	rec->t = v.root;
 	rec->p = ray.at(&ray, rec->t);
-
 	rec->mat = self->mat;
-	// Point - sphere_center is already a normal vector
-	// Dividing by the radius makes it unit length aswell
 	outward_normal = divide(sub(rec->p, self->center), self->radius);
 	rec->set_face_normal(rec, ray, outward_normal);
 	get_sphere_uv(outward_normal, &rec->u, &rec->v);
-
 	return (true);
 }
 
-// t_sphere	*make_sphere(t_vec3 center, float radius)
+void	resize_sphere(void *base, float scalar)
+{
+	t_sphere	*self;
+
+	self = (t_sphere *)base;
+	self->radius += scalar;
+	if (self->radius < 0.01f)
+		self->radius = 0.01f;
+}
+
 t_sphere	*make_sphere(t_sphere sphere)
 {
 	t_sphere	*s;
@@ -67,5 +82,8 @@ t_sphere	*make_sphere(t_sphere sphere)
 		return (NULL);
 	*s = sphere;
 	s->base.hit = hit_sphere;
+	s->base.destroy = NULL;
+	s->base.resize = resize_sphere;
+	s->base.rotate = NULL;
 	return (s);
 }

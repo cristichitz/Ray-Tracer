@@ -6,12 +6,26 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:32:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/03/07 20:38:58 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/09 14:25:19 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parse.h"
 #include "rt_cpu.h"
+
+static int	ensure_normalized(t_vec3 *v)
+{
+	float	len_sq;
+
+	len_sq = length_squared(*v);
+	if (len_sq < 1e-12f)
+	{
+		print_error("Orientation vector cannot be zero.");
+		return (0);
+	}
+	*v = norm(*v);
+	return (1);
+}
 
 static int	valid_filename(char *filename, const char *ext)
 {
@@ -65,7 +79,7 @@ int	set_pts(t_vec3 *pt, char *params, int (*f)(float *n, char *p))
 	int		ok;
 
 	if (!params)
-		return(return_print_error("Missing point parameter.", 0));
+		return (return_print_error("Missing point parameter.", 0));
 	ok = 1;
 	parts = ft_split(params, ',');
 	if (!parts)
@@ -82,8 +96,12 @@ int	set_pts(t_vec3 *pt, char *params, int (*f)(float *n, char *p))
 int	get_float(float *num, char *param, float min, float max)
 {
 	float	fnum;
+	char	*endptr;
 
-	fnum = ft_strtof(param, NULL); // TODO: Use endptr for check.
+	endptr = NULL;
+	fnum = ft_strtof(param, &endptr);
+	if (!endptr || *endptr != '\0' || endptr == param)
+		return (return_print_error("Invalid value.", 0));
 	if (fnum > max)
 		return (return_print_error("Value too large.", 0));
 	if (fnum < min)
@@ -194,7 +212,9 @@ int	set_cam(t_data *data, char **params)
 	}
 	if (!set_pts(&data->cam.center, params[1], get_pt))
 		return (0);
-	if (!set_pts(&data->cam.dir, params[2], get_uvec_pt))
+	if (!set_pts(&data->cam.uvec, params[2], get_uvec_pt))
+		return (0);
+	if (!ensure_normalized(&data->cam.uvec))
 		return (0);
 	if (!set_fov(&data->cam.fov, params[3]))
 		return (0);
@@ -204,7 +224,7 @@ int	set_cam(t_data *data, char **params)
 
 int	set_ambient_light(t_data *data, char **params)
 {
-	t_vec3 ambient;
+	t_vec3	ambient;
 
 	if (!split_count(params, 3))
 		return (0);
@@ -235,8 +255,8 @@ int	add_light_quad(t_data *data, t_light light)
 	u = make_vec(LIGHT_QUAD_SIZE, 0.0f, 0.0f);
 	v = make_vec(0.0f, 0.0f, LIGHT_QUAD_SIZE);
 	corner = sub(light.center, scale(add(u, v), 0.5f));
-	difflight = init_diffuse_light(scale(light.colour,
-				light.brightness * LIGHT_QUAD_GAIN));
+	difflight = init_diffuse_light(scale(light.colour, light.brightness
+				* LIGHT_QUAD_GAIN));
 	object = make_quad(corner, u, v, difflight);
 	if (!object)
 		return (return_print_error("Failed to allocate light quad.", 0));
@@ -271,21 +291,23 @@ int	set_light(t_data *data, char **params)
 
 int	set_material(t_material *mat, char *params)
 {
-	char		**parts;
-	int			ok;
-	t_vec3		colour;
+	char	**parts;
+	int		ok;
+	t_vec3	colour;
 
-	colour = make_vec(0.0f, 0.0f, 0.0f);		
+	colour = make_vec(0.0f, 0.0f, 0.0f);
 	parts = ft_split(params, ',');
 	if (!parts)
 		return (0);
 	ok = 1;
 	if (split_len(parts) != 3)
 		ok = 0;
-	else if (!get_normed_float(&colour.x, parts[0], 0, 255.0f) || !get_normed_float(&colour.y, parts[1], 0, 255.0f)
+	else if (!get_normed_float(&colour.x, parts[0], 0, 255.0f)
+		|| !get_normed_float(&colour.y, parts[1], 0, 255.0f)
 		|| !get_normed_float(&colour.z, parts[2], 0, 255.0f))
 		ok = 0;
-	*mat = init_lambertian(colour); 
+	if (ok)
+		*mat = init_lambertian(colour);
 	ft_free_split(parts);
 	return (ok);
 }
@@ -293,17 +315,16 @@ int	set_material(t_material *mat, char *params)
 int	set_sphere(t_data *data, char **params)
 {
 	t_sphere	sphere;
-	t_sphere	*object;				
+	t_sphere	*object;
 
 	if (!split_count(params, 4))
-		return (0);	
+		return (0);
 	if (!set_pts(&sphere.center, params[1], get_pt))
 		return (0);
 	if (!set_radius(&sphere.radius, params[2]))
 		return (0);
 	if (!set_material(&sphere.mat, params[3]))
 		return (0);
-
 	object = make_sphere(sphere);
 	if (!object)
 		return (return_print_error("Failed to allocate sphere.", 0));
@@ -320,12 +341,13 @@ int	set_cylinder(t_data *data, char **params)
 	t_cylinder	cylinder;
 	t_cylinder	*object;
 
-
 	if (!split_count(params, 6))
 		return (0);
 	if (!set_pts(&cylinder.center, params[1], get_pt))
 		return (0);
 	if (!set_pts(&cylinder.normal, params[2], get_uvec_pt))
+		return (0);
+	if (!ensure_normalized(&cylinder.normal))
 		return (0);
 	if (!set_radius(&cylinder.radius, params[3]))
 		return (0);
@@ -346,19 +368,22 @@ int	set_cylinder(t_data *data, char **params)
 
 int	set_plane(t_data *data, char **params)
 {
-	t_plane *object;
+	t_plane	*object;
 	t_vec3	center;
 	t_vec3	normal;
-	t_vec3	colour = make_vec(0.5, 0.5, 0.5);
+	t_vec3	colour;
 
+	colour = make_vec(0.5, 0.5, 0.5);
 	if (!split_count(params, 4))
 		return (0);
-	if(!set_pts(&center, params[1], get_pt))
+	if (!set_pts(&center, params[1], get_pt))
 		return (0);
-	if(!set_pts(&normal,params[2], get_uvec_pt))
+	if (!set_pts(&normal, params[2], get_uvec_pt))
 		return (0);
-	// if(!set_colour(&colour, params[3]))
-	// 	return (0);
+	if (!ensure_normalized(&normal))
+		return (0);
+	if (!set_colour(&colour, params[3]))
+		return (0);
 	object = make_infinite_plane(center, normal, colour);
 	if (!object)
 		return (return_print_error("Failed to allocate plane.", 0));
@@ -455,12 +480,7 @@ int	parse_input(t_data *data, int ac, char **av)
 		line = get_next_line(fd);
 	}
 	close(fd);
+	if (!data->set_cam)
+		return (return_print_error("Missing camera (C).", 0));
 	return (1);
 }
-
-/*
-
-TODO: error process flow
-TODO: shrink
-
-*/
