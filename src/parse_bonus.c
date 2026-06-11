@@ -85,7 +85,7 @@ int  load_scene(t_data *data, int argc, char **argv)
   data->frame.background = make_float3(0.70f, 0.80f, 1.0f);
   if (argc >= 2)
     return (parse_scene(data, argv[1]));
-  make_cornell_box(data);
+  // make_cornell_box(data);
   build_rubik(data);
   return (1);
 }

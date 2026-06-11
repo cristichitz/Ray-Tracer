@@ -75,14 +75,40 @@ typedef struct s_gpu {
 # define CUBIES 27
 # define FACES 6
 # define MOVE_FRAMES 6      // animation frames spent on one 90-degree turn
+# define RUBIK_STEP 2.2f    // world-space spacing between adjacent cubie centers
+// --- R-key cinematic: explode out -> 720deg orbit -> implode into a scramble.
+# define EXPLODE_OUT_FRAMES 25  // frames spent flying the cube apart
+# define EXPLODE_SPIN_FRAMES 90 // frames of the camera orbit at full spread
+# define EXPLODE_IN_FRAMES 50   // frames spent sucking the cubies into scramble
+# define EXPLODE_MAX_DIST 16.0f // peak outward spread of a cubie (world units)
+# define EXPLODE_CAM_PULL 1.4f  // how far the camera backs off per unit of spread
+# define EXPLODE_SPIN_TURNS 2.0f // full camera revolutions during the spin (720)
+# define EXPLODE_STAGGER 0.55f  // fraction of the implode used to launch cubies
+# define EXPLODE_ORBIT_RATE 0.025f // steady camera orbit per frame (out/in/solve)
+# define EXPLODE_OUT_TURNS 1.0f // tumbles each cubie makes while flying out
 # define SCRAMBLE_LEN 20     // random moves added by one scramble
 # define MAX_MOVES 1024      // ring-buffer / history capacity
+
+// Phases of the R-key cinematic (t_rubik.explode_phase).
+# define EXP_IDLE 0
+# define EXP_OUT  1
+# define EXP_SPIN 2
+# define EXP_IN   3
 
 typedef struct s_move {
   int  axis;   // rotation axis: 0 = x, 1 = y, 2 = z
   int  layer;  // which outer slice: -1 or +1
   int  turns;  // +1 = 90, -1 = -90, +2 = 180 (about axis, right-hand rule)
 } t_move;
+
+// Unit quaternion (w + xi + yj + zk); used to carry each cubie's net
+// orientation through the explode->scramble cinematic.
+typedef struct s_quat {
+  float  w;
+  float  x;
+  float  y;
+  float  z;
+} t_quat;
 
 typedef struct s_cubie {
   int  pos[3]; // current grid coordinate, each component in {-1, 0, 1}
@@ -101,7 +127,23 @@ typedef struct s_rubik {
   int        frames_left;       // frames remaining in the active turn
   t_move     current;           // turn being animated
   float      step;              // per-frame angle of the active turn (radians)
-  int        explode_active;
+  int        explode_active;    // 1 while the R-key cinematic is running
+
+  // --- R-key cinematic state (explode out -> orbit -> implode to scramble) ---
+  int        explode_phase;     // EXP_IDLE / EXP_OUT / EXP_SPIN / EXP_IN
+  int        explode_frame;     // frame counter within the current phase
+  cl_float3  loc_c[FACES];      // canonical quad corner, relative to cubie center
+  cl_float3  loc_u[FACES];      // canonical quad u edge
+  cl_float3  loc_v[FACES];      // canonical quad v edge
+  cl_float3  home_solved[CUBIES];   // cubie center in the solved cube
+  cl_float3  home_target[CUBIES];   // cubie center after the scramble
+  cl_float3  expl_dir[CUBIES];      // outward explosion direction per cubie
+  t_quat     rot_target[CUBIES];    // cubie orientation after the scramble
+  int        target_pos[CUBIES][3]; // grid coordinate after the scramble
+  cl_float3  cam_base_dir;      // camera->center direction captured at launch
+  float      cam_base_dist;     // camera distance captured at launch
+  float      spin_angle;        // accumulated orbit angle (radians)
+  int        orbit_active;      // 1 while the camera orbits during the auto-solve
 } t_rubik;
 
 typedef struct s_data {
@@ -157,7 +199,9 @@ void       rubik_stage(t_data *data);
 
 // Rubik's cube: build + move engine (rubick_*_bonus.c)
 void       rot_vec_axis(cl_float3 *v, int axis, float ct, float st);
-void       explode_rubik(t_rubik *r, t_object *objs, t_data *data);
+void       explode_step(t_data *data);
+void       start_explode(t_data *data);
+void       explode_orbit_solve(t_data *data);
 void       build_rubik(t_data *data);
 void       rotate_quad_axis(t_object *o, int axis, cl_float3 pivot, float ang);
 void       rotate_layer(t_rubik *r, t_object *objs, float ang);

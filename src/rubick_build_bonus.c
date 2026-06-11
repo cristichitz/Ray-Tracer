@@ -20,14 +20,15 @@ static void  rubik_camera(t_data *data)
 }
 
 /*
-** A sticker is the outward color when the face is on the cube's surface,
-** otherwise near-black (the plastic body seen between cubies).
+** A sticker is the full outward color when the face is on the cube's surface.
+** Hidden inner faces get a dimmed tint of that same color rather than pure
+** black, so they still look like colored plastic when the cube explodes.
 */
 static t_material  sticker(int outer, cl_float3 color)
 {
   if (outer)
     return (material_init(color, 0));
-  return (material_init(make_float3(0.03f, 0.03f, 0.03f), 0));
+  return (material_init(scale(color, 0.25f), 0));
 }
 
 /*
@@ -101,7 +102,7 @@ void  build_rubik(t_data *data)
       pos[2] = -1;
       while (pos[2] <= 1)
       {
-        add_cubie(data, pos, 2.2f, idx++);
+        add_cubie(data, pos, RUBIK_STEP, idx++);
         pos[2]++;
       }
       pos[1]++;
