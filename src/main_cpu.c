@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/12 13:43:38 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/12 14:35:29 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ int	main(int ac, char **av)
 	scene = NULL;
 	for (int i = 1; i < ac; i++)
 	{
-		if (!strcmp(av[i], "--bench"))
+		if (!ft_strcmp(av[i], "--bench"))
 		{
 			bench = 1;
 			if (i + 1 < ac && av[i + 1][0] >= '0' && av[i + 1][0] <= '9')
