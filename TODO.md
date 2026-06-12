@@ -13,6 +13,7 @@
 
 - TODO: Norminette.
 - TODO: valgrind and sanitizers.
+- TODO: resizing window.
 
 ## Nice to have
 - TODO: parse cu for cube.

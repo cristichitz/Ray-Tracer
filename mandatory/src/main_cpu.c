@@ -53,6 +53,25 @@ static void	update_viewport(t_data *data)
 	data->pixel00_loc = add(upper_left_corner, scale(add(data->px_w,
 					data->px_h), 0.5f));
 }
+
+static void	resize_hook(int32_t width, int32_t height, void *param)
+{
+	t_data	*data;
+
+	data = (t_data *)param;
+	if (width <= 0 || height <= 0)
+		return ;
+	data->width = (uint32_t)width;
+	data->height = (uint32_t)height;
+	data->aspect_ratio = (float)data->width / (float)data->height;
+	data->viewport_h = 2.0f * tanf(deg_to_rad((float)data->cam.fov) / 2.0f);
+	data->viewport_w = data->aspect_ratio * data->viewport_h;
+	mlx_resize_image(data->img, data->width, data->height);
+	set_quality(data, LOW);
+	data->wait_frames = 0;
+	data->render_check = true;
+}
+
 //TODO: too big.
 void	game_loop(void *param)
 {
@@ -224,6 +243,7 @@ int	main(int ac, char **av)
 	}
 	mlx_loop_hook(data.mlx, game_loop, &data);
 	mlx_key_hook(data.mlx, &object_selector, &data);
+	mlx_resize_hook(data.mlx, resize_hook, &data);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
 	data.world.destroy(&data.world);
