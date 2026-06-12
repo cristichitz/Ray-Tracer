@@ -20,69 +20,87 @@ SFLAGS = -ggdb3 -fsanitize=address -fsanitize=leak -fsanitize=undefined
 
 # MANDATORY FILES
 SRCS = \
-src/error.c \
-src/main_cpu.c \
-src/render_cpu.c \
-src/utils.c \
-src/quality.c \
-src/control/cam_control.c \
-src/control/obj_control.c \
-src/class/vec3.c \
-src/class/sphere.c \
-src/class/hittable.c \
-src/class/ray.c \
-src/class/plane.c \
-src/class/quad.c \
-src/class/cylinder.c \
-src/class/interval.c \
-src/class/material.c \
-src/class/texture.c \
-src/class/quaternion.c \
-src/class/box.c \
-src/parse/checks.c \
-src/parse/getters.c \
-src/parse/parse_utils.c \
-src/parse/parse.c \
-src/parse/process.c \
-src/parse/scene.c \
-src/parse/set_lights.c \
-src/parse/set_obj.c \
-src/parse/set_obj_2.c \
-src/parse/set_params.c \
-src/parse/set_params_2.c \
-src/bench.c \
-src/render_direct.c
+mandatory/src/error.c \
+mandatory/src/main_cpu.c \
+mandatory/src/render_cpu.c \
+mandatory/src/utils.c \
+mandatory/src/quality.c \
+mandatory/src/control/cam_control.c \
+mandatory/src/control/obj_control.c \
+mandatory/src/class/vec3.c \
+mandatory/src/class/sphere.c \
+mandatory/src/class/hittable.c \
+mandatory/src/class/ray.c \
+mandatory/src/class/plane.c \
+mandatory/src/class/quad.c \
+mandatory/src/class/cylinder.c \
+mandatory/src/class/interval.c \
+mandatory/src/class/material.c \
+mandatory/src/class/texture.c \
+mandatory/src/class/quaternion.c \
+mandatory/src/class/box.c \
+mandatory/src/parse/checks.c \
+mandatory/src/parse/getters.c \
+mandatory/src/parse/parse_utils.c \
+mandatory/src/parse/parse.c \
+mandatory/src/parse/process.c \
+mandatory/src/parse/scene.c \
+mandatory/src/parse/set_lights.c \
+mandatory/src/parse/set_obj.c \
+mandatory/src/parse/set_obj_2.c \
+mandatory/src/parse/set_params.c \
+mandatory/src/parse/set_params_2.c \
+mandatory/src/bench.c \
+mandatory/src/render_direct.c
 
-INCLUDES = -I. -I./MLX42/include -I./libft -I./include
+INCLUDES = -I. -I./MLX42/include -I./libft -I./mandatory/include
 
 # BONUS FILES
 BONUS_SRCS = \
-src/main_bonus.c \
-src/cl_util_bonus.c \
-src/init_gpu_bonus.c \
-src/cleanup_bonus.c \
-src/utils_bonus.c \
-src/view_bonus.c \
-src/scene_bonus.c \
-src/parse_bonus.c \
-src/parse_utils_bonus.c \
-src/parse_obj_bonus.c \
-src/parse_world_bonus.c \
-src/class/vec3_bonus.c \
-src/class/sphere_bonus.c \
-src/class/material_bonus.c \
-src/class/plane_bonus.c \
-src/class/cylinder_bonus.c \
-src/rubik/rubick_build_bonus.c \
-src/rubik/rubick_move_bonus.c \
-src/rubik/rubick_engine_bonus.c \
-src/rubik/rubick_explode_bonus.c \
-src/rubik/quat_bonus.c \
-src/physics/physics_bonus.c \
-src/physics/collide_bonus.c \
-src/render_out_bonus.c
+bonus/src/main_bonus.c \
+bonus/src/utils_bonus.c \
+bonus/src/control/controls_bonus.c \
+bonus/src/control/view_bonus.c \
+bonus/src/cl/cl_util_bonus.c \
+bonus/src/cl/cl_info_bonus.c \
+bonus/src/cl/cl_select_bonus.c \
+bonus/src/cl/cl_program_bonus.c \
+bonus/src/cl/cl_release_bonus.c \
+bonus/src/gpu/init_gpu_bonus.c \
+bonus/src/gpu/render_gpu_bonus.c \
+bonus/src/gpu/cleanup_bonus.c \
+bonus/src/scene/scene_bonus.c \
+bonus/src/scene/scene_build_bonus.c \
+bonus/src/parse/parse_bonus.c \
+bonus/src/parse/parse_utils_bonus.c \
+bonus/src/parse/parse_obj_bonus.c \
+bonus/src/parse/parse_world_bonus.c \
+bonus/src/class/vec3_bonus.c \
+bonus/src/class/vec3_2_bonus.c \
+bonus/src/class/vec3_3_bonus.c \
+bonus/src/class/sphere_bonus.c \
+bonus/src/class/material_bonus.c \
+bonus/src/class/plane_bonus.c \
+bonus/src/class/cylinder_bonus.c \
+bonus/src/rubik/rubick_build_bonus.c \
+bonus/src/rubik/rubick_move_bonus.c \
+bonus/src/rubik/rubick_engine_bonus.c \
+bonus/src/rubik/rubick_solve_bonus.c \
+bonus/src/rubik/rubick_plan_bonus.c \
+bonus/src/rubik/rubick_explode_bonus.c \
+bonus/src/rubik/rubick_phase_bonus.c \
+bonus/src/rubik/rubick_phase_2_bonus.c \
+bonus/src/rubik/quat_bonus.c \
+bonus/src/rubik/quat_2_bonus.c \
+bonus/src/physics/physics_bonus.c \
+bonus/src/physics/physics_rocket_bonus.c \
+bonus/src/physics/physics_step_bonus.c \
+bonus/src/physics/collide_bonus.c \
+bonus/src/physics/collide_box_bonus.c \
+bonus/src/physics/collide_sat_bonus.c \
+bonus/src/render_out_bonus.c
 
-BONUS_INCLUDES = -I. -I./MLX42/include -I./libft -I./include -I./kernels
+BONUS_INCLUDES = -I. -I./MLX42/include -I./libft -I./bonus/include -I./bonus/kernels
 BONUS_CFLAGS = -DCL_TARGET_OPENCL_VERSION=300
 
 
@@ -99,7 +117,7 @@ LIBFT_DIR  = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 MLX_FLAGS = -ldl -lglfw -pthread -lm -lz
-BONUS_LINK_FLAGS = -L./libs -lOpenCL -Wl,-rpath,'$$ORIGIN/libs' -Wl,--disable-new-dtags
+BONUS_LINK_FLAGS = -L./bonus/libs -lOpenCL -Wl,-rpath,'$$ORIGIN/bonus/libs' -Wl,--disable-new-dtags
 
 MACOS_GLFW_FLAGS = -I/opt/homebrew/cellar/glfw/3.4/include/ -L/opt/homebrew/cellar/glfw/3.4/lib/
 UNAME_S := $(shell uname -s)
@@ -132,12 +150,12 @@ bonus: $(NAME_BONUS)
 $(NAME_BONUS): $(MLX42_BUILD) $(LIBFT) $(BONUS_OBJS)
 	$(CC) $(CFLAGS) $(BONUS_CFLAGS) $(BONUS_OBJS) $(MLX42_BUILD) $(LIBFT) $(MLX_FLAGS) $(BONUS_LINK_FLAGS) -o $(NAME_BONUS)
 
-$(OBJ_DIR)/%.o: %.c
+$(OBJ_DIR)/mandatory/%.o: mandatory/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OBJ_DIR)/%_bonus.o: %_bonus.c
-	@mkdir -p $(@D)		
+$(OBJ_DIR)/bonus/%.o: bonus/%.c
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(BONUS_CFLAGS) $(BONUS_INCLUDES) -c $< -o $@
 
 $(LIBFT):
@@ -163,7 +181,7 @@ fclean: clean
 re: fclean all
 
 # Emit annotated Intel assembly of the hot render path (inspect render_cpu2.s)
-ASM_SRC = src/render_cpu2.c src/class/vec3.c
+ASM_SRC = mandatory/src/render_cpu.c mandatory/src/class/vec3.c
 asm:
 	$(CC) -Wall -Wextra -O3 -march=native -fverbose-asm -masm=intel \
 		$(INCLUDES) -S $(ASM_SRC)
