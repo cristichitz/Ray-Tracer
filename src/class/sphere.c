@@ -82,7 +82,7 @@ t_sphere	*make_sphere(t_sphere sphere)
 		return (NULL);
 	*s = sphere;
 	s->base.hit = hit_sphere;
-	s->base.destroy = NULL;
+	//s->base.destroy = NULL;
 	s->base.resize = resize_sphere;
 	s->base.rotate = NULL;
 	return (s);

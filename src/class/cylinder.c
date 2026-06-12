@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "cylinder.h"
-#include "plane.h"
 #include "quaternion.h"
 #include <stdlib.h>
 
@@ -154,7 +153,7 @@ t_cylinder	*make_cylinder(t_cylinder cylinder)
 		return (NULL);
 	*c = cylinder;
 	c->base.hit = hit_cylinder;
-	c->base.destroy = NULL;
+	//c->base.destroy = NULL;
 	c->base.resize = resize_cylinder;
 	c->base.rotate = rotate_cylinder;
 	return (c);

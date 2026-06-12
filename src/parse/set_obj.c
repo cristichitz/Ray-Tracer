@@ -92,20 +92,20 @@ int	set_cylinder(t_data *data, char **params)
 
 int	set_plane(t_data *data, char **params)
 {
-	t_vec3	center;
-	t_vec3	normal;
+	t_plane	plane;
 	t_vec3	colour;
 
 	colour = make_vec(0.5f, 0.5f, 0.5f);
 	if (!split_count(params, 4))
 		return (0);
-	if (!set_pts(&center, params[1], get_pt))
+	if (!set_pts(&plane.Q, params[1], get_pt))
 		return (0);
-	if (!set_pts(&normal, params[2], get_uvec_pt))
+	if (!set_pts(&plane.normal, params[2], get_uvec_pt))
 		return (0);
-	if (!force_normalised(&normal))
+	if (!force_normalised(&plane.normal))
 		return (0);
 	if (!set_colour(&colour, params[3]))
 		return (0);
-	return (add_to_world(data, make_infinite_plane(center, normal, colour)));
+	plane.mat = init_lambertian(colour);
+	return (add_to_world(data, make_plane(plane)));
 }

@@ -19,6 +19,7 @@
 # include "libft.h"
 # include "light.h"
 # include "plane.h"
+# include "quad.h"
 # include "sphere.h"
 
 # define WIDTH 640

@@ -1,29 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   plane.h                                            :+:      :+:    :+:   */
+/*   quad.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/04 15:06:28 by timurray          #+#    #+#             */
+/*   Created: 2026/06/12 12:23:00 by timurray          #+#    #+#             */
 /*   Updated: 2026/06/12 12:23:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PLANE_H
-# define PLANE_H
+#ifndef QUAD_H
+# define QUAD_H
 
 # include "hittable.h"
 
-typedef struct s_plane
+typedef struct s_aabb
+{
+	t_interval	x;
+	t_interval	y;
+	t_interval	z;
+}				t_aabb;
+
+typedef struct s_quad
 {
 	t_hittable	base;
 	t_vec3		Q;
-	t_vec3		normal;
+	t_vec3		u;
+	t_vec3		v;
 	t_material	mat;
+	t_aabb		bbox;
+	t_vec3		normal;
 	float		D;
-}				t_plane;
+	t_vec3		w;
+}				t_quad;
 
-t_plane			*make_plane(t_plane plane);
+t_aabb			make_aabb(t_vec3 a, t_vec3 b);
+t_quad			*make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat);
 
 #endif

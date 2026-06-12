@@ -32,6 +32,7 @@ src/class/sphere.c \
 src/class/hittable.c \
 src/class/ray.c \
 src/class/plane.c \
+src/class/quad.c \
 src/class/cylinder.c \
 src/class/interval.c \
 src/class/material.c \
