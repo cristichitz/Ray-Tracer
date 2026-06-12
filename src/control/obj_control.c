@@ -18,6 +18,16 @@ void	object_selector(mlx_key_data_t keydata, void *param)
 	t_data	*data;
 
 	data = (t_data *)param;
+	if (keydata.key == MLX_KEY_M && keydata.action == MLX_RELEASE)
+	{
+		if (data->render_mode == RENDER_PATH_TRACE)
+			data->render_mode = RENDER_DIRECT;
+		else
+			data->render_mode = RENDER_PATH_TRACE;
+		data->render_check = true;
+		set_quality(data, LOW);
+		data->wait_frames = 0;
+	}
 	if (data->world.objects->len == 0)
 		return ;
 	if (keydata.key == MLX_KEY_C && keydata.action == MLX_RELEASE)

@@ -6,11 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
-<<<<<<< Updated upstream
-/*   Updated: 2026/06/11 15:03:06 by timurray         ###   ########.fr       */
-=======
-/*   Updated: 2026/06/12 12:07:41 by timurray         ###   ########.fr       */
->>>>>>> Stashed changes
+/*   Updated: 2026/06/12 13:43:38 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +15,7 @@
 #include "parse.h"
 #include "rt_cpu.h"
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> //TODO: forbidden
 
 static void	camera_setup(t_data *data)
 {
@@ -57,7 +53,7 @@ static void	update_viewport(t_data *data)
 	data->pixel00_loc = add(upper_left_corner, scale(add(data->px_w,
 					data->px_h), 0.5f));
 }
-
+//TODO: too big.
 void	game_loop(void *param)
 {
 	t_data	*data;
@@ -81,14 +77,6 @@ void	game_loop(void *param)
 			scene_changed = true;
 		if (rotate_object(data, &rotation_speed))
 			scene_changed = true;
-	}
-	if (mlx_is_key_down(data->mlx, MLX_KEY_M))
-	{
-		if (data->render_mode == RENDER_PATH_TRACE)
-			data->render_mode = RENDER_DIRECT;
-		else
-			data->render_mode = RENDER_PATH_TRACE;
-		scene_changed = true;
 	}
 	if (scene_changed)
 	{
@@ -134,7 +122,7 @@ void	initialize(t_data *data)
 	data->render_mode = RENDER_PATH_TRACE;
 	update_viewport(data);
 }
-
+//TODO: Make a seperate file for this or leave for bonus?
 void	make_cornell_box(t_hittable_list *world)
 {
 	t_material	red;
@@ -160,7 +148,7 @@ void	make_cornell_box(t_hittable_list *world)
 			make_vec(0, 555, 0), white));
 }
 
-//TODO: too many vars
+// TODO: too many vars
 int	main(int ac, char **av)
 {
 	t_data			data;
@@ -199,40 +187,45 @@ int	main(int ac, char **av)
 		print_error("No scene file given.");
 		return (0);
 	}
+	// TODO: remove bench
 	pav[0] = av[0];
 	pav[1] = scene;
 	if (!parse_input(&data, 2, pav))
 	{
-		// TODO: free memory
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	// make_cornell_box(&world);
 	initialize(&data);
 	if (bench)
 		return (run_benchmark(&data, frames));
+	//-----
 	data.mlx = mlx_init(data.width, data.height, "MiniRT", true);
 	if (!data.mlx)
 	{
-		puts(mlx_strerror(mlx_errno));
+		ft_printfd(2, "%s\n", mlx_strerror(mlx_errno));
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	data.img = mlx_new_image(data.mlx, data.width, data.height);
 	if (!data.img)
 	{
 		mlx_close_window(data.mlx);
-		puts(mlx_strerror(mlx_errno));
+		ft_printfd(2, "%s\n", mlx_strerror(mlx_errno));
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	if (mlx_image_to_window(data.mlx, data.img, 0, 0) == -1)
 	{
 		mlx_close_window(data.mlx);
-		puts(mlx_strerror(mlx_errno));
+		ft_printfd(2, "%s\n", mlx_strerror(mlx_errno));
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	mlx_loop_hook(data.mlx, game_loop, &data);
 	mlx_key_hook(data.mlx, &object_selector, &data);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
-	world.destroy(&world);
+	data.world.destroy(&data.world);
 	return (EXIT_SUCCESS);
 }
