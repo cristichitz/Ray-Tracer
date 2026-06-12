@@ -12,6 +12,7 @@
 
 #include "hittable.h"
 
+//TODO: too many params
 bool	scatter_lambertian(t_material *self, t_ray r_in, t_hit_record rec,
 		t_vec3 *attenuation, t_ray *scattered)
 {
@@ -34,6 +35,7 @@ t_vec3	reflect(t_vec3 v, t_vec3 n)
 	return (sub(v, b));
 }
 
+//TODO: too many params
 bool	scatter_metal(t_material *self, t_ray r_in, t_hit_record rec,
 		t_vec3 *attenuation, t_ray *scattered)
 {
@@ -45,6 +47,7 @@ bool	scatter_metal(t_material *self, t_ray r_in, t_hit_record rec,
 	return (true);
 }
 
+//TODO: too many params
 bool	scatter_light(t_material *self, t_ray r_in, t_hit_record rec,
 		t_vec3 *attenuation, t_ray *scattered)
 {
@@ -56,12 +59,12 @@ bool	scatter_light(t_material *self, t_ray r_in, t_hit_record rec,
 	return (false);
 }
 
-t_vec3	emmited_light(t_material *self, float u, float v, t_vec3 p)
+t_vec3	emitted_light(t_material *self, float u, float v, t_vec3 p)
 {
 	return (self->tex.value(&self->tex, u, v, p));
 }
 
-t_vec3	emmited_nothing(t_material *self, float u, float v, t_vec3 p)
+t_vec3	emitted_nothing(t_material *self, float u, float v, t_vec3 p)
 {
 	(void)self;
 	(void)u;
@@ -76,7 +79,7 @@ t_material	init_lambertian(t_vec3 col)
 
 	new_mat.tex = init_solid_color(col);
 	new_mat.scatter = scatter_lambertian;
-	new_mat.emmited = emmited_nothing;
+	new_mat.emitted = emitted_nothing;
 	return (new_mat);
 }
 
@@ -86,7 +89,7 @@ t_material	init_metal(t_vec3 col)
 
 	new_mat.tex = init_solid_color(col);
 	new_mat.scatter = scatter_metal;
-	new_mat.emmited = emmited_nothing;
+	new_mat.emitted = emitted_nothing;
 	return (new_mat);
 }
 
@@ -96,7 +99,7 @@ t_material	init_diffuse_light(t_vec3 col)
 
 	new_mat.tex = init_solid_color(col);
 	new_mat.scatter = scatter_light;
-	new_mat.emmited = emmited_light;
+	new_mat.emitted = emitted_light;
 
 	return (new_mat);
 }

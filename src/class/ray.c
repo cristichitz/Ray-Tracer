@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   plane.h                                            :+:      :+:    :+:   */
+/*   ray.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/04 15:06:28 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/12 12:23:00 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/11 15:02:00 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/11 15:02:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PLANE_H
-# define PLANE_H
+#include "ray.h"
 
-# include "hittable.h"
-
-typedef struct s_plane
+t_vec3	ray_at(t_ray *self, float t)
 {
-	t_hittable	base;
-	t_vec3		Q;
-	t_vec3		normal;
-	t_material	mat;
-	float		D;
-}				t_plane;
+	t_vec3	result;
 
-t_plane			*make_plane(t_plane plane);
+	result = add(self->origin, scale(self->dir, t));
+	return (result);
+}
 
-#endif
+t_ray	make_ray(t_vec3 origin, t_vec3 direction)
+{
+	t_ray	r;
+
+	r.origin = origin;
+	r.dir = direction;
+	r.at = ray_at;
+	return (r);
+}

@@ -35,7 +35,7 @@ typedef struct s_hittable
 {
 	bool					(*hit)(void *object, t_ray ray, t_interval t,
 							t_hit_record *rec);
-	void					(*destroy)(void *object);
+	//void					(*destroy)(void *object);
 	void					(*resize)(void *object, float scalar);
 	void					(*rotate)(void *object, t_vec3 axis, float angle);
 }							t_hittable;

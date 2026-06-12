@@ -7,14 +7,16 @@
 - TODO: Light management: hard shadows.
 - TODO: light shouldn't be able to rotate.
 
-- TODO: Normalised vector check in parsing.
+- TODO: destroy functions.
 
-- TODO: Review header file inclusions and structure. It is a bit all over the place right now.
 - TODO: File splitting.
+
 - TODO: Norminette.
+- TODO: valgrind and sanitizers.
 
 ## Nice to have
 - TODO: parse cu for cube.
+- TODO: material switching.
 
 # Bonus
 - TODO: Parsing converter for bonus types.

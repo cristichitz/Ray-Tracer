@@ -1,31 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   quarternion.h                                      :+:      :+:    :+:   */
+/*   set_params_2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/08 17:11:19 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 18:57:45 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/11 13:31:44 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/11 13:32:07 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef QUARTERNION_H
-# define QUARTERNION_H
+#include "parse.h"
 
-# include "vec3.h"
-
-typedef struct s_quarternion
+int	set_brightness(float *fnum, char *param)
 {
-	float		w;
-	float		x;
-	float		y;
-	float		z;
-}				t_quarternion;
-
-t_quarternion	make_quarternion(t_vec3 axis, float angle);
-t_quarternion	mult_quarternion(t_quarternion a, t_quarternion b);
-t_quarternion	inverse_quartenion(t_quarternion q);
-t_vec3			rotate_vec_by_quarternion(t_quarternion q, t_vec3 v);
-
-#endif
+	if (!get_float(fnum, param, 0.0, 1.0))
+		return (0);
+	return (1);
+}

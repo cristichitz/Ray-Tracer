@@ -11,11 +11,10 @@
 /* ************************************************************************** */
 
 #include "cylinder.h"
-#include "plane.h"
-#include "quarternion.h"
+#include "quaternion.h"
 #include <stdlib.h>
 
-// TODO: 4 MAx parameters.
+//TODO: too many params
 static bool	hit_cap(t_cylinder *self, t_ray ray, t_interval ray_t,
 		t_hit_record *rec, float offset)
 {
@@ -67,7 +66,7 @@ static bool	hit_caps(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	}
 	return (hit_any);
 }
-// TODO: 5 max variables per function. Function too long.
+//TODO: too many vars
 bool	hit_cylinder(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 {
 	t_cylinder	*self;
@@ -138,11 +137,11 @@ void	resize_cylinder(void *base, float scalar)
 void	rotate_cylinder(void *base, t_vec3 axis, float angle)
 {
 	t_cylinder		*self;
-	t_quarternion	q;
+	t_quaternion	q;
 
 	self = (t_cylinder *)base;
-	q = make_quarternion(axis, angle);
-	self->normal = norm(rotate_vec_by_quarternion(q, self->normal));
+	q = make_quaternion(axis, angle);
+	self->normal = norm(rotate_vec_by_quaternion(q, self->normal));
 }
 
 t_cylinder	*make_cylinder(t_cylinder cylinder)
@@ -154,7 +153,7 @@ t_cylinder	*make_cylinder(t_cylinder cylinder)
 		return (NULL);
 	*c = cylinder;
 	c->base.hit = hit_cylinder;
-	c->base.destroy = NULL;
+	//c->base.destroy = NULL;
 	c->base.resize = resize_cylinder;
 	c->base.rotate = rotate_cylinder;
 	return (c);

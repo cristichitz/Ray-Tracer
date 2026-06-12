@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/10 16:53:20 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/12 14:35:29 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "parse.h"
 #include "rt_cpu.h"
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> //TODO: forbidden
 
 static void	camera_setup(t_data *data)
 {
@@ -28,7 +28,10 @@ static void	camera_setup(t_data *data)
 	data->cam_forward.y = sinf(data->cam.pitch);
 	data->cam_forward.z = cosf(data->cam.yaw) * cosf(data->cam.pitch);
 	data->cam_forward = norm(data->cam_forward);
-	right = norm(cross(world_up, data->cam_forward));
+	right = cross(world_up, data->cam_forward);
+	if (length_squared(right) < 1e-8f)
+		right = make_vec(1.0f, 0.0f, 0.0f); // fallback
+	right = norm(right);
 	up = cross(data->cam_forward, right);
 	data->horizontal = scale(right, data->viewport_w);
 	data->vertical = scale(up, -data->viewport_h);
@@ -50,7 +53,7 @@ static void	update_viewport(t_data *data)
 	data->pixel00_loc = add(upper_left_corner, scale(add(data->px_w,
 					data->px_h), 0.5f));
 }
-
+//TODO: too big.
 void	game_loop(void *param)
 {
 	t_data	*data;
@@ -74,14 +77,6 @@ void	game_loop(void *param)
 			scene_changed = true;
 		if (rotate_object(data, &rotation_speed))
 			scene_changed = true;
-	}
-	if (mlx_is_key_down(data->mlx, MLX_KEY_M))
-	{
-		if (data->render_mode == RENDER_PATH_TRACE)
-			data->render_mode = RENDER_DIRECT;
-		else
-			data->render_mode = RENDER_PATH_TRACE;
-		scene_changed = true;
 	}
 	if (scene_changed)
 	{
@@ -127,7 +122,7 @@ void	initialize(t_data *data)
 	data->render_mode = RENDER_PATH_TRACE;
 	update_viewport(data);
 }
-
+//TODO: Make a seperate file for this or leave for bonus?
 void	make_cornell_box(t_hittable_list *world)
 {
 	t_material	red;
@@ -153,6 +148,7 @@ void	make_cornell_box(t_hittable_list *world)
 			make_vec(0, 555, 0), white));
 }
 
+// TODO: too many vars
 int	main(int ac, char **av)
 {
 	t_data			data;
@@ -177,7 +173,7 @@ int	main(int ac, char **av)
 	scene = NULL;
 	for (int i = 1; i < ac; i++)
 	{
-		if (!strcmp(av[i], "--bench"))
+		if (!ft_strcmp(av[i], "--bench"))
 		{
 			bench = 1;
 			if (i + 1 < ac && av[i + 1][0] >= '0' && av[i + 1][0] <= '9')
@@ -191,39 +187,45 @@ int	main(int ac, char **av)
 		print_error("No scene file given.");
 		return (0);
 	}
+	// TODO: remove bench
 	pav[0] = av[0];
 	pav[1] = scene;
 	if (!parse_input(&data, 2, pav))
 	{
-		// TODO: free memory
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	// make_cornell_box(&world);
 	initialize(&data);
 	if (bench)
 		return (run_benchmark(&data, frames));
-	data.mlx = mlx_init(data.width, data.height, "CPU RT", true);
+	//-----
+	data.mlx = mlx_init(data.width, data.height, "MiniRT", true);
 	if (!data.mlx)
 	{
-		puts(mlx_strerror(mlx_errno));
+		ft_printfd(2, "%s\n", mlx_strerror(mlx_errno));
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	data.img = mlx_new_image(data.mlx, data.width, data.height);
 	if (!data.img)
 	{
 		mlx_close_window(data.mlx);
-		puts(mlx_strerror(mlx_errno));
+		ft_printfd(2, "%s\n", mlx_strerror(mlx_errno));
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	if (mlx_image_to_window(data.mlx, data.img, 0, 0) == -1)
 	{
 		mlx_close_window(data.mlx);
-		puts(mlx_strerror(mlx_errno));
+		ft_printfd(2, "%s\n", mlx_strerror(mlx_errno));
+		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
 	mlx_loop_hook(data.mlx, game_loop, &data);
 	mlx_key_hook(data.mlx, &object_selector, &data);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
+	data.world.destroy(&data.world);
 	return (EXIT_SUCCESS);
 }

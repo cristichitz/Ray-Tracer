@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/07 15:23:10 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 18:55:51 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/11 13:51:51 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ bool	move_cam(t_data *data, float *speed)
 
 bool	rotate_cam(t_data *data, float *rotation_speed)
 {
-	bool rotated;
+	bool	rotated;
 
 	rotated = false;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_LEFT))

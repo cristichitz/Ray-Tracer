@@ -1,29 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   plane.h                                            :+:      :+:    :+:   */
+/*   quaternion.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/04 15:06:28 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/12 12:23:00 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/08 17:11:19 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/11 15:02:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PLANE_H
-# define PLANE_H
+#ifndef QUATERNION_H
+# define QUATERNION_H
 
-# include "hittable.h"
+# include "vec3.h"
 
-typedef struct s_plane
+typedef struct s_quaternion
 {
-	t_hittable	base;
-	t_vec3		Q;
-	t_vec3		normal;
-	t_material	mat;
-	float		D;
-}				t_plane;
+	float		w;
+	float		x;
+	float		y;
+	float		z;
+}				t_quaternion;
 
-t_plane			*make_plane(t_plane plane);
+t_quaternion	make_quaternion(t_vec3 axis, float angle);
+t_quaternion	mult_quaternion(t_quaternion a, t_quaternion b);
+t_quaternion	inverse_quaternion(t_quaternion q);
+t_vec3			rotate_vec_by_quaternion(t_quaternion q, t_vec3 v);
 
 #endif

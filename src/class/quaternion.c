@@ -6,16 +6,15 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/08 17:12:43 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/08 18:57:42 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/11 15:02:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "quarternion.h"
-#include "vec3.h"
+#include "quaternion.h"
 
-t_quarternion	make_quarternion(t_vec3 axis, float angle)
+t_quaternion	make_quaternion(t_vec3 axis, float angle)
 {
-	t_quarternion	q;
+	t_quaternion	q;
 	float			half;
 	float			s;
 
@@ -29,9 +28,9 @@ t_quarternion	make_quarternion(t_vec3 axis, float angle)
 	return (q);
 }
 
-t_quarternion	mult_quarternion(t_quarternion a, t_quarternion b)
+t_quaternion	mult_quaternion(t_quaternion a, t_quaternion b)
 {
-	t_quarternion	q;
+	t_quaternion	q;
 
 	q.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
 	q.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
@@ -40,18 +39,18 @@ t_quarternion	mult_quarternion(t_quarternion a, t_quarternion b)
 	return (q);
 }
 
-t_quarternion	inverse_quartenion(t_quarternion q)
+t_quaternion	inverse_quaternion(t_quaternion q)
 {
-	return ((t_quarternion){q.w, -q.x, -q.y, -q.z});
+	return ((t_quaternion){q.w, -q.x, -q.y, -q.z});
 }
 
-t_vec3	rotate_vec_by_quarternion(t_quarternion q, t_vec3 v)
+t_vec3	rotate_vec_by_quaternion(t_quaternion q, t_vec3 v)
 {
-	t_quarternion	base;
-	t_quarternion	rotated_q;
+	t_quaternion	base;
+	t_quaternion	rotated_q;
 
-	base = (t_quarternion){0.0f, v.x, v.y, v.z};
-	rotated_q = mult_quarternion(mult_quarternion(q, base),
-			inverse_quartenion(q));
+	base = (t_quaternion){0.0f, v.x, v.y, v.z};
+	rotated_q = mult_quaternion(mult_quaternion(q, base),
+			inverse_quaternion(q));
 	return (make_vec(rotated_q.x, rotated_q.y, rotated_q.z));
 }
