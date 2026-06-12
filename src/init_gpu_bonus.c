@@ -100,7 +100,8 @@ void  render_frame(t_data *data)
   cl_ulong s, e;
   clGetEventProfilingInfo(ev, CL_PROFILING_COMMAND_START, sizeof(s), &s, NULL);
   clGetEventProfilingInfo(ev, CL_PROFILING_COMMAND_END, sizeof(e), &e, NULL);
-  printf("kernel: %.2f ms\n", (e - s) / 1e6);
+  if (!data->render_mode)
+    printf("kernel: %.2f ms\n", (e - s) / 1e6);
   clReleaseEvent(ev);
   clError = clFinish(data->gpu.queue);
   CHECK_OCL_ERR("clFinish", clError);

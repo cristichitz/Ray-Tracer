@@ -48,7 +48,11 @@ void  step_rubik(t_data *data)
   {
     if (r->q_count == 0)
     {
-      r->orbit_active = 0;
+      if (r->orbit_active)
+      {
+        r->orbit_active = 0;
+        physics_start(data);
+      }
       return ;
     }
     start_move(r);

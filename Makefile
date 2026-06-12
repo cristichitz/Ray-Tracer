@@ -60,10 +60,14 @@ src/class/sphere_bonus.c \
 src/class/material_bonus.c \
 src/class/plane_bonus.c \
 src/class/cylinder_bonus.c \
-src/rubick_build_bonus.c \
-src/rubick_move_bonus.c \
-src/rubick_engine_bonus.c \
-src/rubick_explode_bonus.c
+src/rubik/rubick_build_bonus.c \
+src/rubik/rubick_move_bonus.c \
+src/rubik/rubick_engine_bonus.c \
+src/rubik/rubick_explode_bonus.c \
+src/rubik/quat_bonus.c \
+src/physics/physics_bonus.c \
+src/physics/collide_bonus.c \
+src/render_out_bonus.c
 
 BONUS_INCLUDES = -I. -I./MLX42/include -I./libft -I./include -I./kernels
 BONUS_CFLAGS = -DCL_TARGET_OPENCL_VERSION=300

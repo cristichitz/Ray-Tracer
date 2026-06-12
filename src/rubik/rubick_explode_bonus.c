@@ -16,88 +16,13 @@
 ** sticker orientations and the normal move engine can solve it cleanly.
 */
 
-/* ----------------------------- quaternions ------------------------------- */
-
-static t_quat  quat_identity(void)
-{
-  return ((t_quat){1.0f, 0.0f, 0.0f, 0.0f});
-}
-
-/* Rotation by `angle` (radians) about a coordinate axis (0=x, 1=y, 2=z). */
-static t_quat  quat_axis(int axis, float angle)
-{
-  t_quat  q;
-  float   s;
-
-  s = sinf(angle * 0.5f);
-  q.w = cosf(angle * 0.5f);
-  q.x = (axis == 0) * s;
-  q.y = (axis == 1) * s;
-  q.z = (axis == 2) * s;
-  return (q);
-}
-
-/* Rotation by `angle` (radians) about an arbitrary axis. */
-static t_quat  quat_from_axis(cl_float3 axis, float angle)
-{
-  t_quat  q;
-  float   s;
-
-  axis = norm(axis);
-  s = sinf(angle * 0.5f);
-  q.w = cosf(angle * 0.5f);
-  q.x = axis.x * s;
-  q.y = axis.y * s;
-  q.z = axis.z * s;
-  return (q);
-}
+/* Quaternion + cubie-rebuild helpers are shared with physics (quat_bonus.c). */
 
 /* A per-cubie tumble axis, varied but deterministic (and never zero). */
 static cl_float3  tumble_axis(int c)
 {
   return (make_float3(sinf(c * 1.7f + 0.3f),
         sinf(c * 2.6f + 1.1f), cosf(c * 1.3f + 0.5f)));
-}
-
-/* Hamilton product: the rotation "do b, then a". */
-static t_quat  quat_mul(t_quat a, t_quat b)
-{
-  t_quat  q;
-
-  q.w = a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z;
-  q.x = a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y;
-  q.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x;
-  q.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w;
-  return (q);
-}
-
-/* Rotate a vector by a unit quaternion (q * v * q^-1). */
-static cl_float3  quat_apply(t_quat q, cl_float3 v)
-{
-  t_quat  p;
-  t_quat  r;
-
-  p = (t_quat){0.0f, v.x, v.y, v.z};
-  r = quat_mul(quat_mul(q, p), (t_quat){q.w, -q.x, -q.y, -q.z});
-  return (make_float3(r.x, r.y, r.z));
-}
-
-/* slerp(identity, q, t): the same rotation scaled to a fraction t of the way. */
-static t_quat  quat_pow(t_quat q, float t)
-{
-  t_quat  r;
-  float   s;
-  float   half;
-
-  s = sqrtf(fmaxf(0.0f, 1.0f - q.w * q.w));
-  if (s < 1e-6f)
-    return (quat_identity());
-  half = acosf(fmaxf(-1.0f, fminf(1.0f, q.w))) * t;
-  r.w = cosf(half);
-  r.x = q.x / s * sinf(half);
-  r.y = q.y / s * sinf(half);
-  r.z = q.z / s * sinf(half);
-  return (r);
 }
 
 /* ----------------------------- scramble plan ----------------------------- */
@@ -216,7 +141,8 @@ void  start_explode(t_data *data)
   cl_float3  rel;
 
   r = &data->rubik;
-  if (r->explode_active || r->active || r->q_count != 0 || r->h_count != 0)
+  if (r->explode_active || r->active || r->q_count != 0 || r->h_count != 0
+    || data->phys.running)
     return ;
   capture_cube(r, data->objects);
   plan_scramble(r);
@@ -242,28 +168,6 @@ static cl_float3  lerp3(cl_float3 a, cl_float3 b, float t)
   return (add(scale(a, 1.0f - t), scale(b, t)));
 }
 
-/* Rebuild one cubie's 6 quads from the canonical box at a center + orientation. */
-static void  place_cubie(t_rubik *r, t_object *objs, int c,
-    cl_float3 center, t_quat rot)
-{
-  t_object   *o;
-  cl_float3  n;
-  int        f;
-
-  f = 0;
-  while (f < FACES)
-  {
-    o = &objs[r->cubies[c].obj + f];
-    o->center = add(center, quat_apply(rot, r->loc_c[f]));
-    o->u = quat_apply(rot, r->loc_u[f]);
-    o->v = quat_apply(rot, r->loc_v[f]);
-    n = cross(o->u, o->v);
-    o->normal = norm(n);
-    o->d = dot(o->normal, o->center);
-    o->w = divide(n, dot(n, n));
-    f++;
-  }
-}
 
 /*
 ** Place the camera: orbit `spin` radians around Y from its launch direction
@@ -300,12 +204,14 @@ static void  phase_out(t_data *data)
   r->explode_frame++;
   spread = EXPLODE_MAX_DIST
     * smoothstep((float)r->explode_frame / EXPLODE_OUT_FRAMES);
+  data->scene_scale = 1.0f + (SCENE_SCALE_MAX - 1.0f)
+    * smoothstep((float)r->explode_frame / EXPLODE_OUT_FRAMES);
   tumble = EXPLODE_OUT_TURNS * 2.0f * (float)CL_M_PI
     * ((float)r->explode_frame / EXPLODE_OUT_FRAMES);
   c = 0;
   while (c < CUBIES)
   {
-    place_cubie(r, data->objects, c,
+    rubik_place_cubie(r, data->objects, c,
         add(r->home_solved[c], scale(r->expl_dir[c], spread)),
         quat_from_axis(tumble_axis(c), tumble));
     c++;
@@ -393,7 +299,7 @@ static void  phase_in(t_data *data)
     p = (gt - (float)c / CUBIES * EXPLODE_STAGGER)
       / (1.0f - (float)c / CUBIES * EXPLODE_STAGGER);
     p = fmaxf(0.0f, fminf(1.0f, p));
-    place_cubie(r, data->objects, c,
+    rubik_place_cubie(r, data->objects, c,
         lerp3(add(r->home_solved[c], scale(r->expl_dir[c], EXPLODE_MAX_DIST)),
           r->home_target[c], p * p),
         quat_pow(r->rot_target[c], p * p));

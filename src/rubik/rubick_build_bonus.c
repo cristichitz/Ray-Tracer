@@ -110,6 +110,6 @@ void  build_rubik(t_data *data)
     pos[0]++;
   }
   data->rubik.explode_active = 0;
-  // rubik_stage(data);
   rubik_camera(data);
+  // add_stage(data);
 }

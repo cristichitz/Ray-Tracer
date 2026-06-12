@@ -9,6 +9,8 @@ void  key_hook(mlx_key_data_t key, void *param)
   data = (t_data *)param;
   if (key.action != MLX_PRESS)
     return ;
+  if (data->render_mode || data->phys.running)
+    return ;
   if (key.key == MLX_KEY_SPACE)
     scramble_rubik(&data->rubik);
   else if (key.key == MLX_KEY_ENTER)
@@ -20,7 +22,7 @@ void  key_hook(mlx_key_data_t key, void *param)
 void game_loop(void *param)
 {
   t_data  *data = (t_data *)param;
-  float   speed = 0.5f;
+  float   speed = 10.5f;
   float   rot_speed = 0.05f;
   int     moved = 0;
 
@@ -52,7 +54,7 @@ void game_loop(void *param)
   if (mlx_is_key_down(data->mlx, MLX_KEY_Q)) { step = add(step, scale(up, -speed)); moved = 1; }
 
   if (moved || data->rubik.active || data->rubik.explode_active
-    || data->rubik.orbit_active)
+    || data->rubik.orbit_active || data->phys.running)
   {
     if (moved)
       data->cam_center = add(data->cam_center, step);
@@ -61,6 +63,8 @@ void game_loop(void *param)
   }
 
   step_rubik(data);
+  physics_step(data);
+  update_stage(data);
 
   render_frame(data);
 }
@@ -71,6 +75,7 @@ int main(int argc, char **argv)
 
   SetupLocalCL();
   memset(&data, 0, sizeof(data));
+  data.render_mode = render_mode_on(argc, argv);
   if (!load_scene(&data, argc, argv))
     return (EXIT_FAILURE);
   initialize(&data);
@@ -86,7 +91,7 @@ int main(int argc, char **argv)
   }
 
   init_gpu(&data);
-  mlx_loop_hook(data.mlx, game_loop, &data);
+  mlx_loop_hook(data.mlx, data.render_mode ? render_loop : game_loop, &data);
   mlx_key_hook(data.mlx, key_hook, &data);
   mlx_close_hook(data.mlx, cleanup, &data);
   mlx_loop(data.mlx);

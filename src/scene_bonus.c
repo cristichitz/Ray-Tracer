@@ -70,6 +70,62 @@ int  make_box(t_data *data, cl_float3 a, cl_float3 b, t_material mat)
 //   o->w = divide(n, dot(n, n));
 // }
 
+/*
+** Add a ground quad and two emissive lights (one warm, one bluish) in the back
+** corners, 45 deg up/behind the cube. Their indices and base offsets are saved
+** so update_stage can scale them with the explosion.
+*/
+void  add_stage(t_data *data)
+{
+  float  h;
+
+  data->scene_scale = 1.0f;
+  data->stage_floor_y = data->rubik.center.y - RUBIK_STEP - RUBIK_STEP * 0.46f;
+  data->light_base[0] = make_float3(STAGE_LIGHT_SPREAD, STAGE_LIGHT_HEIGHT,
+      STAGE_LIGHT_BACK);
+  data->light_base[1] = make_float3(-STAGE_LIGHT_SPREAD, STAGE_LIGHT_HEIGHT,
+      STAGE_LIGHT_BACK);
+  h = STAGE_FLOOR_HALF;
+  data->stage_floor = (int)data->obj_count;
+  add_object(data, make_obj_quad(make_float3(data->rubik.center.x - h,
+        data->stage_floor_y, data->rubik.center.z - h),
+      make_float3(2 * h, 0, 0), make_float3(0, 0, 2 * h),
+      material_init(make_float3(0.45f, 0.45f, 0.48f), 0)));
+  data->stage_light[0] = (int)data->obj_count;
+  add_object(data, make_obj_sphere(add(data->rubik.center, data->light_base[0]),
+      STAGE_LIGHT_RADIUS, material_init(make_float3(2.2f, 1.5f, 0.8f), 2)));
+  data->stage_light[1] = (int)data->obj_count;
+  add_object(data, make_obj_sphere(add(data->rubik.center, data->light_base[1]),
+      STAGE_LIGHT_RADIUS, material_init(make_float3(0.5f, 0.9f, 2.6f), 2)));
+  data->has_stage = 1;
+}
+
+/* Reposition + resize the floor and lights for the current scene_scale. */
+void  update_stage(t_data *data)
+{
+  float  s;
+  float  h;
+  int    k;
+
+  if (!data->has_stage)
+    return ;
+  s = data->scene_scale;
+  k = 0;
+  while (k < 2)
+  {
+    data->objects[data->stage_light[k]] = make_obj_sphere(
+        add(data->rubik.center, scale(data->light_base[k], s)),
+        STAGE_LIGHT_RADIUS * s,
+        data->objects[data->stage_light[k]].material);
+    k++;
+  }
+  h = STAGE_FLOOR_HALF * s;
+  data->objects[data->stage_floor] = make_obj_quad(
+      make_float3(data->rubik.center.x - h, data->stage_floor_y,
+        data->rubik.center.z - h), make_float3(2 * h, 0, 0),
+      make_float3(0, 0, 2 * h), data->objects[data->stage_floor].material);
+}
+
 void make_rubick_cube(t_data *data)
 {
   // uint32_t       i;
