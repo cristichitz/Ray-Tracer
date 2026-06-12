@@ -38,6 +38,7 @@ src/class/interval.c \
 src/class/material.c \
 src/class/texture.c \
 src/class/quaternion.c \
+src/class/box.c \
 src/parse/checks.c \
 src/parse/getters.c \
 src/parse/parse_utils.c \
