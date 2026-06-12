@@ -6,13 +6,13 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 10:44:35 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/11 14:59:28 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/12 16:26:17 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_cpu.h"
 
-//TODO: too many vars
+// TODO: too many vars
 t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 {
 	t_hit_record	hit_record;
@@ -81,24 +81,33 @@ void	write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
 		mlx_put_pixel(data->img, x, y, pixel_color);
 }
 
+//TODO: too long
 int	render_frame(t_data *data)
 {
-	t_ray	r;
-	t_vec3	color;
+	t_ray		r;
+	t_vec3		c;
+	uint32_t	y;
+	uint32_t	x;
+	uint32_t	sample;
 
-	for (uint32_t y = 0; y < data->height; y++)
+	y = 0;
+	while (y < data->height)
 	{
-		for (uint32_t x = 0; x < data->width; x++)
+		x = 0;
+		while (x < data->width)
 		{
-			color = make_vec(0.0f, 0.0f, 0.0f);
-			for (uint32_t sample = 0; sample < data->samples_per_pixel; sample++)
+			c = make_vec(0.0f, 0.0f, 0.0f);
+			sample = 0;
+			while (sample < data->samples_per_pixel)
 			{
 				r = get_ray(data, x, y);
-				color = add(color, get_ray_color(&data->world, data->max_depth,
-							r));
+				c = add(c, get_ray_color(&data->world, data->max_depth, r));
+				sample++;
 			}
-			write_color(data, x, y, scale(color, data->pixel_samples_scale));
+			write_color(data, x, y, scale(c, data->pixel_samples_scale));
+			x++;
 		}
+		y++;
 	}
 	return (0);
 }
