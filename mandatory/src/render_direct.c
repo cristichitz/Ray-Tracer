@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_direct.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 10:50:00 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/10 14:31:29 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/12 21:21:19 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,37 @@ static bool	in_shadow(t_data *data, t_hit_record *rec)
 	return (true);
 }
 
-static t_vec3	compute_diffuse(t_data *data, t_hit_record *rec)
+static t_vec3	compute_direct_light(t_data *data, t_hit_record *rec, t_ray cam_ray)
 {
 	t_vec3	light_dir;
-	float	n_dot_l;
 	t_vec3	diffuse;
+	t_vec3	specular;
 
-	if (!data->set_light)
+	t_vec3	view_dir;
+	t_vec3	reflect_dir;
+	float	n_dot_l;
+	float	spec_factor;
+
+	if (!data->set_light || in_shadow(data, rec))
 		return (make_vec(0.0f, 0.0f, 0.0f));
-	if (in_shadow(data, rec))
-		return (make_vec(0.0f, 0.0f, 0.0f));
+		
 	light_dir = norm(sub(data->light.center, rec->p));
 	n_dot_l = fmaxf(0.0f, dot(rec->normal, light_dir));
 	diffuse = scale(rec->mat.tex.albedo, n_dot_l * data->light.brightness);
+
+	view_dir = norm(scale(cam_ray.dir, -1.0f));
+
+	// Formula: R = 2 * (N dot L) * N - L
+	reflect_dir = sub(scale(rec->normal, 2.0f * n_dot_l), light_dir);
+	reflect_dir = norm(reflect_dir);
+
+	spec_factor = powf(fmaxf(0.0f, dot(view_dir, reflect_dir)), 10);
+
+	specular = scale(make_vec(1.0f, 1.0f, 1.0f), spec_factor * data->light.brightness);
+
 	diffuse = mult(diffuse, data->light.colour);
-	return (diffuse);
+	specular = mult(specular, data->light.colour);
+	return (add(diffuse, specular));
 }
 
 static t_vec3	get_ray_color_direct(t_data *data, t_ray ray)
@@ -70,7 +86,7 @@ static t_vec3	get_ray_color_direct(t_data *data, t_ray ray)
 		return (get_ray_color_direct(data,
 				make_ray(rec.p, ray.dir)));
 	color = mult(data->world.ambient, rec.mat.tex.albedo);
-	color = add(color, compute_diffuse(data, &rec));
+	color = add(color, compute_direct_light(data, &rec, ray));
 	return (color);
 }
 
