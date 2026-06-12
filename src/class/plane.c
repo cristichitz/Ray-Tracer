@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 17:05:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 14:55:32 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/12 12:06:15 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,8 @@ t_plane	*make_infinite_plane(t_vec3 center, t_vec3 normal, t_vec3 colour)
 	t_plane *p;
 
 	p = malloc(sizeof(t_plane));
-
+	if(!p)
+		return (NULL);
 	p->Q = center;
 	p->normal = normal;
 	p->mat = init_lambertian(colour);

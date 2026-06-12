@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:50:21 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 14:52:01 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/12 11:46:44 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,16 @@ int	add_object(t_hittable_list *self, void *object)
 
 void	destroy_objects(t_hittable_list *self)
 {
+	size_t	i;
+	void	*obj;
+
+	i = 0;
+	while (i < self->objects->len)
+	{
+		obj = ft_vec_get(self->objects, i);
+		free(obj);
+		i++;
+	}
 	ft_vec_free(self->objects);
 }
 

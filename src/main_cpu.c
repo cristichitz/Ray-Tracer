@@ -6,7 +6,11 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 16:36:24 by timurray          #+#    #+#             */
+<<<<<<< Updated upstream
 /*   Updated: 2026/06/11 15:03:06 by timurray         ###   ########.fr       */
+=======
+/*   Updated: 2026/06/12 12:07:41 by timurray         ###   ########.fr       */
+>>>>>>> Stashed changes
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +32,10 @@ static void	camera_setup(t_data *data)
 	data->cam_forward.y = sinf(data->cam.pitch);
 	data->cam_forward.z = cosf(data->cam.yaw) * cosf(data->cam.pitch);
 	data->cam_forward = norm(data->cam_forward);
-	right = norm(cross(world_up, data->cam_forward));
+	right = cross(world_up, data->cam_forward);
+	if (length_squared(right) < 1e-8f)
+		right = make_vec(1.0f, 0.0f, 0.0f); // fallback
+	right = norm(right);
 	up = cross(data->cam_forward, right);
 	data->horizontal = scale(right, data->viewport_w);
 	data->vertical = scale(up, -data->viewport_h);
@@ -226,5 +233,6 @@ int	main(int ac, char **av)
 	mlx_key_hook(data.mlx, &object_selector, &data);
 	mlx_loop(data.mlx);
 	mlx_terminate(data.mlx);
+	world.destroy(&world);
 	return (EXIT_SUCCESS);
 }
