@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   material.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 17:35:00 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 17:35:00 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:10:57 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,18 @@ typedef struct s_texture
 	t_vec3					albedo;
 }							t_texture;
 
+typedef struct s_scat {
+	t_vec3	attenuation;
+	t_ray	scattered;
+} 	t_scat;
+
 t_texture					init_solid_color(t_vec3 col);
 
 typedef struct s_hit_record	t_hit_record;
 typedef struct s_material	t_material;
 
 typedef bool				(*t_scatter)(t_material *self, t_ray r_in,
-				t_hit_record rec, t_vec3 *attenuation, t_ray *scattered);
+				t_hit_record rec, t_scat *scat);
 typedef t_vec3				(*t_emitted)(t_material *self, float u, float v,
 				t_vec3 p);
 

@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 10:44:35 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 15:20:35 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:08:47 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@
 t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 {
 	t_hit_record	hit_record;
-	t_ray			scattered;
-	t_vec3			attenuation;
+	t_scat			scat;
 	t_vec3			col_emis_amb_scat[3];
 
 	hit_record.set_face_normal = ft_set_face_normal;
@@ -29,11 +28,10 @@ t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 			hit_record.v, hit_record.p);
 	col_emis_amb_scat[1] = mult(world->ambient, hit_record.mat.tex.albedo);
 	col_emis_amb_scat[0] = add(col_emis_amb_scat[0], col_emis_amb_scat[1]);
-	if (!hit_record.mat.scatter(&hit_record.mat, ray, hit_record, &attenuation,
-			&scattered))
+	if (!hit_record.mat.scatter(&hit_record.mat, ray, hit_record, &scat))
 		return (col_emis_amb_scat[0]);
-	col_emis_amb_scat[2] = mult(attenuation, get_ray_color(world, depth - 1,
-				scattered));
+	col_emis_amb_scat[2] = mult(scat.attenuation, get_ray_color(world, depth - 1,
+				scat.scattered));
 	return (add(col_emis_amb_scat[0], col_emis_amb_scat[2]));
 }
 

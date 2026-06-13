@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   material.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:54:58 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 14:55:04 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:04:52 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 //TODO: too many params
 bool	scatter_lambertian(t_material *self, t_ray r_in, t_hit_record rec,
-		t_vec3 *attenuation, t_ray *scattered)
+		t_scat *scat)
 {
 	t_vec3	scatter_direction;
 
@@ -22,8 +22,8 @@ bool	scatter_lambertian(t_material *self, t_ray r_in, t_hit_record rec,
 	scatter_direction = add(rec.normal, random_unit_vector());
 	if (near_zero(scatter_direction))
 		scatter_direction = rec.normal;
-	*scattered = make_ray(rec.p, scatter_direction);
-	*attenuation = self->tex.albedo;
+	scat->scattered = make_ray(rec.p, scatter_direction);
+	scat->attenuation = self->tex.albedo;
 	return (true);
 }
 
@@ -37,25 +37,24 @@ t_vec3	reflect(t_vec3 v, t_vec3 n)
 
 //TODO: too many params
 bool	scatter_metal(t_material *self, t_ray r_in, t_hit_record rec,
-		t_vec3 *attenuation, t_ray *scattered)
+		t_scat *scat)
 {
 	t_vec3	reflected;
 
 	reflected = reflect(r_in.dir, rec.normal);
-	*scattered = make_ray(rec.p, reflected);
-	*attenuation = self->tex.albedo;
+	scat->scattered = make_ray(rec.p, reflected);
+	scat->attenuation = self->tex.albedo;
 	return (true);
 }
 
 //TODO: too many params
 bool	scatter_light(t_material *self, t_ray r_in, t_hit_record rec,
-		t_vec3 *attenuation, t_ray *scattered)
+		t_scat *scat)
 {
 	(void)self;
 	(void)r_in;
 	(void)rec;
-	(void)attenuation;
-	(void)scattered;
+	(void)scat;
 	return (false);
 }
 

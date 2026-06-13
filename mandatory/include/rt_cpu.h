@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 17:24:36 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/13 19:39:03 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include "plane.h"
 # include "quad.h"
 # include "sphere.h"
+# include "box.h"
 
 # define WIDTH 640
 

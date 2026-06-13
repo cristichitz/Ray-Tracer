@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 12:59:55 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 18:36:33 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:09:09 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,16 +116,33 @@ int	set_quad(t_data *data, char **params)
 	t_vec3	u;
 	t_vec3	v;
 	t_vec3	colour;
-	
-	if (!split_count(params, 4))
+
+	if (!split_count(params, 5))
 		return (0);
 	if (!set_pts(&q, params[1], get_pt))
 		return (0);
 	if (!set_pts(&u, params[2], get_pt))
 		return (0);
-	if (!set_pts(&v, params[2], get_pt))
+	if (!set_pts(&v, params[3], get_pt))
+		return (0);
+	if (!set_colour(&colour, params[4]))
+		return (0);
+	return (add_to_world(data, make_quad(q, u, v, init_lambertian(colour))));
+}
+
+int	set_box(t_data *data, char **params)
+{
+	t_vec3	a;
+	t_vec3	b;
+	t_vec3	colour;
+
+	if (!split_count(params, 4))
+		return (0);
+	if (!set_pts(&a, params[1], get_pt))
+		return (0);
+	if (!set_pts(&b, params[2], get_pt))
 		return (0);
 	if (!set_colour(&colour, params[3]))
 		return (0);
-	return (add_to_world(data, make_quad(q, u, v, init_lambertian(colour))));
+	return (add_to_world(data, make_box(a, b, init_lambertian(colour))));	
 }
