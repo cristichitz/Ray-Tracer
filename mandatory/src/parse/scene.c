@@ -6,11 +6,23 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 13:11:49 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/11 13:30:41 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 13:03:33 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parse.h"
+
+static void	clean_gnl(int fd)
+{
+	char	*line;
+
+	line = get_next_line(fd);
+	while (line)
+	{
+		free(line);
+		line = get_next_line(fd);
+	}
+}
 
 int	process_scene(t_data *data, int fd)
 {
@@ -32,6 +44,7 @@ int	process_scene(t_data *data, int fd)
 		if (!trimmed || !process_line(data, trimmed))
 		{
 			free(trimmed);
+			clean_gnl(fd);
 			return (0);
 		}
 		free(trimmed);
