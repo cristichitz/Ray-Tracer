@@ -65,8 +65,8 @@ cl_program	create_build_program(cl_context context, cl_uint count,
 	clerror = clGetContextInfo(context, CL_CONTEXT_DEVICES,
 			sizeof(cl_device_id), &device, NULL);
 	check_ocl_err("clGetContextInfo", clerror);
-	clerror = clBuildProgram(program, 1, &device, "-I. -I./bonus/kernels",
-			NULL, NULL);
+	clerror = clBuildProgram(program, 1, &device,
+			"-I. -I./bonus/kernels -cl-fast-relaxed-math", NULL, NULL);
 	if (clerror != CL_SUCCESS)
 	{
 		printf("\nOpenCL build error %d in create_build_program\n", clerror);

@@ -8,8 +8,7 @@ MLX42
 miniRT
 miniRT_bonus
 
-cp3a/*
-rubick_solver/*
+frames/
 
 *.pdf
 .gitignore

@@ -123,4 +123,5 @@ void	build_rubik(t_data *data)
 	}
 	data->rubik.explode_active = 0;
 	rubik_camera(data);
+	add_stage(data);
 }

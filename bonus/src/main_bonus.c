@@ -25,6 +25,12 @@ void	key_hook(mlx_key_data_t key, void *param)
 		return ;
 	if (data->render_mode || data->phys.running)
 		return ;
+	if (data->phys.wall_mode)
+	{
+		if (key.key == MLX_KEY_SPACE)
+			wall_fire(data);
+		return ;
+	}
 	if (key.key == MLX_KEY_SPACE)
 		scramble_rubik(&data->rubik);
 	else if (key.key == MLX_KEY_ENTER)
@@ -38,8 +44,13 @@ void	key_hook(mlx_key_data_t key, void *param)
 */
 static void	update_camera(t_data *data, cl_float3 step, int moved)
 {
-	if (moved || data->rubik.active || data->rubik.explode_active
-		|| data->rubik.orbit_active || data->phys.running)
+	int	animating;
+
+	animating = (data->rubik.active || data->rubik.explode_active
+			|| data->rubik.orbit_active || data->phys.running);
+	if (animating)
+		data->scene_dirty = 1;
+	if (moved || animating)
 	{
 		if (moved)
 			data->cam_center = add(data->cam_center, step);
@@ -68,7 +79,10 @@ void	game_loop(void *param)
 	step_rubik(data);
 	physics_step(data);
 	update_stage(data);
+	if (data->frame_index >= ACCUM_MAX)
+		return ;
 	render_frame(data);
+	data->frame_index++;
 }
 
 static int	init_window(t_data *data)

@@ -18,11 +18,11 @@
 
 // Lower resolution = the biggest realtime win (cost is ~quadratic in width).
 // Bump these back up for final stills; these values target a smooth animation.
-#define BONUS_WIDTH 1920
+#define BONUS_WIDTH 1280
 // Samples taken per rendered frame. Kept low because frames accumulate when
 // the camera is still (progressive refinement); this is also the quality used
 // while moving.
-#define BONUS_SPP 100
+#define BONUS_SPP 256
 #define BONUS_MAX_DEPTH 5
 // Stop re-rendering once this many frames have accumulated (converged -> idle).
 #define ACCUM_MAX 512
@@ -35,6 +35,10 @@
 // and let it grind out a frame sequence to assemble into a video with ffmpeg.
 #define RENDER_SPP 1        // path-tracing samples accumulated per saved frame
 #define RENDER_MAX_FRAMES 3000  // safety cap on total frames written
+// Simulated seconds per SAVED frame (--render only). Playback at 60fps is
+// real-time when this is 1/60 (0.0167); smaller = slow motion. Interactive
+// mode keeps using PHYS_DT, which is tuned to feel fast on screen.
+#define RENDER_DT 0.008f
 //Sphere inclues hittable...
 // #include "shape.h"
 #include "cl_util_bonus.h"
@@ -83,7 +87,24 @@ typedef struct s_gpu {
   cl_mem            buffer;
   cl_mem            object_buffer;
   cl_mem            accum_buffer;
+  cl_mem            node_buffer;
+  cl_mem            prim_buffer;
 } t_gpu;
+
+/*
+** Host-side BVH over every bounded primitive (spheres, quads, cylinders).
+** Planes are infinite so they sit at the tail of `prim` and are intersected
+** linearly. `prim` indexes into data->objects, which is never reordered, so
+** the rubik/physics/stage code (which addresses objects by index) is
+** unaffected. Rebuilt from scratch whenever scene_dirty is set.
+*/
+typedef struct s_bvh {
+  t_bvh_node *nodes;       // flat tree, root at 0, capacity 2 * nprim + 1
+  int        nnodes;
+  int        *prim;        // object indices: BVH prims first, planes after
+  int        nprim;        // bounded primitives in the tree
+  int        plane_count;  // planes at prim[nprim .. nprim + plane_count)
+} t_bvh;
 
 // --- Rubik's cube demo (host side) -----------------------------------------
 // A real 3x3x3: 27 cubies, each built as a 6-quad box. A "move" turns one
@@ -119,6 +140,7 @@ typedef struct s_gpu {
 # define PHYS_BAUMGARTE 0.30f   // fraction of penetration corrected per contact
 # define PHYS_SLOP 0.01f        // penetration allowed before correction kicks in
 # define PHYS_SLEEP_VEL 0.8f    // motion below which the pile is considered settled
+# define PHYS_MAX_BODIES 64     // rigid body capacity (27 cubies / wall bricks)
 
 // --- Finger "rocket": the finger spins up like a helicopter rotor, then lifts.
 # define PHYS_ROCKET_DELAY 30   // frames the finger holds still before it spins
@@ -141,6 +163,26 @@ typedef struct s_gpu {
 # define SCENE_SCALE_MAX 1.5f     // peak expansion of the stage during the blast
 # define SCRAMBLE_LEN 20     // random moves added by one scramble
 # define MAX_MOVES 1024      // ring-buffer / history capacity
+
+// --- "Cannonball vs brick wall" demo (run with --wall): a Cornell-style room,
+// a wall of stacked brick boxes, and a heavy metal sphere fired with SPACE.
+// The bricks reuse the cubie rigid bodies; the ball is a sphere-shaped body.
+# define WALL_COLS 8
+# define WALL_ROWS 6
+# define WALL_HALF 1.0f      // brick half-extent (bricks are 2x2x2 cubes)
+# define WALL_GAP 0.02f      // air between bricks so they start contact-free
+# define WALL_Z 24.0f        // z position of the wall's center plane
+# define WALL_FLOOR_Y -8.0f  // room floor height
+// Room interior; the visible quads AND the rigid collision planes both use
+// these, so nothing can tumble through a wall.
+# define WALL_ROOM_HX 14.0f    // half-width: side walls at x = -/+ this
+# define WALL_ROOM_TOP 16.0f   // ceiling height
+# define WALL_ROOM_BACK 36.0f  // back wall z
+# define WALL_ROOM_FRONT -6.0f // front opening z (invisible wall, keeps it in)
+# define BALL_RADIUS 3.2f
+# define BALL_INV_MASS 0.05f // ~6-7 brick masses: enough to punch through
+# define BALL_SPEED 200.0f    // fire velocity along +z
+# define BALL_LIFT 18.0f     // upward component of the fire velocity
 
 // Phases of the R-key cinematic (t_rubik.explode_phase).
 # define EXP_IDLE 0
@@ -209,17 +251,20 @@ typedef struct s_rbody {
   cl_float3  omega;     // angular velocity (world)
   float      inv_mass;  // 0 for the frozen "finger" cubies (immovable)
   float      inv_i;     // 0 for the frozen "finger" cubies
-  float      half;      // cube half-extent (for corner / OBB tests)
+  float      half;      // cube half-extent / sphere radius (see shape)
   int        sleeping;  // settled and skipped by the integrator
+  int        shape;     // 0 = box (drives 6 quads), 1 = sphere
+  int        obj;       // sphere only: index of its object in data->objects
 } t_rbody;
 
 typedef struct s_physics {
-  t_rbody  bodies[CUBIES];
+  t_rbody  bodies[PHYS_MAX_BODIES];
   int      count;
   int      running;     // 1 while the simulation is live
   int      settle;      // consecutive near-still frames (-> stop when high)
   int      rocket_frame;// frames since the finger-rocket sequence began
   int      finger_done; // 1 once the finger has lifted out of view
+  int      wall_mode;   // 1 in the --wall demo (no finger/rocket logic)
   float    floor_y;     // ground plane height
 } t_physics;
 
@@ -245,8 +290,14 @@ typedef struct s_data {
     t_object  *objects;
     uint32_t  obj_count;
 
+    // Acceleration structure over `objects` (see t_bvh)
+    t_bvh     bvh;
+
     // Number of frames accumulated since the last camera move (progressive)
     int       frame_index;
+
+    // Objects changed on the host; re-upload the scene buffer before render
+    int       scene_dirty;
 
     // Offline render-to-disk mode (--render)
     int       render_mode;     // 1 = headless render, auto-play + write frames
@@ -293,8 +344,18 @@ t_object   make_obj_cylinder(cl_float3 center, cl_float3 axis,
 
 // Scene assembly (scene_bonus.c)
 int        add_object(t_data *data, t_object obj);
+void       bvh_build(t_data *data);
+void       obj_bounds(t_object *o, cl_float3 *mn, cl_float3 *mx);
+void       bvh_range_bounds(t_data *d, int first, int count, cl_float3 box[2]);
 int        make_box(t_data *data, cl_float3 a, cl_float3 b, t_material mat);
 void       make_cornell_box(t_data *data);
+void       build_wall_scene(t_data *data);
+cl_float3  wall_brick_center(int row, int col);
+void       wall_bricks(t_data *data);
+void       wall_capture_faces(t_data *data, int base);
+void       wall_place_brick(t_data *data, t_rbody *b);
+void       wall_physics_start(t_data *data, int brick_base);
+void       wall_fire(t_data *data);
 void       make_rubick_cube(t_data *data);
 void       add_stage(t_data *data);
 void       update_stage(t_data *data);
@@ -352,6 +413,10 @@ void       physics_step(t_data *data);
 void       rocket_finger(t_data *data);
 void       collide_ground(t_rbody *b, float floor_y);
 void       collide_pair(t_rbody *a, t_rbody *b);
+void       contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp);
+void       collide_ball(t_rbody *a, t_rbody *b);
+void       collide_ball_ground(t_rbody *b, float floor_y);
+void       collide_room(t_rbody *b);
 cl_float3  box_axis(t_rbody *b, int i);
 cl_float3  box_vertex(t_rbody *b, int i);
 cl_float3  contact_point(t_rbody *a, t_rbody *b);

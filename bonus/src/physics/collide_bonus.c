@@ -52,7 +52,7 @@ static void	friction_impulse(t_rbody *a, t_rbody *b, t_contact *c)
 ** Resolve one contact point cp with normal n (pointing from a to b): a
 ** normal impulse (restitution) followed by a clamped friction impulse.
 */
-static void	contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp)
+void	contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp)
 {
 	t_contact	c;
 	cl_float3	relv;
@@ -86,6 +86,11 @@ void	collide_ground(t_rbody *b, float floor_y)
 	float		maxpen;
 	int			i;
 
+	if (b->shape == 1)
+	{
+		collide_ball_ground(b, floor_y);
+		return ;
+	}
 	memset(&ground, 0, sizeof(ground));
 	maxpen = 0.0f;
 	i = -1;
@@ -115,6 +120,11 @@ void	collide_pair(t_rbody *a, t_rbody *b)
 	pen = 0.0f;
 	if (a->inv_mass == 0.0f && b->inv_mass == 0.0f)
 		return ;
+	if (a->shape == 1 || b->shape == 1)
+	{
+		collide_ball(a, b);
+		return ;
+	}
 	if (!sat_overlap(a, b, &n, &pen))
 		return ;
 	contact_impulse(a, b, n, contact_point(a, b));

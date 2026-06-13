@@ -14,7 +14,7 @@
 ** keep being found by the normal bounce path, so the caller still counts their
 ** emission on diffuse hits.
 */
-float3 direct_light(__global t_object *objs, int count, t_hit_record rec, uint *seed)
+float3 direct_light(t_scene sc, t_hit_record rec, uint *seed)
 {
   int       n = 0;
   int       idx = -1;
@@ -32,9 +32,9 @@ float3 direct_light(__global t_object *objs, int count, t_hit_record rec, uint *
   int           i;
 
   i = 0;
-  while (i < count)
+  while (i < sc.count)
   {
-    if (objs[i].type == OBJ_QUAD && objs[i].material.type == 2)
+    if (sc.objs[i].type == OBJ_QUAD && sc.objs[i].material.type == 2)
     {
       n++;
       if (random_float(0.0f, 1.0f, seed) * (float)n < 1.0f)
@@ -44,7 +44,7 @@ float3 direct_light(__global t_object *objs, int count, t_hit_record rec, uint *
   }
   if (idx < 0)
     return ((float3)(0.0f));
-  light = objs[idx];
+  light = sc.objs[idx];
   q = light.center + light.u * random_float(0.0f, 1.0f, seed)
       + light.v * random_float(0.0f, 1.0f, seed);
   to_l = q - rec.p;
@@ -56,9 +56,12 @@ float3 direct_light(__global t_object *objs, int count, t_hit_record rec, uint *
   if (cos_surf <= 0.0f || cos_light <= 1e-6f)
     return ((float3)(0.0f));
   shadow = make_ray(rec.p, wl);
-  if (hit_objects(objs, count, shadow, interval_init(0.001f, dist - 0.001f), &tmp))
+  if (hit_objects(sc, shadow, interval_init(0.001f, dist - 0.001f), &tmp))
     return ((float3)(0.0f));
   area = length(cross(light.u, light.v));
+  // Clamp the inverse-square falloff: points nearly touching the light make
+  // 1/dist2 explode into firefly pixels that linger in the accumulation.
   return (light.material.albedo
-      * (cos_surf * cos_light * area * (float)n / (NEE_PI * dist2)));
+      * (cos_surf * cos_light * area * (float)n
+        / (NEE_PI * fmax(dist2, 0.25f))));
 }

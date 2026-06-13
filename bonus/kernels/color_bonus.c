@@ -1,7 +1,7 @@
 #include "init_kernel.h"
 
-float3 get_ray_color(__global t_object *objs, int count, int max_depth,
-                     t_ray ray, float3 background, uint *seed)
+float3 get_ray_color(t_scene sc, int max_depth, t_ray ray, float3 background,
+                     uint *seed)
 {
   t_hit_record  rec;
   t_ray         scattered;
@@ -12,7 +12,7 @@ float3 get_ray_color(__global t_object *objs, int count, int max_depth,
 
   for (int depth = 0; depth < max_depth; depth++)
   {
-    if (!hit_objects(objs, count, ray, interval_init(0.001f, INFINITY), &rec))
+    if (!hit_objects(sc, ray, interval_init(0.001f, INFINITY), &rec))
     {
       out += throughput * background;
       break ;
@@ -29,7 +29,7 @@ float3 get_ray_color(__global t_object *objs, int count, int max_depth,
     }
     else if (rec.mat.type == 0)
     {
-      out += throughput * rec.mat.albedo * direct_light(objs, count, rec, seed);
+      out += throughput * rec.mat.albedo * direct_light(sc, rec, seed);
       scatter_lambertian(&rec.mat, rec, &attenuation, &scattered, seed);
       count_emission = false;
     }

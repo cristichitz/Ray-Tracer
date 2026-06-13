@@ -98,6 +98,13 @@ bonus/src/physics/physics_step_bonus.c \
 bonus/src/physics/collide_bonus.c \
 bonus/src/physics/collide_box_bonus.c \
 bonus/src/physics/collide_sat_bonus.c \
+bonus/src/physics/physics_wall_bonus.c \
+bonus/src/physics/collide_ball_bonus.c \
+bonus/src/physics/collide_room_bonus.c \
+bonus/src/scene/wall_bonus.c \
+bonus/src/scene/wall_bricks_bonus.c \
+bonus/src/bvh/bvh_bounds_bonus.c \
+bonus/src/bvh/bvh_build_bonus.c \
 bonus/src/render_out_bonus.c
 
 BONUS_INCLUDES = -I. -I./MLX42/include -I./libft -I./bonus/include -I./bonus/kernels
@@ -117,7 +124,14 @@ LIBFT_DIR  = ./libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 MLX_FLAGS = -ldl -lglfw -pthread -lm -lz
+# School machines: no system OpenCL dev files, so link via the linker script
+# in bonus/libs (which points at the Debian loader path) and rpath the bundled
+# AMD runtime. Machines with a proper /usr/lib/libOpenCL.so link it directly.
+ifneq ($(wildcard /usr/lib/libOpenCL.so),)
+BONUS_LINK_FLAGS = -lOpenCL
+else
 BONUS_LINK_FLAGS = -L./bonus/libs -lOpenCL -Wl,-rpath,'$$ORIGIN/bonus/libs' -Wl,--disable-new-dtags
+endif
 
 MACOS_GLFW_FLAGS = -I/opt/homebrew/cellar/glfw/3.4/include/ -L/opt/homebrew/cellar/glfw/3.4/lib/
 UNAME_S := $(shell uname -s)

@@ -35,7 +35,11 @@ static void	substep(t_physics *ph, float dt)
 	{
 		integrate(&ph->bodies[i], dt);
 		if (ph->bodies[i].inv_mass > 0.0f)
+		{
 			collide_ground(&ph->bodies[i], ph->floor_y);
+			if (ph->wall_mode)
+				collide_room(&ph->bodies[i]);
+		}
 		i++;
 	}
 	i = 0;
@@ -82,10 +86,17 @@ static void	push_bodies(t_data *data)
 	c = 0;
 	while (c < ph->count)
 	{
-		pl.cubie = ph->bodies[c].cubie;
-		pl.center = ph->bodies[c].pos;
-		pl.rot = ph->bodies[c].orient;
-		rubik_place_cubie(&data->rubik, data->objects, pl);
+		if (ph->bodies[c].shape == 1)
+			data->objects[ph->bodies[c].obj].center = ph->bodies[c].pos;
+		else if (ph->wall_mode)
+			wall_place_brick(data, &ph->bodies[c]);
+		else
+		{
+			pl.cubie = ph->bodies[c].cubie;
+			pl.center = ph->bodies[c].pos;
+			pl.rot = ph->bodies[c].orient;
+			rubik_place_cubie(&data->rubik, data->objects, pl);
+		}
 		c++;
 	}
 }
@@ -94,15 +105,20 @@ static void	push_bodies(t_data *data)
 void	physics_step(t_data *data)
 {
 	t_physics	*ph;
+	float		dt;
 	int			s;
 
 	ph = &data->phys;
 	if (!ph->running)
 		return ;
-	rocket_finger(data);
+	if (!ph->wall_mode)
+		rocket_finger(data);
+	dt = PHYS_DT;
+	if (data->render_mode)
+		dt = RENDER_DT;
 	s = 0;
 	while (s++ < PHYS_SUBSTEPS)
-		substep(ph, PHYS_DT / PHYS_SUBSTEPS);
+		substep(ph, dt / PHYS_SUBSTEPS);
 	push_bodies(data);
 	if (peak_motion(ph) < PHYS_SLEEP_VEL)
 		ph->settle++;

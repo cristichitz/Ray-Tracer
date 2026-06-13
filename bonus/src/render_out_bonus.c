@@ -110,13 +110,17 @@ void	render_loop(void *param)
 	if (!data->render_started)
 	{
 		mkdir("frames", 0755);
-		start_explode(data);
+		if (data->phys.wall_mode)
+			wall_fire(data);
+		else
+			start_explode(data);
 		data->render_started = 1;
 	}
 	step_rubik(data);
 	physics_step(data);
 	update_stage(data);
 	update_view(data);
+	data->scene_dirty = 1;
 	accumulate(data);
 	save_frame_ppm(data, data->render_frame_no);
 	data->render_frame_no++;

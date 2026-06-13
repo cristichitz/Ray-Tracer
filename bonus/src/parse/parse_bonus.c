@@ -91,15 +91,25 @@ int	parse_scene(t_data *data, char *file)
 
 int	load_scene(t_data *data, int argc, char **argv)
 {
+	int	i;
+
 	data->cam_center = make_float3(0.0f, 0.0f, 0.0f);
 	data->cam_dir = make_float3(0.0f, 0.0f, -1.0f);
 	data->cam_fov = 70.0f;
 	data->frame.background = make_float3(0.70f, 0.80f, 1.0f);
+	i = 1;
+	while (i < argc)
+	{
+		if (!ft_strcmp(argv[i], "--wall"))
+			return (build_wall_scene(data), 1);
+		i++;
+	}
 	while (--argc > 0)
 	{
 		if (argv[argc][0] != '-')
 			return (parse_scene(data, argv[argc]));
 	}
+	// build_rubik(data);
 	make_cornell_box(data);
 	return (1);
 }
