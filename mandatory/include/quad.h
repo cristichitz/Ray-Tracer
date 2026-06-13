@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quad.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 12:23:00 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/12 12:23:00 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:56:38 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ typedef struct s_quad
 	t_vec3		w;
 }				t_quad;
 
+void			pad_to_minimums(t_aabb *p);
+t_aabb			make_aabb_from_aabbs(t_aabb box0, t_aabb box1);
+t_aabb			make_aabb(t_vec3 a, t_vec3 b);
 t_aabb			make_aabb(t_vec3 a, t_vec3 b);
 t_quad			*make_quad(t_vec3 q, t_vec3 u, t_vec3 v, t_material mat);
 

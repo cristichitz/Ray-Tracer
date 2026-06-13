@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:06:51 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 20:20:47 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:55:11 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "interval.h"
 # include "material.h"
 # include "ray.h"
+# include <stdlib.h>
 
 typedef void				(*t_set_normal)(t_hit_record *self,
 				t_ray ray, t_vec3 outward_normal);
