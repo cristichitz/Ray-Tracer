@@ -17,7 +17,7 @@
 
 static void	render_scene(bool *scene_changed, t_data *data)
 {
-	if (scene_changed)
+	if (*scene_changed)
 	{
 		set_quality(data, LOW);
 		data->wait_frames = 0;
@@ -28,7 +28,7 @@ static void	render_scene(bool *scene_changed, t_data *data)
 		if (data->wait_frames > 15)
 			set_quality(data, HIGH);
 	}
-	if (scene_changed || data->render_check)
+	if (*scene_changed || data->render_check)
 	{
 		update_viewport(data);
 		if (data->render_mode == RENDER_DIRECT)
