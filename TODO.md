@@ -16,7 +16,8 @@
 - TODO: resizing window.
 
 ## Nice to have
-- TODO: parse cu for cube. 
+- TODO: parse cu for cube.
+
 - TODO: material switching.
 
 # Bonus
