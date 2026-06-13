@@ -32,6 +32,8 @@ void	destroy_objects(t_hittable_list *self)
 	size_t	i;
 	void	*obj;
 
+	if (!self->objects || self->objects->alloc_size == 0)
+		return ;
 	i = 0;
 	while (i < self->objects->len)
 	{
