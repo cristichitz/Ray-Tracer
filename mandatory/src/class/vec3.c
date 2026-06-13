@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "vec3.h"
-#include <stdio.h>
 
 t_vec3	make_vec(float a, float b, float c)
 {
@@ -106,7 +105,3 @@ t_vec3	norm(t_vec3 a)
 	return (make_vec(a.x / len, a.y / len, a.z / len));
 }
 
-void	print_vec(t_vec3 a)
-{
-	printf("(%f, %f, %f)\n", a.x, a.y, a.z);
-}
