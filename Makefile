@@ -6,7 +6,7 @@
 #    By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/13 19:57:23 by cdohanic         ###   ########.fr        #
+#    Updated: 2026/06/13 20:24:17 by cdohanic         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,8 @@ mandatory/src/control/cam_control.c \
 mandatory/src/control/obj_control.c \
 mandatory/src/control/render_mode.c \
 mandatory/src/control/move_object.c \
+mandatory/src/control/resize.c \
+mandatory/src/control/cam_view.c \
 mandatory/src/class/vec/vec3.c \
 mandatory/src/class/vec/vec3_2.c \
 mandatory/src/class/vec/vec3_3.c \

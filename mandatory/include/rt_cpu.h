@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 19:39:03 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:24:42 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef t_vec					t_list;
 typedef struct s_hittable_list	t_hittable_list;
 
 typedef bool					(*t_world_hit)(t_hittable_list *self, t_ray r,
-				t_interval t, t_hit_record *rec);
+						t_interval t, t_hit_record *rec);
 
 typedef struct s_hittable_list
 {
@@ -103,20 +103,19 @@ typedef struct s_data
 
 int								init_world(t_hittable_list *world);
 
-// MLX Loop
 int								render_frame(t_data *data);
 int								render_frame_direct(t_data *data);
 t_ray							get_ray(t_data *data, uint32_t x, uint32_t y);
 void							write_color(t_data *data, uint32_t x,
 									uint32_t y, t_vec3 color);
-// int								close_app(t_data *data);
-// int								key_hook(int keycode, t_data *data);
 
-void							init_viewport(t_data *data);
 void							camera_setup(t_data *data);
 void							update_viewport(t_data *data);
+void							init_viewport(t_data *data);
 bool							move_cam(t_data *data, float *speed);
 bool							rotate_cam(t_data *data, float *rot_speed);
+void							resize_hook(int32_t width, int32_t height,
+									void *param);
 
 void							object_selector(mlx_key_data_t keydata,
 									void *param);
@@ -129,8 +128,6 @@ bool							is_emissive(t_hit_record *rec);
 t_vec3							sample_square(void);
 float							clampf(float val, float min, float max);
 void							set_quality(t_data *data, t_quality quality);
-void							set_render_mode(t_data *data,
-									t_render_mode mode);
 
 void							print_error(char *msg);
 int								return_print_error(char *msg, int err);

@@ -6,24 +6,23 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 19:37:23 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/13 20:24:36 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSE_H
 # define PARSE_H
 
+# include "libft.h"
+# include "rt_cpu.h"
 # include <fcntl.h>
 # include <float.h>
 # include <limits.h>
 # include <stdlib.h>
-# include "libft.h"
-# include "rt_cpu.h"
 
-// COORD_MAX / COORD_MIN bound scene coordinates during parsing
 # define COORD_MAX 2000.0
 # define COORD_MIN -2000.0
-// emissive quad spawned for an L light: side length and emission multiplier
+
 # define LIGHT_QUAD_SIZE 20.0f
 # define LIGHT_QUAD_GAIN 4.0f
 
