@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/06 17:05:37 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/12 12:23:00 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 19:29:18 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ t_plane	*make_plane(t_plane plane)
 	*p = plane;
 	p->d = dot(p->normal, p->q);
 	p->base.hit = hit_plane;
-	//p->base.destroy = NULL;
 	p->base.resize = NULL;
 	p->base.rotate = rotate_plane;
 	return (p);

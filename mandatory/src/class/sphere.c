@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/09 14:55:51 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/10 16:59:26 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 19:30:25 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ t_sphere	*make_sphere(t_sphere sphere)
 		return (NULL);
 	*s = sphere;
 	s->base.hit = hit_sphere;
-	//s->base.destroy = NULL;
 	s->base.resize = resize_sphere;
 	s->base.rotate = NULL;
 	return (s);
