@@ -18,10 +18,10 @@
 typedef struct s_plane
 {
 	t_hittable	base;
-	t_vec3		Q;
+	t_vec3		q;
 	t_vec3		normal;
 	t_material	mat;
-	float		D;
+	float		d;
 }				t_plane;
 
 t_plane			*make_plane(t_plane plane);

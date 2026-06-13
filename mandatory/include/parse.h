@@ -3,28 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   parse.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 13:00:52 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 18:35:13 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSE_H
 # define PARSE_H
 
-# include "libft.h"
-# include "rt_cpu.h"
 # include <fcntl.h>
 # include <float.h>
 # include <limits.h>
 # include <stdlib.h>
+# include "libft.h"
+# include "rt_cpu.h"
 
-# define COORD_MAX 2000.0      // TODO: What should max be?
-# define COORD_MIN -2000.0     // TODO: What should min be?
-# define LIGHT_QUAD_SIZE 20.0f // side length of the emissive quad spawned for L
-# define LIGHT_QUAD_GAIN 4.0f 
-	// emission multiplier so the quad lights the scene
+// COORD_MAX / COORD_MIN bound scene coordinates during parsing
+# define COORD_MAX 2000.0
+# define COORD_MIN -2000.0
+// emissive quad spawned for an L light: side length and emission multiplier
+# define LIGHT_QUAD_SIZE 20.0f
+# define LIGHT_QUAD_GAIN 4.0f
 
 int		parse_input(t_data *data, int ac, char **av);
 
@@ -63,5 +64,7 @@ int		set_light(t_data *data, char **params);
 int		set_sphere(t_data *data, char **params);
 int		set_cylinder(t_data *data, char **params);
 int		set_plane(t_data *data, char **params);
+int     set_quad(t_data *data, char **params);
+
 
 #endif

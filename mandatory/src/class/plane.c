@@ -25,7 +25,7 @@ bool	hit_plane(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	denom = dot(self->normal, ray.dir);
 	if (fabs(denom) < 1e-8)
 		return (false);
-	t = (dot(self->normal, self->Q) - dot(self->normal, ray.origin)) / denom;
+	t = (dot(self->normal, self->q) - dot(self->normal, ray.origin)) / denom;
 	if (!ray_t.contains(&ray_t, t))
 		return (false);
 	intersection = ray.at(&ray, t);
@@ -54,7 +54,7 @@ t_plane	*make_plane(t_plane plane)
 	if (!p)
 		return (NULL);
 	*p = plane;
-	p->D = dot(p->normal, p->Q);
+	p->d = dot(p->normal, p->q);
 	p->base.hit = hit_plane;
 	//p->base.destroy = NULL;
 	p->base.resize = NULL;

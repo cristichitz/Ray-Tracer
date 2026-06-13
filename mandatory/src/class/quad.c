@@ -78,11 +78,11 @@ bool	hit_quad(void *base, t_ray ray, t_interval ray_t, t_hit_record *rec)
 	denom = dot(self->normal, ray.dir);
 	if (fabs(denom) < 1e-8)
 		return (false);
-	t = (dot(self->normal, self->Q) - dot(self->normal, ray.origin)) / denom;
+	t = (dot(self->normal, self->q) - dot(self->normal, ray.origin)) / denom;
 	if (!ray_t.contains(&ray_t, t))
 		return (false);
 	intersection = ray.at(&ray, t);
-	p = sub(intersection, self->Q);
+	p = sub(intersection, self->q);
 	alpha = dot(self->w, cross(p, self->v));
 	beta = dot(self->w, cross(self->u, p));
 	if (!is_interior(alpha, beta, rec))
@@ -106,11 +106,11 @@ void	rotate_quad(void *base, t_vec3 axis, float angle)
 	self->v = rotate_vec_by_quaternion(q, self->v);
 	n = cross(self->u, self->v);
 	self->normal = norm(n);
-	self->D = dot(self->normal, self->Q);
+	self->d = dot(self->normal, self->q);
 	self->w = divide(n, dot(n, n));
 }
 
-t_quad	*make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
+t_quad	*make_quad(t_vec3 q, t_vec3 u, t_vec3 v, t_material mat)
 {
 	t_quad	*quad;
 	t_aabb	bbox_diagonal1;
@@ -120,12 +120,12 @@ t_quad	*make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
 	quad = malloc(sizeof(t_quad));
 	if (!quad)
 		return (NULL);
-	quad->Q = Q;
+	quad->q = q;
 	quad->u = u;
 	quad->v = v;
 	quad->mat = mat;
-	bbox_diagonal1 = make_aabb(Q, add(Q, add(u, v)));
-	bbox_diagonal2 = make_aabb(add(Q, u), add(Q, v));
+	bbox_diagonal1 = make_aabb(q, add(q, add(u, v)));
+	bbox_diagonal2 = make_aabb(add(q, u), add(q, v));
 	quad->bbox = make_aabb_from_aabbs(bbox_diagonal1, bbox_diagonal2);
 	quad->base.hit = hit_quad;
 	//quad->base.destroy = NULL;
@@ -133,7 +133,7 @@ t_quad	*make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat)
 	quad->base.rotate = rotate_quad;
 	n = cross(u, v);
 	quad->normal = norm(n);
-	quad->D = dot(quad->normal, Q);
+	quad->d = dot(quad->normal, q);
 	quad->w = divide(n, dot(n, n));
 	pad_to_minimums(&quad->bbox);
 	return (quad);

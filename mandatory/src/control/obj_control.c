@@ -3,76 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   obj_control.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 18:40:31 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 13:09:49 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 17:35:07 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "movable.h"
 #include "rt_cpu.h"
-
-void	object_selector(mlx_key_data_t keydata, void *param)
-{
-	t_data	*data;
-
-	data = (t_data *)param;
-	if (keydata.key == MLX_KEY_M && keydata.action == MLX_RELEASE)
-	{
-		if (data->render_mode == RENDER_PATH_TRACE)
-			data->render_mode = RENDER_DIRECT;
-		else
-			data->render_mode = RENDER_PATH_TRACE;
-		data->render_check = true;
-		set_quality(data, LOW);
-		data->wait_frames = 0;
-	}
-	if (data->world.objects->len == 0)
-		return ;
-	if (keydata.key == MLX_KEY_C && keydata.action == MLX_RELEASE)
-	{
-		data->object_i = (data->object_i + 1) % data->world.objects->len;
-		data->render_check = true;
-		if (data->object_i == data->light_i)
-			ft_printf("Light: %u/%u\n",
-				data->object_i + 1, data->world.objects->len);
-		else
-			ft_printf("Object: %u/%u\n",
-				data->object_i + 1, data->world.objects->len);
-	}
-}
-
-bool	move_object(t_data *data, float *speed)
-{
-	t_movable	*object;
-	t_vec3		right;
-	t_vec3		up;
-	t_vec3		step;
-
-	right = norm(cross(make_vec(0.0f, 1.0f, 0.0f), data->cam_forward));
-	up = norm(cross(data->cam_forward, right));
-	step = make_vec(0.0f, 0.0f, 0.0f);
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_6) || mlx_is_key_down(data->mlx, MLX_KEY_H))
-		step = add(step, scale(right, *speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_4) || mlx_is_key_down(data->mlx, MLX_KEY_F))
-		step = add(step, scale(right, -*speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_5) || mlx_is_key_down(data->mlx, MLX_KEY_G))
-		step = add(step, scale(data->cam_forward, *speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_8) || mlx_is_key_down(data->mlx, MLX_KEY_T))
-		step = add(step, scale(data->cam_forward, -*speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_9) || mlx_is_key_down(data->mlx, MLX_KEY_Y))
-		step = add(step, scale(up, *speed));
-	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_7) || mlx_is_key_down(data->mlx, MLX_KEY_R))
-		step = add(step, scale(up, -*speed));
-	if (step.x == 0.0f && step.y == 0.0f && step.z == 0.0f)
-		return (false);
-	object = (t_movable *)ft_vec_get(data->world.objects, data->object_i);
-	object->center = add(object->center, step);
-	if (data->object_i == data->light_i)
-		data->light.center = add(data->light.center, step);
-	return (true);
-}
 
 static bool	adjust_brightness(t_data *data, float *scalar)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   set_obj.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 12:59:55 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/11 13:28:30 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 18:36:33 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	set_plane(t_data *data, char **params)
 	colour = make_vec(0.5f, 0.5f, 0.5f);
 	if (!split_count(params, 4))
 		return (0);
-	if (!set_pts(&plane.Q, params[1], get_pt))
+	if (!set_pts(&plane.q, params[1], get_pt))
 		return (0);
 	if (!set_pts(&plane.normal, params[2], get_uvec_pt))
 		return (0);
@@ -108,4 +108,24 @@ int	set_plane(t_data *data, char **params)
 		return (0);
 	plane.mat = init_lambertian(colour);
 	return (add_to_world(data, make_plane(plane)));
+}
+
+int	set_quad(t_data *data, char **params)
+{
+	t_vec3	q;
+	t_vec3	u;
+	t_vec3	v;
+	t_vec3	colour;
+	
+	if (!split_count(params, 4))
+		return (0);
+	if (!set_pts(&q, params[1], get_pt))
+		return (0);
+	if (!set_pts(&u, params[2], get_pt))
+		return (0);
+	if (!set_pts(&v, params[2], get_pt))
+		return (0);
+	if (!set_colour(&colour, params[3]))
+		return (0);
+	return (add_to_world(data, make_quad(q, u, v, init_lambertian(colour))));
 }

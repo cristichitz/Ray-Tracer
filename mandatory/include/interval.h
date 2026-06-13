@@ -17,15 +17,20 @@
 
 typedef struct s_interval	t_interval;
 
+typedef bool				(*t_itv_contains)(t_interval *self, float x);
+typedef bool				(*t_itv_surrounds)(t_interval *self, float x);
+typedef float				(*t_itv_clamp)(t_interval *self, float x);
+typedef t_interval			(*t_itv_expand)(t_interval *self, float x);
+
 typedef struct s_interval
 {
 	float					min;
 	float					max;
 	float					size;
-	bool					(*contains)(t_interval *self, float x);
-	bool					(*surrounds)(t_interval *self, float x);
-	float					(*clamp)(t_interval *self, float x);
-	t_interval				(*expand)(t_interval *self, float x);
+	t_itv_contains			contains;
+	t_itv_surrounds			surrounds;
+	t_itv_clamp				clamp;
+	t_itv_expand			expand;
 }							t_interval;
 
 t_interval					interval_init(float min, float max);

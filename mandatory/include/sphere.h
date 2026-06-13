@@ -31,8 +31,7 @@ typedef struct s_sphere_var
 	float		discriminant;
 	float		sqrtd;
 	float		root;
-} t_sphere_var;
-
+}				t_sphere_var;
 
 t_sphere		*make_sphere(t_sphere sphere);
 

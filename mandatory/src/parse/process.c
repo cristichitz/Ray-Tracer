@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 13:10:56 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/11 13:30:31 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 18:25:42 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ int	process_type(t_data *data, char **params)
 		return (set_plane(data, params));
 	if (ft_strcmp(params[0], "cy") == 0)
 		return (set_cylinder(data, params));
+	if (ft_strcmp(params[0], "qu") == 0)
+		return (set_quad(data, params));
 	print_error("type not found");
 	return (0);
 }

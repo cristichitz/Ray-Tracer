@@ -1,21 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vec3.c                                             :+:      :+:    :+:   */
+/*   vec3_3.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/09 14:57:12 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 14:57:20 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/13 17:41:06 by cdohanic          #+#    #+#             */
+/*   Updated: 2026/06/13 17:49:45 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "vec3.h"
-
-t_vec3	make_vec(float a, float b, float c)
-{
-	return ((t_vec3){a, b, c});
-}
 
 float	length_squared(t_vec3 a)
 {
@@ -58,50 +53,5 @@ bool	near_zero(t_vec3 a)
 	float	s;
 
 	s = 1e-8;
-	return (fabs(a.x) < s) && (fabs(a.y) < s) && (fabs(a.z) < s);
+	return ((fabs(a.x) < s) && (fabs(a.y) < s) && (fabs(a.z) < s));
 }
-
-t_vec3	mult(t_vec3 a, t_vec3 b)
-{
-	return (make_vec(a.x * b.x, a.y * b.y, a.z * b.z));
-}
-
-t_vec3	add(t_vec3 a, t_vec3 b)
-{
-	return ((t_vec3){a.x + b.x, a.y + b.y, a.z + b.z});
-}
-
-t_vec3	sub(t_vec3 a, t_vec3 b)
-{
-	return ((t_vec3){a.x - b.x, a.y - b.y, a.z - b.z});
-}
-
-t_vec3	scale(t_vec3 a, float b)
-{
-	return ((t_vec3){a.x * b, a.y * b, a.z * b});
-}
-
-t_vec3	divide(t_vec3 a, float b)
-{
-	return ((t_vec3){a.x / b, a.y / b, a.z / b});
-}
-
-float	dot(t_vec3 a, t_vec3 b)
-{
-	return (a.x * b.x + a.y * b.y + a.z * b.z);
-}
-
-t_vec3	cross(t_vec3 a, t_vec3 b)
-{
-	return (make_vec(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y
-			- a.y * b.x));
-}
-
-t_vec3	norm(t_vec3 a)
-{
-	float	len;
-
-	len = sqrtf(a.x * a.x + a.y * a.y + a.z * a.z);
-	return (make_vec(a.x / len, a.y / len, a.z / len));
-}
-

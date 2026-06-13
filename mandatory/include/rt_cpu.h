@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rt_cpu.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 13:01:29 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 17:24:36 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,16 @@ typedef enum e_render_mode
 typedef t_vec					t_list;
 
 typedef struct s_hittable_list	t_hittable_list;
+
+typedef bool					(*t_world_hit)(t_hittable_list *self, t_ray r,
+				t_interval t, t_hit_record *rec);
+
 typedef struct s_hittable_list
 {
 	t_list						*objects;
 	int							(*add)(t_hittable_list *self, void *object);
 	void						(*destroy)(t_hittable_list *self);
-	bool						(*hit)(t_hittable_list *self, t_ray r,
-								t_interval t, t_hit_record *rec);
+	t_world_hit					hit;
 	t_vec3						background;
 	t_vec3						ambient;
 }								t_hittable_list;
@@ -108,6 +111,9 @@ void							write_color(t_data *data, uint32_t x,
 // int								close_app(t_data *data);
 // int								key_hook(int keycode, t_data *data);
 
+void							init_viewport(t_data *data);
+void							camera_setup(t_data *data);
+void							update_viewport(t_data *data);
 bool							move_cam(t_data *data, float *speed);
 bool							rotate_cam(t_data *data, float *rot_speed);
 
@@ -118,6 +124,8 @@ bool							resize_object(t_data *data, float *scalar);
 bool							rotate_object(t_data *data,
 									float *rotation_speed);
 
+bool							is_emissive(t_hit_record *rec);
+t_vec3							sample_square(void);
 float							clampf(float val, float min, float max);
 void							set_quality(t_data *data, t_quality quality);
 void							set_render_mode(t_data *data,

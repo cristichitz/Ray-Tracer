@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render_cpu.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/10 10:44:35 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/12 16:26:17 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 15:20:35 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,31 +18,23 @@ t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 	t_hit_record	hit_record;
 	t_ray			scattered;
 	t_vec3			attenuation;
-	t_vec3			color_from_emission;
-	t_vec3			color_from_ambient;
-	t_vec3			color_from_scatter;
+	t_vec3			col_emis_amb_scat[3];
 
 	hit_record.set_face_normal = ft_set_face_normal;
 	if (depth <= 0)
 		return (make_vec(0.0f, 0.0f, 0.0f));
 	if (!world->hit(world, ray, interval_init(0.001f, INFINITY), &hit_record))
 		return (world->background);
-	color_from_emission = hit_record.mat.emitted(&hit_record.mat, hit_record.u,
+	col_emis_amb_scat[0] = hit_record.mat.emitted(&hit_record.mat, hit_record.u,
 			hit_record.v, hit_record.p);
-	color_from_ambient = mult(world->ambient, hit_record.mat.tex.albedo);
-	color_from_emission = add(color_from_emission, color_from_ambient);
+	col_emis_amb_scat[1] = mult(world->ambient, hit_record.mat.tex.albedo);
+	col_emis_amb_scat[0] = add(col_emis_amb_scat[0], col_emis_amb_scat[1]);
 	if (!hit_record.mat.scatter(&hit_record.mat, ray, hit_record, &attenuation,
 			&scattered))
-		return (color_from_emission);
-	color_from_scatter = mult(attenuation, get_ray_color(world, depth - 1,
+		return (col_emis_amb_scat[0]);
+	col_emis_amb_scat[2] = mult(attenuation, get_ray_color(world, depth - 1,
 				scattered));
-	return (add(color_from_emission, color_from_scatter));
-}
-
-t_vec3	sample_square(void)
-{
-	return (make_vec(random_float(0.0f, 1.0f) - 0.5, random_float(0.0f, 1.0f)
-			- 0.5f, 0));
+	return (add(col_emis_amb_scat[0], col_emis_amb_scat[2]));
 }
 
 t_ray	get_ray(t_data *data, uint32_t x, uint32_t y)
@@ -80,14 +72,28 @@ void	write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
 		mlx_put_pixel(data->img, x, y, pixel_color);
 }
 
-//TODO: too long
+t_vec3	gather_samples(t_data *data, uint32_t x, uint32_t y)
+{
+	uint32_t	sample;
+	t_ray		r;
+	t_vec3		c;
+
+	sample = 0;
+	c = make_vec(0.0f, 0.0f, 0.0f);
+	while (sample < data->samples_per_pixel)
+	{
+		r = get_ray(data, x, y);
+		c = add(c, get_ray_color(&data->world, data->max_depth, r));
+		sample++;
+	}
+	return (c);
+}
+
 int	render_frame(t_data *data)
 {
-	t_ray		r;
 	t_vec3		c;
 	uint32_t	y;
 	uint32_t	x;
-	uint32_t	sample;
 
 	y = 0;
 	while (y < data->height)
@@ -95,14 +101,7 @@ int	render_frame(t_data *data)
 		x = 0;
 		while (x < data->width)
 		{
-			c = make_vec(0.0f, 0.0f, 0.0f);
-			sample = 0;
-			while (sample < data->samples_per_pixel)
-			{
-				r = get_ray(data, x, y);
-				c = add(c, get_ray_color(&data->world, data->max_depth, r));
-				sample++;
-			}
+			c = gather_samples(data, x, y);
 			write_color(data, x, y, scale(c, data->pixel_samples_scale));
 			x++;
 		}

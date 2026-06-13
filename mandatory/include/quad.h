@@ -25,17 +25,17 @@ typedef struct s_aabb
 typedef struct s_quad
 {
 	t_hittable	base;
-	t_vec3		Q;
+	t_vec3		q;
 	t_vec3		u;
 	t_vec3		v;
 	t_material	mat;
 	t_aabb		bbox;
 	t_vec3		normal;
-	float		D;
+	float		d;
 	t_vec3		w;
 }				t_quad;
 
 t_aabb			make_aabb(t_vec3 a, t_vec3 b);
-t_quad			*make_quad(t_vec3 Q, t_vec3 u, t_vec3 v, t_material mat);
+t_quad			*make_quad(t_vec3 q, t_vec3 u, t_vec3 v, t_material mat);
 
 #endif

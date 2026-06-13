@@ -15,11 +15,15 @@
 
 # include "vec3.h"
 
+typedef struct s_ray		t_ray;
+
+typedef t_vec3				(*t_ray_at)(t_ray *self, float t);
+
 typedef struct s_ray
 {
 	t_vec3					origin;
 	t_vec3					dir;
-	t_vec3					(*at)(struct s_ray *self, float t);
+	t_ray_at				at;
 }							t_ray;
 
 t_ray						make_ray(t_vec3 origin, t_vec3 direction);

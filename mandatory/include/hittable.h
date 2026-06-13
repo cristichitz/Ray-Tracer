@@ -17,6 +17,9 @@
 # include "material.h"
 # include "ray.h"
 
+typedef void				(*t_set_normal)(t_hit_record *self,
+				t_ray ray, t_vec3 outward_normal);
+
 typedef struct s_hit_record
 {
 	t_vec3					p;
@@ -27,19 +30,20 @@ typedef struct s_hit_record
 	float					v;
 	bool					front_face;
 	t_vec3					colour;
-	void					(*set_face_normal)(struct s_hit_record *self,
-							t_ray ray, t_vec3 outward_normal);
+	t_set_normal			set_face_normal;
 }							t_hit_record;
+
+typedef bool				(*t_hit_fn)(void *object, t_ray ray,
+				t_interval t, t_hit_record *rec);
 
 typedef struct s_hittable
 {
-	bool					(*hit)(void *object, t_ray ray, t_interval t,
-							t_hit_record *rec);
-	//void					(*destroy)(void *object);
+	t_hit_fn				hit;
 	void					(*resize)(void *object, float scalar);
 	void					(*rotate)(void *object, t_vec3 axis, float angle);
 }							t_hittable;
 
 void						ft_set_face_normal(t_hit_record *self, t_ray r,
 								t_vec3 outward_normal);
+
 #endif
