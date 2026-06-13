@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 18:40:31 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/09 21:32:58 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 13:09:49 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,12 @@ void	object_selector(mlx_key_data_t keydata, void *param)
 	{
 		data->object_i = (data->object_i + 1) % data->world.objects->len;
 		data->render_check = true;
+		if (data->object_i == data->light_i)
+			ft_printf("Light: %u/%u\n",
+				data->object_i + 1, data->world.objects->len);
+		else
+			ft_printf("Object: %u/%u\n",
+				data->object_i + 1, data->world.objects->len);
 	}
 }
 
@@ -63,7 +69,31 @@ bool	move_object(t_data *data, float *speed)
 		return (false);
 	object = (t_movable *)ft_vec_get(data->world.objects, data->object_i);
 	object->center = add(object->center, step);
+	if (data->object_i == data->light_i)
+		data->light.center = add(data->light.center, step);
 	return (true);
+}
+
+static bool	adjust_brightness(t_data *data, float *scalar)
+{
+	bool	changed;
+
+	changed = false;
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_ADD))
+	{
+		data->light.brightness += *scalar;
+		if (data->light.brightness > 1.0f)
+			data->light.brightness = 1.0f;
+		changed = true;
+	}
+	if (mlx_is_key_down(data->mlx, MLX_KEY_KP_SUBTRACT))
+	{
+		data->light.brightness -= *scalar;
+		if (data->light.brightness < 0.0f)
+			data->light.brightness = 0.0f;
+		changed = true;
+	}
+	return (changed);
 }
 
 bool	resize_object(t_data *data, float *scalar)
@@ -73,6 +103,8 @@ bool	resize_object(t_data *data, float *scalar)
 
 	resized = false;
 	object = (t_hittable *)ft_vec_get(data->world.objects, data->object_i);
+	if (data->object_i == data->light_i)
+		return (adjust_brightness(data, scalar));
 	if (object->resize)
 	{
 		if (mlx_is_key_down(data->mlx, MLX_KEY_KP_ADD))

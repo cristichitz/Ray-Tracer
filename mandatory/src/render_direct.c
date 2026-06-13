@@ -72,19 +72,20 @@ static t_vec3	compute_direct_light(t_data *data, t_hit_record *rec, t_ray cam_ra
 	return (add(diffuse, specular));
 }
 
-static t_vec3	get_ray_color_direct(t_data *data, t_ray ray)
+static t_vec3	get_ray_color_direct(t_data *data, t_ray ray, int depth)
 {
 	t_hit_record	rec;
 	t_vec3			color;
 
-	g_ray_count++;
 	rec.set_face_normal = ft_set_face_normal;
+	if (depth <= 0)
+		return (data->world.background);
 	if (!data->world.hit(&data->world, ray,
 			interval_init(0.001f, INFINITY), &rec))
 		return (data->world.background);
 	if (is_emissive(&rec))
 		return (get_ray_color_direct(data,
-				make_ray(rec.p, ray.dir)));
+				make_ray(rec.p, ray.dir), depth - 1));
 	color = mult(data->world.ambient, rec.mat.tex.albedo);
 	color = add(color, compute_direct_light(data, &rec, ray));
 	return (color);
@@ -104,7 +105,7 @@ int	render_frame_direct(t_data *data)
 		while (x < data->width)
 		{
 			r = get_ray(data, x, y);
-			color = get_ray_color_direct(data, r);
+			color = get_ray_color_direct(data, r, 10);
 			write_color(data, x, y, color);
 			x++;
 		}

@@ -25,5 +25,6 @@ int	add_light_quad(t_data *data, t_light light)
 	corner = sub(light.center, scale(add(u, v), 0.5f));
 	difflight = init_diffuse_light(scale(light.colour, light.brightness
 				* LIGHT_QUAD_GAIN));
+	data->light_i = data->world.objects->len;
 	return (add_to_world(data, make_quad(corner, u, v, difflight)));
 }

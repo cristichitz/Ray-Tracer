@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:50 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/11 13:21:19 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/13 13:01:29 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,13 @@ typedef struct s_data
 
 	t_hittable_list				world;
 	unsigned int				object_i;
+	unsigned int				light_i;
 	uint32_t					wait_frames;
 	bool						render_check;
 	t_render_mode				render_mode;
 }								t_data;
 
 int								init_world(t_hittable_list *world);
-
-// Benchmark
-int								run_benchmark(t_data *data, int frames);
-extern unsigned long long		g_ray_count;
 
 // MLX Loop
 int								render_frame(t_data *data);
@@ -125,7 +122,7 @@ float							clampf(float val, float min, float max);
 void							set_quality(t_data *data, t_quality quality);
 void							set_render_mode(t_data *data,
 									t_render_mode mode);
-									
+
 void							print_error(char *msg);
 int								return_print_error(char *msg, int err);
 

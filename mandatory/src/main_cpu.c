@@ -10,12 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "bench.h"
 #include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
 #include <stdlib.h>
-#include <string.h> //TODO: forbidden
 
 static void	camera_setup(t_data *data)
 {
@@ -173,10 +171,6 @@ int	main(int ac, char **av)
 	t_data			data;
 	t_hittable_list	world;
 	t_list			obj;
-	int				frames;
-	int				bench;
-	char			*scene;
-	char			*pav[2];
 
 	data.set_ambient_light = false;
 	data.set_cam = false;
@@ -187,38 +181,12 @@ int	main(int ac, char **av)
 	if (init_world(&world))
 		return (EXIT_FAILURE);
 	data.world = world;
-	frames = 30;
-	bench = 0;
-	scene = NULL;
-	for (int i = 1; i < ac; i++)
-	{
-		if (!ft_strcmp(av[i], "--bench"))
-		{
-			bench = 1;
-			if (i + 1 < ac && av[i + 1][0] >= '0' && av[i + 1][0] <= '9')
-				frames = atoi(av[++i]);
-		}
-		else if (!scene)
-			scene = av[i];
-	}
-	if (!scene)
-	{
-		print_error("No scene file given.");
-		return (0);
-	}
-	// TODO: remove bench
-	pav[0] = av[0];
-	pav[1] = scene;
-	if (!parse_input(&data, 2, pav))
+	if (!parse_input(&data, ac, av))
 	{
 		data.world.destroy(&data.world);
 		return (EXIT_FAILURE);
 	}
-	// make_cornell_box(&world);
 	initialize(&data);
-	if (bench)
-		return (run_benchmark(&data, frames));
-	//-----
 	data.mlx = mlx_init(data.width, data.height, "MiniRT", true);
 	if (!data.mlx)
 	{
