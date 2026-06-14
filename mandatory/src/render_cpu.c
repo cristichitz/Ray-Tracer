@@ -64,10 +64,7 @@ void	write_color(t_data *data, uint32_t x, uint32_t y, t_vec3 color)
 	g = (uint32_t)(256 * intensity.clamp(&intensity, sqrtf(color.y)));
 	b = (uint32_t)(256 * intensity.clamp(&intensity, sqrtf(color.z)));
 	pixel_color = (r << 24) | (g << 16) | (b << 8) | 255;
-	if (data->headless)
-		data->fb[(size_t)y * data->width + x] = pixel_color;
-	else
-		mlx_put_pixel(data->img, x, y, pixel_color);
+	mlx_put_pixel(data->img, x, y, pixel_color);
 }
 
 t_vec3	gather_samples(t_data *data, uint32_t x, uint32_t y)

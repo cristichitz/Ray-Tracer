@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 20:14:55 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/13 17:00:45 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/14 14:24:22 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@
 // Samples taken per rendered frame. Kept low because frames accumulate when
 // the camera is still (progressive refinement); this is also the quality used
 // while moving.
-#define BONUS_SPP 150
-#define BONUS_MAX_DEPTH 10
+#define BONUS_SPP 2
+#define BONUS_MAX_DEPTH 2
 // Stop re-rendering once this many frames have accumulated (converged -> idle).
 #define ACCUM_MAX 512
 // L spawns an emissive sphere; tune size/strength per scene scale

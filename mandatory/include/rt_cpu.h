@@ -59,9 +59,6 @@ typedef struct s_data
 	void						*mlx;
 	void						*img;
 
-	uint32_t					*fb;
-	bool						headless;
-
 	uint32_t					width;
 	uint32_t					height;
 
