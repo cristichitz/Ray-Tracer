@@ -6,13 +6,13 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:55:32 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/12 18:55:33 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/14 18:22:20 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
 
-#define MOVE_SPEED 10.5f
+#define MOVE_SPEED 0.3f
 #define ROT_SPEED 0.05f
 
 static void	clamp_pitch(t_data *data)

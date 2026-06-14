@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 20:14:55 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/14 14:25:49 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/14 19:24:27 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 // Lower resolution = the biggest realtime win (cost is ~quadratic in width).
 // Bump these back up for final stills; these values target a smooth animation.
-#define BONUS_WIDTH 1280
+#define BONUS_WIDTH 1920
 // Samples taken per rendered frame. Kept low because frames accumulate when
 // the camera is still (progressive refinement); this is also the quality used
 // while moving.
@@ -28,7 +28,7 @@
 #define ACCUM_MAX 512
 // L spawns an emissive sphere; tune size/strength per scene scale
 #define LIGHT_RADIUS 5.0f
-#define LIGHT_GAIN 30.0f
+#define LIGHT_GAIN 20.0f
 // Offline render-to-disk (run with --render): the whole cinematic plays
 // automatically and one PPM image per animation frame is written into frames/.
 // This decouples the animation from the keyboard, so you can crank samples/depth
@@ -126,7 +126,7 @@ typedef struct s_bvh {
 # define PHYS_MAX_BODIES 128    // rigid body capacity
 # define PHYS_MAX_COLLIDERS 32  // static collision-plane capacity
 # define PHYS_LAUNCH_SPEED 80.0f // speed the SPACE shove imparts to a body
-# define PHYS_CLICK_IMPULSE 600.0f // impulse a left mouse click pushes with
+# define PHYS_CLICK_IMPULSE 6000.0f // impulse a left mouse click pushes with
 
 // Unit quaternion (w + xi + yj + zk); carries a rigid body's orientation.
 typedef struct s_quat {

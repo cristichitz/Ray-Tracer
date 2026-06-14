@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/14 16:00:00 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/14 16:00:00 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/14 18:23:37 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	dynamic_preset(const char *name, cl_float3 c, t_material *out)
 	else if (!ft_strcmp(name, "brick"))
 		*out = mat_make(c, 0, 1, make_float3(1.0f, 0.10f, 0.60f));
 	else if (!ft_strcmp(name, "wood"))
-		*out = mat_make(c, 0, 1, make_float3(0.6f, 0.20f, 0.50f));
+		*out = mat_make(c, 0, 0, make_float3(0.6f, 0.20f, 0.50f));
 	else if (!ft_strcmp(name, "rubber"))
 		*out = mat_make(c, 0, 1, make_float3(0.5f, 0.80f, 0.90f));
 	else
