@@ -6,7 +6,7 @@
 #    By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/13 20:24:17 by cdohanic         ###   ########.fr        #
+#    Updated: 2026/06/13 20:58:25 by cdohanic         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,12 +38,15 @@ mandatory/src/class/sphere.c \
 mandatory/src/class/hittable.c \
 mandatory/src/class/ray.c \
 mandatory/src/class/plane.c \
-mandatory/src/class/quad.c \
+mandatory/src/class/quad/quad.c \
+mandatory/src/class/quad/aabb.c \
 mandatory/src/class/cylinder/cylinder.c \
 mandatory/src/class/cylinder/cylinder_body.c \
 mandatory/src/class/cylinder/cylinder_caps.c \
 mandatory/src/class/interval.c \
-mandatory/src/class/material.c \
+mandatory/src/class/material/light.c \
+mandatory/src/class/material/lambertian.c \
+mandatory/src/class/material/metal.c \
 mandatory/src/class/texture.c \
 mandatory/src/class/quaternion.c \
 mandatory/src/class/box.c \
