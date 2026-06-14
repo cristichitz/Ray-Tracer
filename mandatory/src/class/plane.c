@@ -58,5 +58,6 @@ t_plane	*make_plane(t_plane plane)
 	p->base.hit = hit_plane;
 	p->base.resize = NULL;
 	p->base.rotate = rotate_plane;
+	p->base.destroy = NULL;
 	return (p);
 }

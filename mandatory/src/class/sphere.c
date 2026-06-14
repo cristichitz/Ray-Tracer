@@ -84,5 +84,6 @@ t_sphere	*make_sphere(t_sphere sphere)
 	s->base.hit = hit_sphere;
 	s->base.resize = resize_sphere;
 	s->base.rotate = NULL;
+	s->base.destroy = NULL;
 	return (s);
 }

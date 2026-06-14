@@ -62,5 +62,6 @@ t_cylinder	*make_cylinder(t_cylinder cylinder)
 	c->base.hit = hit_cylinder;
 	c->base.resize = resize_cylinder;
 	c->base.rotate = rotate_cylinder;
+	c->base.destroy = NULL;
 	return (c);
 }

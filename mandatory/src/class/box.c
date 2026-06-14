@@ -39,6 +39,20 @@ bool	hit_box(void *base, t_ray ray, t_interval t, t_hit_record *rec)
 	return (hit);
 }
 
+static void	destroy_box(void *base)
+{
+	t_box	*self;
+	int		i;
+
+	self = (t_box *)base;
+	i = 0;
+	while (i < 6)
+	{
+		free(self->sides[i]);
+		i++;
+	}
+}
+
 static void	assemble_boxi(t_box *boxi, t_vec3 min, t_vec3 max, t_material mat)
 {
 	t_vec3	dx;
@@ -61,9 +75,9 @@ static void	assemble_boxi(t_box *boxi, t_vec3 min, t_vec3 max, t_material mat)
 	boxi->sides[5] = make_quad(make_vec(min.x, min.y, min.z), dx, dz,
 			mat);
 	boxi->base.hit = hit_box;
+	boxi->base.destroy = destroy_box;
 }
 
-// order: back - right - front - left - top - bottom
 t_box	*make_box(t_vec3 a, t_vec3 b, t_material mat)
 {
 	t_box	*boxi;

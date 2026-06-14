@@ -99,6 +99,7 @@ t_quad	*make_quad(t_vec3 q, t_vec3 u, t_vec3 v, t_material mat)
 	quad->base.hit = hit_quad;
 	quad->base.resize = NULL;
 	quad->base.rotate = rotate_quad;
+	quad->base.destroy = NULL;
 	n = cross(u, v);
 	quad->normal = norm(n);
 	quad->d = dot(quad->normal, q);
