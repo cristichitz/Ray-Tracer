@@ -6,13 +6,13 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 11:11:47 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/08 16:32:55 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/14 17:42:09 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../libft.h"
 
-float ft_atof(const char *nptr)
+float	ft_atof(const char *nptr)
 {
-	return(ft_strtof(nptr, NULL));
+	return (ft_strtof(nptr, NULL));
 }
