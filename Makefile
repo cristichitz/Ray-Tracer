@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+         #
+#    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/13 20:58:25 by cdohanic         ###   ########.fr        #
+#    Updated: 2026/06/14 13:58:04 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,9 +44,9 @@ mandatory/src/class/cylinder/cylinder.c \
 mandatory/src/class/cylinder/cylinder_body.c \
 mandatory/src/class/cylinder/cylinder_caps.c \
 mandatory/src/class/interval.c \
+mandatory/src/class/material/metal.c \
 mandatory/src/class/material/light.c \
 mandatory/src/class/material/lambertian.c \
-mandatory/src/class/material/metal.c \
 mandatory/src/class/texture.c \
 mandatory/src/class/quaternion.c \
 mandatory/src/class/box.c \

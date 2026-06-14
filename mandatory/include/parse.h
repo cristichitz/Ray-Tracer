@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/04 15:18:29 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 20:24:36 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/14 12:46:31 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int		set_light(t_data *data, char **params);
 int		set_sphere(t_data *data, char **params);
 int		set_cylinder(t_data *data, char **params);
 int		set_plane(t_data *data, char **params);
-int     set_quad(t_data *data, char **params);
-int     set_box(t_data *data, char **params);
+int		set_quad(t_data *data, char **params);
+int		set_box(t_data *data, char **params);
 
 #endif
