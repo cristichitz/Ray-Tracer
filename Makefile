@@ -61,7 +61,8 @@ mandatory/src/parse/set_obj.c \
 mandatory/src/parse/set_obj_2.c \
 mandatory/src/parse/set_params.c \
 mandatory/src/parse/set_params_2.c \
-mandatory/src/render_direct.c
+mandatory/src/render_direct.c \
+mandatory/src/random.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./mandatory/include
 
