@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hittable.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:06:51 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 20:55:11 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/14 12:45:40 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,6 @@ typedef struct s_hit_record
 	t_vec3					colour;
 	t_set_normal			set_face_normal;
 }							t_hit_record;
-
-// typedef bool				(*t_hit_fn)(void *object, t_ray ray,
-// 				t_interval t, t_hit_record *rec);
 
 typedef struct s_hittable
 {
