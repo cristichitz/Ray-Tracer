@@ -24,7 +24,7 @@ static void	integrate(t_rbody *b, float dt)
 	b->orient = quat_integrate(b->orient, b->omega, dt);
 }
 
-/* One collision sub-iteration: integrate, then resolve ground + every pair. */
+/* One sub-iteration: integrate, resolve the static world, then every pair. */
 static void	substep(t_physics *ph, float dt)
 {
 	int	i;
@@ -35,7 +35,7 @@ static void	substep(t_physics *ph, float dt)
 	{
 		integrate(&ph->bodies[i], dt);
 		if (ph->bodies[i].inv_mass > 0.0f)
-			collide_ground(&ph->bodies[i], ph->floor_y);
+			collide_world(ph, &ph->bodies[i]);
 		i++;
 	}
 	i = 0;
@@ -71,43 +71,30 @@ static float	peak_motion(t_physics *ph)
 	return (sqrtf(m));
 }
 
-/* Push every body's pose into the quad geometry the GPU renders. */
-static void	push_bodies(t_data *data)
-{
-	t_physics	*ph;
-	t_place		pl;
-	int			c;
-
-	ph = &data->phys;
-	c = 0;
-	while (c < ph->count)
-	{
-		pl.cubie = ph->bodies[c].cubie;
-		pl.center = ph->bodies[c].pos;
-		pl.rot = ph->bodies[c].orient;
-		rubik_place_cubie(&data->rubik, data->objects, pl);
-		c++;
-	}
-}
-
-/* Advance the simulation one rendered frame and push the result to geometry. */
+/* Advance the simulation one rendered frame and push poses into the geometry. */
 void	physics_step(t_data *data)
 {
 	t_physics	*ph;
+	float		dt;
 	int			s;
+	int			c;
 
 	ph = &data->phys;
 	if (!ph->running)
 		return ;
-	rocket_finger(data);
+	dt = PHYS_DT;
+	if (data->render_mode)
+		dt = RENDER_DT;
 	s = 0;
 	while (s++ < PHYS_SUBSTEPS)
-		substep(ph, PHYS_DT / PHYS_SUBSTEPS);
-	push_bodies(data);
+		substep(ph, dt / PHYS_SUBSTEPS);
+	c = 0;
+	while (c < ph->count)
+		body_place(data, &ph->bodies[c++]);
 	if (peak_motion(ph) < PHYS_SLEEP_VEL)
 		ph->settle++;
 	else
 		ph->settle = 0;
-	if (ph->finger_done && ph->settle > 30)
+	if (ph->settle > 30)
 		ph->running = 0;
 }

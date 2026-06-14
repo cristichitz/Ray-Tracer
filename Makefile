@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
+#    By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/14 13:58:04 by timurray         ###   ########.fr        #
+#    Updated: 2026/06/14 14:34:58 by cdohanic         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -90,25 +90,26 @@ bonus/src/class/vec3_2_bonus.c \
 bonus/src/class/vec3_3_bonus.c \
 bonus/src/class/sphere_bonus.c \
 bonus/src/class/material_bonus.c \
+bonus/src/class/material_preset_bonus.c \
 bonus/src/class/plane_bonus.c \
 bonus/src/class/cylinder_bonus.c \
-bonus/src/rubik/rubick_build_bonus.c \
-bonus/src/rubik/rubick_move_bonus.c \
-bonus/src/rubik/rubick_engine_bonus.c \
-bonus/src/rubik/rubick_solve_bonus.c \
-bonus/src/rubik/rubick_plan_bonus.c \
-bonus/src/rubik/rubick_explode_bonus.c \
-bonus/src/rubik/rubick_phase_bonus.c \
-bonus/src/rubik/rubick_phase_2_bonus.c \
-bonus/src/rubik/quat_bonus.c \
-bonus/src/rubik/quat_2_bonus.c \
+bonus/src/physics/quat_bonus.c \
+bonus/src/physics/quat_2_bonus.c \
+bonus/src/physics/body_bonus.c \
+bonus/src/physics/body_place_bonus.c \
 bonus/src/physics/physics_bonus.c \
-bonus/src/physics/physics_rocket_bonus.c \
 bonus/src/physics/physics_step_bonus.c \
+bonus/src/physics/physics_input_bonus.c \
 bonus/src/physics/collide_bonus.c \
 bonus/src/physics/collide_box_bonus.c \
 bonus/src/physics/collide_sat_bonus.c \
+bonus/src/physics/collide_ball_bonus.c \
+bonus/src/physics/collide_sphere_bonus.c \
+bonus/src/physics/collide_room_bonus.c \
+bonus/src/bvh/bvh_bounds_bonus.c \
+bonus/src/bvh/bvh_build_bonus.c \
 bonus/src/render_out_bonus.c
+
 
 BONUS_INCLUDES = -I. -I./MLX42/include -I./libft -I./bonus/include -I./bonus/kernels
 BONUS_CFLAGS = -DCL_TARGET_OPENCL_VERSION=300

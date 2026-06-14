@@ -13,7 +13,7 @@
 #include "rt_bonus.h"
 
 /*
-** OBB geometry helpers for the falling cubies: world-space box axes, corner
+** OBB geometry helpers for box rigid bodies: world-space box axes, corner
 ** positions, point containment and the contact-point approximation.
 */
 

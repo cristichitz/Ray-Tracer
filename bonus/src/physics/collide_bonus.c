@@ -14,10 +14,11 @@
 #include <string.h>
 
 /*
-** Impulse resolution for the falling cubies. Contacts are resolved with
+** Impulse resolution for the rigid bodies. Contacts are resolved with
 ** sequential impulses (normal bounce + Coulomb friction) plus Baumgarte
-** positional correction so stacks don't sink. The cube's inertia is
-** isotropic, so inv_i is a single scalar.
+** positional correction so stacks don't sink. Inertia is isotropic, so inv_i
+** is a single scalar. Restitution and friction are combined from the two
+** bodies in contact, so the result is dictated by their materials.
 */
 
 /* Add velocity + angular velocity from an impulse applied at offset r. */
@@ -33,6 +34,7 @@ static void	friction_impulse(t_rbody *a, t_rbody *b, t_contact *c)
 	cl_float3	relv;
 	cl_float3	t;
 	float		jt;
+	float		fr;
 
 	relv = sub(add(b->vel, cross(b->omega, c->rb)),
 			add(a->vel, cross(a->omega, c->ra)));
@@ -40,10 +42,11 @@ static void	friction_impulse(t_rbody *a, t_rbody *b, t_contact *c)
 	if (dot(t, t) < 1e-10f)
 		return ;
 	t = norm(t);
+	fr = sqrtf(a->friction * b->friction);
 	jt = -dot(relv, t) / (a->inv_mass + b->inv_mass
 			+ a->inv_i * dot(cross(c->ra, t), cross(c->ra, t))
 			+ b->inv_i * dot(cross(c->rb, t), cross(c->rb, t)));
-	jt = fmaxf(-PHYS_FRICTION * c->jn, fminf(PHYS_FRICTION * c->jn, jt));
+	jt = fmaxf(-fr * c->jn, fminf(fr * c->jn, jt));
 	body_apply(a, scale(t, -jt), c->ra);
 	body_apply(b, scale(t, jt), c->rb);
 }
@@ -52,7 +55,7 @@ static void	friction_impulse(t_rbody *a, t_rbody *b, t_contact *c)
 ** Resolve one contact point cp with normal n (pointing from a to b): a
 ** normal impulse (restitution) followed by a clamped friction impulse.
 */
-static void	contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp)
+void	contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp)
 {
 	t_contact	c;
 	cl_float3	relv;
@@ -72,7 +75,7 @@ static void	contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp)
 		+ b->inv_i * dot(cross(c.rb, n), cross(c.rb, n));
 	if (denom < 1e-8f)
 		return ;
-	c.jn = -(1.0f + PHYS_RESTITUTION) * vn / denom;
+	c.jn = -(1.0f + 0.5f * (a->restitution + b->restitution)) * vn / denom;
 	body_apply(a, scale(n, -c.jn), c.ra);
 	body_apply(b, scale(n, c.jn), c.rb);
 	friction_impulse(a, b, &c);
@@ -86,7 +89,14 @@ void	collide_ground(t_rbody *b, float floor_y)
 	float		maxpen;
 	int			i;
 
+	if (b->shape == 1)
+	{
+		collide_ball_ground(b, floor_y);
+		return ;
+	}
 	memset(&ground, 0, sizeof(ground));
+	ground.restitution = b->restitution;
+	ground.friction = b->friction;
 	maxpen = 0.0f;
 	i = -1;
 	while (++i < 8)
@@ -115,6 +125,11 @@ void	collide_pair(t_rbody *a, t_rbody *b)
 	pen = 0.0f;
 	if (a->inv_mass == 0.0f && b->inv_mass == 0.0f)
 		return ;
+	if (a->shape == 1 || b->shape == 1)
+	{
+		collide_ball(a, b);
+		return ;
+	}
 	if (!sat_overlap(a, b, &n, &pen))
 		return ;
 	contact_impulse(a, b, n, contact_point(a, b));

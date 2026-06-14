@@ -73,14 +73,10 @@ static void	save_frame_ppm(t_data *data, int n)
 	fclose(f);
 }
 
-/* The cinematic is over once nothing is animating and the pile has settled. */
+/* The shot is over once the simulation has run itself to rest. */
 static int	animation_done(t_data *data)
 {
-	t_rubik	*r;
-
-	r = &data->rubik;
-	return (!r->explode_active && !r->orbit_active && !r->active
-		&& r->q_count == 0 && !data->phys.running);
+	return (!data->phys.running);
 }
 
 static void	accumulate(t_data *data)
@@ -110,13 +106,12 @@ void	render_loop(void *param)
 	if (!data->render_started)
 	{
 		mkdir("frames", 0755);
-		start_explode(data);
+		shove_forward(data);
 		data->render_started = 1;
 	}
-	step_rubik(data);
 	physics_step(data);
-	update_stage(data);
 	update_view(data);
+	data->scene_dirty = 1;
 	accumulate(data);
 	save_frame_ppm(data, data->render_frame_no);
 	data->render_frame_no++;

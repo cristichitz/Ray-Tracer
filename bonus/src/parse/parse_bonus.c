@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:53:22 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/13 15:51:15 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/12 18:53:22 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ static int	valid_ext(char *file)
 
 static int	process_type(t_data *data, char **p)
 {
+	if (p[0][0] == '#')
+		return (1);
 	if (!ft_strcmp(p[0], "C"))
 		return (set_cam(data, p));
 	if (!ft_strcmp(p[0], "A"))
@@ -38,6 +40,10 @@ static int	process_type(t_data *data, char **p)
 		return (set_plane(data, p));
 	if (!ft_strcmp(p[0], "cy"))
 		return (set_cylinder(data, p));
+	if (!ft_strcmp(p[0], "bx"))
+		return (set_box(data, p));
+	if (!ft_strcmp(p[0], "qu"))
+		return (set_quad(data, p));
 	return (parse_err("Unknown element type."));
 }
 
@@ -89,17 +95,30 @@ int	parse_scene(t_data *data, char *file)
 	return (1);
 }
 
+/*
+** Parse the first non-flag argument as the scene file (or fall back to the
+** built-in Cornell box when none is given), then build the physics world
+** (colliders from static planes; bodies were registered as objects were
+** parsed). Physics is therefore identical no matter which .rt is loaded.
+*/
 int	load_scene(t_data *data, int argc, char **argv)
 {
+	int	i;
+
 	data->cam_center = make_float3(0.0f, 0.0f, 0.0f);
 	data->cam_dir = make_float3(0.0f, 0.0f, -1.0f);
 	data->cam_fov = 70.0f;
 	data->frame.background = make_float3(0.70f, 0.80f, 1.0f);
-	while (--argc > 0)
+	i = argc;
+	while (--i > 0)
 	{
-		if (argv[argc][0] != '-')
-			return (parse_scene(data, argv[argc]));
+		if (argv[i][0] != '-')
+			break ;
 	}
-	make_cornell_box(data);
+	if (i > 0 && !parse_scene(data, argv[i]))
+		return (0);
+	if (i == 0)
+		make_cornell_box(data);
+	physics_init(data);
 	return (1);
 }

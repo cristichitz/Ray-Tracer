@@ -1,0 +1,111 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   body_bonus.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/14 16:00:00 by cdohanic          #+#    #+#             */
+/*   Updated: 2026/06/14 16:00:00 by cdohanic         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "rt_bonus.h"
+#include <string.h>
+
+/*
+** Rigid bodies are registered straight from the object builders: whenever a
+** sphere or a box is created with a dynamic material, add_body() turns the
+** object (or the box's BOX_FACES quads) into one simulated body. Nothing here
+** knows about any particular scene, so every .rt file gets the same physics.
+*/
+
+/* Combined AABB of a body's objects (parse-time: indexes objects directly). */
+static void	body_bounds(t_data *data, int first, int count, cl_float3 box[2])
+{
+	cl_float3	mn;
+	cl_float3	mx;
+	int			i;
+
+	obj_bounds(&data->objects[first], &box[0], &box[1]);
+	i = 1;
+	while (i < count)
+	{
+		obj_bounds(&data->objects[first + i], &mn, &mx);
+		box[0] = make_float3(fminf(box[0].x, mn.x), fminf(box[0].y, mn.y),
+				fminf(box[0].z, mn.z));
+		box[1] = make_float3(fmaxf(box[1].x, mx.x), fmaxf(box[1].y, mx.y),
+				fmaxf(box[1].z, mx.z));
+		i++;
+	}
+}
+
+/* Cache each quad's geometry relative to the body center so it can be re-posed. */
+static void	capture_box(t_rbody *b, t_object *objs)
+{
+	int	f;
+
+	f = 0;
+	while (f < BOX_FACES)
+	{
+		b->loc_c[f] = sub(objs[b->obj_first + f].center, b->pos);
+		b->loc_u[f] = objs[b->obj_first + f].u;
+		b->loc_v[f] = objs[b->obj_first + f].v;
+		f++;
+	}
+}
+
+/* Locate the body (center + half-extent) from its objects; cache box faces. */
+static void	body_shape(t_data *data, t_rbody *b)
+{
+	cl_float3	box[2];
+
+	if (b->shape == 1)
+	{
+		b->pos = data->objects[b->obj_first].center;
+		b->half = data->objects[b->obj_first].radius;
+		return ;
+	}
+	body_bounds(data, b->obj_first, b->obj_count, box);
+	b->pos = scale(add(box[0], box[1]), 0.5f);
+	b->half = (box[1].x - box[0].x) * 0.5f;
+	capture_box(b, data->objects);
+}
+
+/* Mass and (isotropic) inverse inertia from density and the body's size. */
+static void	body_mass(t_rbody *b, float density)
+{
+	float	mass;
+	float	vol;
+
+	if (b->shape == 1)
+		vol = 4.18879f * b->half * b->half * b->half;
+	else
+		vol = 8.0f * b->half * b->half * b->half;
+	mass = fmaxf(1e-6f, density * vol);
+	b->inv_mass = 1.0f / mass;
+	if (b->shape == 1)
+		b->inv_i = 2.5f * b->inv_mass / (b->half * b->half);
+	else
+		b->inv_i = 1.5f * b->inv_mass / (b->half * b->half);
+}
+
+/* Register a rigid body over objects [first, first + count) from a material. */
+void	add_body(t_data *data, int first, int count, t_material mat)
+{
+	t_rbody	*b;
+
+	if (data->phys.count >= PHYS_MAX_BODIES)
+		return ;
+	b = &data->phys.bodies[data->phys.count];
+	memset(b, 0, sizeof(*b));
+	b->obj_first = first;
+	b->obj_count = count;
+	b->shape = (count == 1);
+	b->orient = quat_identity();
+	b->restitution = mat.restitution;
+	b->friction = mat.friction;
+	body_shape(data, b);
+	body_mass(b, mat.density);
+	data->phys.count++;
+}

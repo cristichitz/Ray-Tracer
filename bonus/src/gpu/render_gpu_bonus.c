@@ -12,6 +12,34 @@
 
 #include "rt_bonus.h"
 
+/*
+** Objects moved on the host: rebuild the BVH and push the scene, tree and
+** index list back to the GPU, then refresh the node count (kernel arg 8).
+*/
+static void	upload_scene(t_data *data)
+{
+	cl_int	clerror;
+	cl_int	nn;
+
+	bvh_build(data);
+	clerror = clEnqueueWriteBuffer(data->gpu.queue, data->gpu.object_buffer,
+			CL_TRUE, 0, sizeof(t_object) * data->obj_count, data->objects,
+			0, NULL, NULL);
+	check_ocl_err("clEnqueueWriteBuffer", clerror);
+	clerror = clEnqueueWriteBuffer(data->gpu.queue, data->gpu.node_buffer,
+			CL_TRUE, 0, sizeof(t_bvh_node) * (data->bvh.nnodes + 1),
+			data->bvh.nodes, 0, NULL, NULL);
+	check_ocl_err("clEnqueueWriteBuffer", clerror);
+	clerror = clEnqueueWriteBuffer(data->gpu.queue, data->gpu.prim_buffer,
+			CL_TRUE, 0, sizeof(int) * data->obj_count, data->bvh.prim,
+			0, NULL, NULL);
+	check_ocl_err("clEnqueueWriteBuffer", clerror);
+	nn = data->bvh.nnodes;
+	clerror = clSetKernelArg(data->gpu.kernel, 8, sizeof(cl_int), &nn);
+	check_ocl_err("clSetKernelArg", clerror);
+	data->scene_dirty = 0;
+}
+
 static void	set_frame_args(t_data *data)
 {
 	cl_int	clerror;
@@ -23,10 +51,8 @@ static void	set_frame_args(t_data *data)
 	check_ocl_err("clSetKernelArg", clerror);
 	clerror = clSetKernelArg(data->gpu.kernel, 5, sizeof(cl_int), &fidx);
 	check_ocl_err("clSetKernelArg", clerror);
-	clerror = clEnqueueWriteBuffer(data->gpu.queue, data->gpu.object_buffer,
-			CL_TRUE, 0, sizeof(t_object) * data->obj_count, data->objects,
-			0, NULL, NULL);
-	check_ocl_err("clEnqueueWriteBuffer", clerror);
+	if (data->scene_dirty)
+		upload_scene(data);
 }
 
 static void	profile_kernel(cl_event ev, int render_mode)

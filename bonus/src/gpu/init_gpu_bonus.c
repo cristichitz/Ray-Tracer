@@ -32,6 +32,37 @@ cl_int	init_objects(t_data *data)
 	return (clerror);
 }
 
+/*
+** Builds the BVH on the host and uploads it as two buffers: the flat node
+** tree and the primitive index list (kernel args 6-10, see render_kernel).
+*/
+static cl_int	init_bvh_buffers(t_data *data)
+{
+	cl_int	clerror;
+	cl_int	meta[3];
+
+	bvh_build(data);
+	data->gpu.node_buffer = clCreateBuffer(data->gpu.context,
+			CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+			sizeof(t_bvh_node) * (2 * data->bvh.nprim + 1),
+			data->bvh.nodes, &clerror);
+	check_ocl_err("clCreateBuffer", clerror);
+	data->gpu.prim_buffer = clCreateBuffer(data->gpu.context,
+			CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+			sizeof(int) * (data->obj_count + 1), data->bvh.prim, &clerror);
+	check_ocl_err("clCreateBuffer", clerror);
+	clSetKernelArg(data->gpu.kernel, 6, sizeof(cl_mem),
+		&data->gpu.node_buffer);
+	clSetKernelArg(data->gpu.kernel, 7, sizeof(cl_mem),
+		&data->gpu.prim_buffer);
+	meta[0] = data->bvh.nnodes;
+	meta[1] = data->bvh.nprim;
+	meta[2] = data->bvh.plane_count;
+	clSetKernelArg(data->gpu.kernel, 8, sizeof(cl_int), &meta[0]);
+	clSetKernelArg(data->gpu.kernel, 9, sizeof(cl_int), &meta[1]);
+	return (clSetKernelArg(data->gpu.kernel, 10, sizeof(cl_int), &meta[2]));
+}
+
 static void	build_kernels(t_data *data)
 {
 	static const char	*files[] = {"bonus/kernels/interval_bonus.c",
@@ -75,7 +106,9 @@ static cl_int	init_buffers(t_data *data)
 	clerror = clSetKernelArg(data->gpu.kernel, 4, sizeof(cl_mem),
 			&data->gpu.accum_buffer);
 	check_ocl_err("clSetKernelArg", clerror);
-	return (init_objects(data));
+	clerror = init_objects(data);
+	check_ocl_err("init_objects", clerror);
+	return (init_bvh_buffers(data));
 }
 
 cl_int	init_gpu(t_data *data)

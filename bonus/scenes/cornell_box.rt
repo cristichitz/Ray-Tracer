@@ -1,0 +1,21 @@
+# Cornell box - bonus physics demo
+# Run: ./miniRT_bonus bonus/scenes/cornell_box.rt
+# The classic box, but the two inner boxes are dynamic: they fall and stack on
+# the static floor plane. Walls are static planes (scenery + colliders).
+# Left-click a box to shove it; SPACE launches the one under the screen centre.
+
+C  20,20,-40   0,0,1    45
+A  0.0         0,0,0
+# ceiling quad area light (like the box in make_cornell_box), material "light"
+qu 13,39.5,13  14,0,0   0,0,14        255,250,235   light
+
+# --- room walls: static planes (Cornell red / green / white) ---
+pl 20,0,20     0,1,0    186,186,186
+pl 20,40,20    0,-1,0   186,186,186
+pl 20,20,40    0,0,-1   186,186,186
+pl 0,20,20     1,0,0    166,13,13
+pl 40,20,20    -1,0,0   31,115,38
+
+# --- two dynamic boxes that fall and stack ---
+bx 20,12,20    8,8,8    186,186,186   wood
+bx 20,26,20    8,8,8    200,170,110   brick
