@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/08 10:14:06 by timurray          #+#    #+#             */
-/*   Updated: 2025/09/12 09:34:29 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/14 17:43:08 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ int	ft_vec_push(t_vec *dst, void *src)
 		return (-1);
 	else if (!dst->memory)
 		ft_vec_new(dst, 1, dst->elem_size);
-
 	if (dst->elem_size * dst->len >= dst->alloc_size)
 	{
 		if (ft_vec_resize(dst, dst->len * 2) < 0)

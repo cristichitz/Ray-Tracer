@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 11:09:41 by timurray          #+#    #+#             */
-/*   Updated: 2026/02/09 12:41:58 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/14 17:43:00 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,5 +88,5 @@ float	ft_strtof(const char *nptr, char **endptr)
 	handle_exp(&nptr, &num);
 	if (endptr)
 		*endptr = (char *)nptr;
-	return (float)(sign * num);
+	return ((float)(sign * num));
 }

@@ -13,7 +13,6 @@
 #include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
-#include <stdlib.h>
 
 static void	render_scene(bool *scene_changed, t_data *data)
 {
@@ -96,6 +95,7 @@ int	main(int ac, char **av)
 	data.world.objects = &obj;
 	if (init_world(&data.world))
 		return (EXIT_FAILURE);
+	init_random();
 	if (!parse_input(&data, ac, av))
 	{
 		data.world.destroy(&data.world);

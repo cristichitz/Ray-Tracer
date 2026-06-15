@@ -22,6 +22,7 @@
 # endif
 
 float	random_float(float min, float max);
+void	init_random(void);
 float	deg_to_rad(float degrees);
 
 float	length_squared(t_vec3 a);
