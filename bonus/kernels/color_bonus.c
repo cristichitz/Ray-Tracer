@@ -9,6 +9,7 @@ float3 get_ray_color(t_scene sc, int max_depth, t_ray ray, float3 background,
   float3        throughput = (float3)(1.0f);
   float3        out = (float3)(0.0f);
   bool          count_emission = true;
+  int           hops = 0;
 
   for (int depth = 0; depth < max_depth; depth++)
   {
@@ -16,6 +17,18 @@ float3 get_ray_color(t_scene sc, int max_depth, t_ray ray, float3 background,
     {
       out += throughput * background;
       break ;
+    }
+    // Portal surface with both portals active: teleport the ray to the partner
+    // and keep tracing without spending a bounce (so you see straight through).
+    if (rec.mat.portal >= 0 && sc.portal[0] >= 0 && sc.portal[1] >= 0)
+    {
+      int s = rec.mat.portal;
+      ray = portal_warp(sc.objs[sc.portal[s]], sc.objs[sc.portal[1 - s]],
+          rec.p, ray.dir);
+      if (++hops > 8)
+        break ;
+      depth--;
+      continue ;
     }
     // Quad AND sphere lights are handled by NEE (see is_nee_light), so only
     // count their emission on the camera ray / after a specular bounce to

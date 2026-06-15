@@ -14,6 +14,8 @@ static bool hit_one(t_object obj, t_ray ray, t_interval span, t_hit_record *rec)
     return (hit_cylinder(obj, ray, span, rec));
   if (obj.type == OBJ_QUAD)
     return (hit_quad(obj, ray, span, rec));
+  if (obj.type == OBJ_ELLIPSE)
+    return (hit_ellipse(obj, ray, span, rec));
   return (false);
 }
 

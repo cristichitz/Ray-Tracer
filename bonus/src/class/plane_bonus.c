@@ -52,3 +52,28 @@ t_object	make_obj_quad(cl_float3 q, cl_float3 u, cl_float3 v, t_material mat)
 	o.material = mat;
 	return (o);
 }
+
+/*
+** Oriented ellipse used as the portal surface. Unlike a quad, `center` is the
+** true center and u, v are the (perpendicular) semi-axis vectors, so the
+** kernel's unit-disk test (hit_ellipse_bonus.c) bounds it. n / d / w mirror the
+** quad so the planar coordinate test is identical.
+*/
+t_object	make_obj_ellipse(cl_float3 center, cl_float3 u, cl_float3 v,
+		t_material mat)
+{
+	t_object	o;
+	cl_float3	n;
+
+	memset(&o, 0, sizeof(o));
+	n = cross(u, v);
+	o.type = OBJ_ELLIPSE;
+	o.center = center;
+	o.u = u;
+	o.v = v;
+	o.normal = norm(n);
+	o.d = dot(o.normal, center);
+	o.w = divide(n, dot(n, n));
+	o.material = mat;
+	return (o);
+}

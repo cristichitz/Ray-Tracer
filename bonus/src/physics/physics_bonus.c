@@ -60,4 +60,6 @@ void	physics_init(t_data *data)
 	ph->settle = 0;
 	ph->autostart = 0;
 	ph->running = 0;
+	ph->held = -1;
+	ph->hold_dist = 0.0f;
 }

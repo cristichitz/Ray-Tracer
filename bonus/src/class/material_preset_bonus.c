@@ -30,6 +30,7 @@ static t_material	mat_make(cl_float3 color, int type, int dyn, cl_float3 phys)
 	mat.density = phys.x;
 	mat.restitution = phys.y;
 	mat.friction = phys.z;
+	mat.portal = -1;
 	return (mat);
 }
 

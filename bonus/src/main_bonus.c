@@ -49,33 +49,94 @@ void	key_hook(mlx_key_data_t key, void *param)
 		shove_forward(data);
 }
 
+/* World-space ray through the current mouse cursor position. */
+static t_ray	mouse_ray(t_data *data)
+{
+	int	x;
+	int	y;
+
+	mlx_get_mouse_pos(data->mlx, &x, &y);
+	return (ray_from_screen(data, (float)x, (float)y));
+}
+
+/* Push the sphere under the cursor straight ahead (the old click behaviour). */
+static void	mouse_shove(t_data *data, int i)
+{
+	apply_impulse(&data->phys.bodies[i],
+		scale(data->cam_dir, PHYS_CLICK_IMPULSE), data->phys.bodies[i].pos);
+	data->phys.running = 1;
+	data->phys.settle = 0;
+}
+
+/* Pick up the box under the cursor; it then floats along the mouse ray. */
+static void	mouse_grab(t_data *data, int i, t_ray ray)
+{
+	cl_float3	off;
+
+	off = sub(data->phys.bodies[i].pos, ray.origin);
+	data->phys.held = i;
+	data->phys.bodies[i].held = 1;
+	data->phys.bodies[i].sleeping = 0;
+	data->phys.hold_dist = sqrtf(length_squared(off));
+	data->phys.running = 1;
+	data->phys.settle = 0;
+}
+
+/* Middle click while holding: fling the body along the cursor ray with spin. */
+static void	throw_held(t_data *data)
+{
+	t_rbody	*b;
+	t_ray	ray;
+
+	b = &data->phys.bodies[data->phys.held];
+	ray = mouse_ray(data);
+	b->held = 0;
+	data->phys.held = -1;
+	b->vel = scale(ray.dir, PHYS_LAUNCH_SPEED);
+	b->omega = scale(cross(ray.dir, make_float3(0.0f, 1.0f, 0.0f)), 12.0f);
+	b->sleeping = 0;
+	data->phys.running = 1;
+	data->phys.settle = 0;
+}
+
 /*
-** Left click shoves the body under the cursor straight ahead (along the view
-** direction). Picking + impulse reuse the modular physics_input helpers, so
-** this hook is the whole feature; aim, click, watch it fly.
+** Mouse does it all. While holding a body: middle click throws it (velocity +
+** spin), left click just drops it. Otherwise a left click aiming at a box
+** grabs it (it then follows the cursor), at a sphere shoves it, and at a wall
+** drops a portal there.
 */
 void	mouse_hook(mouse_key_t button, action_t action,
 		modifier_key_t mods, void *param)
 {
 	t_data	*data;
 	t_ray	ray;
-	int		x;
-	int		y;
 	int		i;
 
 	(void)mods;
 	data = (t_data *)param;
-	if (button != MLX_MOUSE_BUTTON_LEFT || action != MLX_PRESS)
+	if (action != MLX_PRESS || data->render_mode)
 		return ;
-	mlx_get_mouse_pos(data->mlx, &x, &y);
-	ray = ray_from_screen(data, (float)x, (float)y);
+	if (data->phys.held >= 0)
+	{
+		if (button == MLX_MOUSE_BUTTON_MIDDLE)
+			throw_held(data);
+		else if (button == MLX_MOUSE_BUTTON_LEFT)
+		{
+			data->phys.bodies[data->phys.held].held = 0;
+			data->phys.held = -1;
+		}
+		return ;
+	}
+	if (button != MLX_MOUSE_BUTTON_LEFT)
+		return ;
+	ray = mouse_ray(data);
 	i = pick_body(data, ray);
 	if (i < 0)
-		return ;
-	apply_impulse(&data->phys.bodies[i],
-		scale(data->cam_dir, PHYS_CLICK_IMPULSE), data->phys.bodies[i].pos);
-	data->phys.running = 1;
-	data->phys.settle = 0;
+		place_portal(data, ray);
+	else if (data->phys.bodies[i].shape == 0)
+		mouse_grab(data, i, ray);
+	else
+		mouse_shove(data, i);
 }
 
 /*
@@ -151,6 +212,7 @@ int	main(int argc, char **argv)
 	data.render_mode = render_mode_on(argc, argv);
 	if (!load_scene(&data, argc, argv))
 		return (EXIT_FAILURE);
+	reserve_portals(&data);
 	initialize(&data);
 	if (!init_window(&data))
 		return (EXIT_FAILURE);

@@ -12,11 +12,35 @@
 
 #include "rt_bonus.h"
 
+/*
+** A carried body is driven toward the cursor target by a capped velocity (not
+** teleported), so it still collides with walls and cannot be shoved through
+** them. Gravity is off while held; the spin is bled away so it hangs steady.
+*/
+static void	drive_held(t_rbody *b, float dt, cl_float3 target)
+{
+	cl_float3	d;
+	float		dist;
+	float		speed;
+
+	d = sub(target, b->pos);
+	dist = sqrtf(dot(d, d));
+	speed = fminf(dist / dt, HOLD_MAX_SPEED);
+	if (dist > 1e-4f)
+		b->vel = scale(d, speed / dist);
+	else
+		b->vel = make_float3(0.0f, 0.0f, 0.0f);
+	b->pos = add(b->pos, scale(b->vel, dt));
+	b->omega = scale(b->omega, 0.5f);
+}
+
 /* Semi-implicit Euler step for one dynamic body. */
-static void	integrate(t_rbody *b, float dt)
+static void	integrate(t_rbody *b, float dt, cl_float3 target)
 {
 	if (b->inv_mass == 0.0f || b->sleeping)
 		return ;
+	if (b->held)
+		return (drive_held(b, dt, target));
 	b->vel.y += PHYS_GRAVITY * dt;
 	b->vel = scale(b->vel, PHYS_LIN_DAMP);
 	b->omega = scale(b->omega, PHYS_ANG_DAMP);
@@ -33,7 +57,7 @@ static void	substep(t_physics *ph, float dt)
 	i = 0;
 	while (i < ph->count)
 	{
-		integrate(&ph->bodies[i], dt);
+		integrate(&ph->bodies[i], dt, ph->hold_target);
 		if (ph->bodies[i].inv_mass > 0.0f)
 			collide_world(ph, &ph->bodies[i]);
 		i++;
@@ -71,6 +95,26 @@ static float	peak_motion(t_physics *ph)
 	return (sqrtf(m));
 }
 
+/*
+** Aim the carry constraint: store the world point along the ray through the
+** current mouse position that the held body is driven toward (drive_held).
+** Recomputed each frame so the cube tracks the cursor and can be dropped
+** anywhere.
+*/
+static void	hold_aim(t_data *data)
+{
+	t_ray	ray;
+	int		x;
+	int		y;
+
+	if (data->phys.held < 0)
+		return ;
+	mlx_get_mouse_pos(data->mlx, &x, &y);
+	ray = ray_from_screen(data, (float)x, (float)y);
+	data->phys.hold_target = add(ray.origin,
+			scale(ray.dir, data->phys.hold_dist));
+}
+
 /* Advance the simulation one rendered frame and push poses into the geometry. */
 void	physics_step(t_data *data)
 {
@@ -85,13 +129,16 @@ void	physics_step(t_data *data)
 	dt = PHYS_DT;
 	if (data->render_mode)
 		dt = RENDER_DT;
+	hold_aim(data);
+	portal_sync_holes(data);
 	s = 0;
 	while (s++ < PHYS_SUBSTEPS)
 		substep(ph, dt / PHYS_SUBSTEPS);
+	portals_teleport(data);
 	c = 0;
 	while (c < ph->count)
 		body_place(data, &ph->bodies[c++]);
-	if (peak_motion(ph) < PHYS_SLEEP_VEL)
+	if (peak_motion(ph) < PHYS_SLEEP_VEL && ph->held < 0)
 		ph->settle++;
 	else
 		ph->settle = 0;

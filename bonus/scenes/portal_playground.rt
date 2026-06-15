@@ -1,0 +1,38 @@
+# Portal playground - bonus
+# Run: ./miniRT_bonus bonus/scenes/portal_playground.rt
+#
+# A closed room you can riddle with portals. Every wall and the floor is a
+# plane, so each one is BOTH a collision surface and a valid portal target.
+#
+# Controls:
+#   left click a wall/floor  -> drop a portal (two max; 3rd recycles the oldest)
+#   left click a cube        -> pick it up; it follows the cursor, click to drop
+#   middle click while held  -> throw it (velocity + spin)
+#   left click a sphere      -> shove it forward
+#   SPACE                    -> launch whatever is under the screen centre
+#
+# Fun test: portal on the floor under the ledge + portal on the far wall, then
+# knock a cube off the ledge and watch it shoot out across the room.
+
+C  0,8,-26    0,-0.12,1   60
+
+# No explicit light: a bright ambient sky lights the open-topped room from
+# above (escaped rays return this colour). With no emitter to sample, the path
+# tracer skips next-event estimation entirely, so frames are fast and clean.
+A  1.0        235,240,250
+
+# --- room: planes double as colliders and portal targets ---
+pl 0,0,0      0,1,0       195,195,200
+pl 0,0,17     0,0,-1      175,180,205
+pl -15,0,0    1,0,0       205,70,70
+pl 15,0,0     -1,0,0      70,160,205
+pl 0,0,-30    0,0,1       175,180,205
+
+# --- static ledge to drop props off (wood keyword = static, immovable) ---
+bx -9,3,11    6,6,6       150,120,80    wood
+
+# --- dynamic props: grab, throw and drop these through the portals ---
+bx -9,7.5,11  3,3,3       225,120,55    brick
+bx 5,2,5      3,3,3       120,205,120   rubber
+bx 9,2.5,9    2.5,2.5,2.5 210,205,90    brick
+sp 0,3,3      3           220,220,235   metal

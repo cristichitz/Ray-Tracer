@@ -30,5 +30,6 @@ t_material	material_init(cl_float3 color, int type)
 	mat.density = 1.0f;
 	mat.restitution = PHYS_RESTITUTION;
 	mat.friction = PHYS_FRICTION;
+	mat.portal = -1;
 	return (mat);
 }

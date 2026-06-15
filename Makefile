@@ -109,6 +109,9 @@ bonus/src/physics/collide_sphere_bonus.c \
 bonus/src/physics/collide_room_bonus.c \
 bonus/src/bvh/bvh_bounds_bonus.c \
 bonus/src/bvh/bvh_build_bonus.c \
+bonus/src/portal/portal_bonus.c \
+bonus/src/portal/portal_hit_bonus.c \
+bonus/src/portal/portal_warp_bonus.c \
 bonus/src/render_out_bonus.c
 
 

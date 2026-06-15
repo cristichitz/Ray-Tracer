@@ -12,7 +12,7 @@
 
 #include "rt_bonus.h"
 
-#define KERNEL_COUNT 13
+#define KERNEL_COUNT 15
 
 /*
 ** Uploads the already-assembled scene (filled by load_scene) as one buffer.
@@ -68,9 +68,11 @@ static void	build_kernels(t_data *data)
 	static const char	*files[] = {"bonus/kernels/interval_bonus.c",
 		"bonus/kernels/ray_bonus.c", "bonus/kernels/random_bonus.c",
 		"bonus/kernels/hit_sphere_bonus.c", "bonus/kernels/hit_plane_bonus.c",
-		"bonus/kernels/hit_quad_bonus.c", "bonus/kernels/hit_cylinder_bonus.c",
+		"bonus/kernels/hit_quad_bonus.c", "bonus/kernels/hit_ellipse_bonus.c",
+		"bonus/kernels/hit_cylinder_bonus.c",
 		"bonus/kernels/objects_bonus.c", "bonus/kernels/nee_bonus.c",
 		"bonus/kernels/scatter_bonus.c", "bonus/kernels/camera_bonus.c",
+		"bonus/kernels/portal_bonus.c",
 		"bonus/kernels/color_bonus.c", "bonus/kernels/render_bonus.c"};
 	char				*src[KERNEL_COUNT];
 	size_t				len[KERNEL_COUNT];
@@ -131,5 +133,7 @@ cl_int	init_gpu(t_data *data)
 	data->gpu.queue = create_cl_queue(device, data->gpu.context);
 	build_kernels(data);
 	data->gpu.kernel = create_cl_kernel(data->gpu.program, "render_kernel");
-	return (init_buffers(data));
+	init_buffers(data);
+	set_portal_args(data);
+	return (CL_SUCCESS);
 }

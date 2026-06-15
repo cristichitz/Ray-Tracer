@@ -51,6 +51,7 @@ static void	set_frame_args(t_data *data)
 	check_ocl_err("clSetKernelArg", clerror);
 	clerror = clSetKernelArg(data->gpu.kernel, 5, sizeof(cl_int), &fidx);
 	check_ocl_err("clSetKernelArg", clerror);
+	set_portal_args(data);
 	if (data->scene_dirty)
 		upload_scene(data);
 }

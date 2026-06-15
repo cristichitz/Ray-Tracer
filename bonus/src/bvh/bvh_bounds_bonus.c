@@ -22,6 +22,19 @@ static cl_float3	vmax3(cl_float3 a, cl_float3 b)
 	return (make_float3(fmaxf(a.x, b.x), fmaxf(a.y, b.y), fmaxf(a.z, b.z)));
 }
 
+/* Box over center +/- (|u| + |v|): contains the whole oriented ellipse. */
+static void	ellipse_bounds(t_object *o, cl_float3 *mn, cl_float3 *mx)
+{
+	cl_float3	e;
+
+	e = make_float3(fabsf(o->u.x) + fabsf(o->v.x),
+			fabsf(o->u.y) + fabsf(o->v.y),
+			fabsf(o->u.z) + fabsf(o->v.z));
+	e = add(e, make_float3(1e-4f, 1e-4f, 1e-4f));
+	*mn = sub(o->center, e);
+	*mx = add(o->center, e);
+}
+
 /* Tight box over the 4 corners, padded so a flat quad is never zero-thin. */
 static void	quad_bounds(t_object *o, cl_float3 *mn, cl_float3 *mx)
 {
@@ -56,6 +69,11 @@ void	obj_bounds(t_object *o, cl_float3 *mn, cl_float3 *mx)
 	if (o->type == OBJ_QUAD)
 	{
 		quad_bounds(o, mn, mx);
+		return ;
+	}
+	if (o->type == OBJ_ELLIPSE)
+	{
+		ellipse_bounds(o, mn, mx);
 		return ;
 	}
 	r = o->radius;

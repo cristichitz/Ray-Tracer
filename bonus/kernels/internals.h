@@ -30,6 +30,9 @@ typedef struct  s_material {
   float     density;
   float     restitution;
   float     friction;
+  // -1 = not a portal. 0 or 1 = this surface is portal A or B: the render
+  // kernel teleports rays through it to the partner portal (see portal_bonus.c).
+  int       portal;
 } t_material;
 
 typedef struct s_hit_record {

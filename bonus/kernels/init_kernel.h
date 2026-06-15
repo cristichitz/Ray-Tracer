@@ -20,6 +20,9 @@
 #define OBJ_PLANE    1
 #define OBJ_CYLINDER 2
 #define OBJ_QUAD     3
+// Oriented ellipse/disk: like a quad but `center` is the true center and
+// u, v are the (perpendicular) semi-axis vectors. Used as the portal surface.
+#define OBJ_ELLIPSE  4
 
 typedef struct s_object {
   int        type;
@@ -64,6 +67,10 @@ typedef struct s_scene {
   int                    nnodes;
   int                    plane_first; // == number of prims inside the BVH
   int                    plane_count;
+  // Object indices of the two active portals (-1 = inactive). When a ray hits
+  // an OBJ_ELLIPSE whose material.portal is 0/1 and both are active, the kernel
+  // teleports the ray to the partner instead of shading it (portal_bonus.c).
+  int                    portal[2];
 } t_scene;
 #endif
 

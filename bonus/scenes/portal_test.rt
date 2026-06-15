@@ -1,0 +1,21 @@
+# Portal test scene - bonus
+# Run: ./miniRT_bonus bonus/scenes/portal_test.rt
+# A flat floor, one flat back wall and a single dynamic cube. Left-click a wall
+# or the floor to drop a portal (two max, the third recycles the oldest);
+# left-click the cube to pick it up so it follows the cursor, click again to
+# drop it. Drop it through one portal to have it come out the other.
+
+C  0,5,-15    0,-0.12,1   60
+
+# No explicit light: a bright ambient sky lights the scene (escaped rays return
+# this colour), so there is no emitter to sample and frames stay fast.
+A  1.0        235,240,250
+
+# flat floor plane (static -> collision surface + portal target)
+pl 0,0,0      0,1,0       180,180,185
+
+# one flat back wall (static -> portal target)
+pl 0,0,10     0,0,-1      150,160,200
+
+# a single dynamic cube resting on the floor (brick = dynamic rigid body)
+bx 0,1,2      2,2,2       210,120,60    brick

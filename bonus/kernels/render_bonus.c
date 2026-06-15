@@ -5,7 +5,8 @@ __kernel void render_kernel(__global int *img_buffer, __constant t_object *objec
                             __global float4 *accum, int frame_index,
                             __global const t_bvh_node *nodes,
                             __global const int *prim,
-                            int nnodes, int plane_first, int plane_count)
+                            int nnodes, int plane_first, int plane_count,
+                            int portal0, int portal1)
 {
   int x = get_global_id(0);
   int y = get_global_id(1);
@@ -22,6 +23,8 @@ __kernel void render_kernel(__global int *img_buffer, __constant t_object *objec
   sc.nnodes = nnodes;
   sc.plane_first = plane_first;
   sc.plane_count = plane_count;
+  sc.portal[0] = portal0;
+  sc.portal[1] = portal1;
 
   // Vary the seed per accumulated frame so each frame draws new samples.
   uint seed = (uint)id + (uint)frame_index * 9781u;

@@ -128,6 +128,18 @@ typedef struct s_bvh {
 # define PHYS_LAUNCH_SPEED 80.0f // speed the SPACE shove imparts to a body
 # define PHYS_CLICK_IMPULSE 6000.0f // impulse a left mouse click pushes with
 
+// --- Portals ---------------------------------------------------------------
+// Two portals max; a left click places one on the static surface under the
+// cursor and the third placement recycles the oldest (FIFO ring of 2). The
+// portal surface is an OBJ_ELLIPSE carrying a portal material; the render
+// kernel teleports rays through it and the physics teleports bodies whose
+// center crosses it.
+# define PORTAL_RX 2.0f        // ellipse horizontal semi-axis (world units)
+# define PORTAL_RY 3.2f        // ellipse vertical semi-axis (taller = doorway)
+# define PORTAL_OFFSET 0.01f   // hair of clearance off the wall (avoids z-fight)
+# define PORTAL_COOLDOWN 8     // frames a body ignores portals after teleport
+# define HOLD_MAX_SPEED 90.0f  // cap on the carry velocity (avoids tunneling)
+
 // Unit quaternion (w + xi + yj + zk); carries a rigid body's orientation.
 typedef struct s_quat {
   float  w;
@@ -159,6 +171,8 @@ typedef struct s_rbody {
   float      restitution; // bounciness, copied from the material
   float      friction;    // friction coefficient, copied from the material
   int        sleeping;    // settled and skipped by the integrator
+  int        held;        // 1 while carried by the cursor (gravity disabled)
+  int        portal_cd;   // frames left before this body may teleport again
   cl_float3  loc_c[BOX_FACES]; // box: canonical quad corner vs body center
   cl_float3  loc_u[BOX_FACES]; // box: canonical quad u edge
   cl_float3  loc_v[BOX_FACES]; // box: canonical quad v edge
@@ -183,6 +197,16 @@ typedef struct s_physics {
   int        autostart;   // 1 = bodies move on load; else wait for input
   int        settle;      // consecutive near-still frames (-> stop when high)
   float      floor_y;     // fallback ground height when no plane collider exists
+  int        held;        // index of the body carried by the cursor, or -1
+  float      hold_dist;   // distance in front of the camera to carry it at
+  cl_float3  hold_target; // world point the carried body is driven toward
+  // Active portal "holes": where a static collider is treated as open so a
+  // body over the ellipse falls through instead of landing on the surface.
+  int        portal_hole;
+  cl_float3  hole_c[2];
+  cl_float3  hole_n[2];
+  cl_float3  hole_u[2];   // full semi-axis vectors (used to normalise the test)
+  cl_float3  hole_v[2];
 } t_physics;
 
 typedef struct s_data {
@@ -219,6 +243,13 @@ typedef struct s_data {
     int       render_mode;     // 1 = headless render, auto-play + write frames
     int       render_started;  // the simulation has been auto-triggered
     int       render_frame_no; // index of the next frame to write
+
+    // Two reserved OBJ_ELLIPSE slots used as portals. portal_obj holds their
+    // object indices, portal_active flags which are placed, portal_next is the
+    // FIFO slot the next click overwrites.
+    int       portal_obj[2];
+    int       portal_active[2];
+    int       portal_next;
 } t_data;
 
 // GPU setup / teardown (init_gpu_bonus.c, cleanup_bonus.c)
@@ -247,6 +278,8 @@ t_material material_init(cl_float3 color, int type);
 t_object   make_obj_sphere(cl_float3 center, float radius, t_material mat);
 t_object   make_obj_plane(cl_float3 point, cl_float3 normal, t_material mat);
 t_object   make_obj_quad(cl_float3 q, cl_float3 u, cl_float3 v, t_material mat);
+t_object   make_obj_ellipse(cl_float3 center, cl_float3 u, cl_float3 v,
+               t_material mat);
 t_object   make_obj_cylinder(cl_float3 center, cl_float3 axis,
                              t_cyl_size size, t_material mat);
 
@@ -305,6 +338,18 @@ t_ray      ray_from_screen(t_data *data, float sx, float sy);
 void       shove_forward(t_data *data);
 
 cl_int     init_objects(t_data *data);
+
+// Portals: reservation, placement, kernel-arg upload (portal_bonus.c),
+// the host static-surface raycast (portal_hit_bonus.c), and the through-portal
+// transform + body teleport (portal_warp_bonus.c).
+void       reserve_portals(t_data *data);
+void       place_portal(t_data *data, t_ray ray);
+void       set_portal_args(t_data *data);
+int        scene_ray_hit(t_data *data, t_ray ray, cl_float3 *p, cl_float3 *n);
+cl_float3  portal_point(t_object *src, t_object *dst, cl_float3 p);
+cl_float3  portal_vec(t_object *src, t_object *dst, cl_float3 raw);
+void       portals_teleport(t_data *data);
+void       portal_sync_holes(t_data *data);
 
 // Offline render-to-disk (render_out_bonus.c)
 int        render_mode_on(int argc, char **argv);
