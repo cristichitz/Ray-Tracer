@@ -33,8 +33,8 @@ typedef enum e_quality
 
 typedef enum e_render_mode
 {
-	RENDER_PATH_TRACE,
-	RENDER_DIRECT
+	RENDER_DIRECT,
+	RENDER_PATH_TRACE
 }								t_render_mode;
 
 typedef t_vec					t_list;

@@ -68,6 +68,6 @@ void	init_viewport(t_data *data)
 	data->object_i = 0;
 	data->wait_frames = 0;
 	data->render_check = true;
-	data->render_mode = RENDER_PATH_TRACE;
+	data->render_mode = RENDER_DIRECT;
 	update_viewport(data);
 }
