@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 13:11:49 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/15 17:52:25 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/16 11:14:15 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,29 @@ static void	clean_gnl(int fd)
 	}
 }
 
+static int	preprocess_line(t_data *data, int fd, char **line)
+{
+	char	*trimmed;
 
-
-
+	trimmed = ft_strtrim(*line, " \t\n");
+	free(*line);
+	*line = NULL;
+	if (trimmed)
+		replace_tabs(trimmed);
+	if (!trimmed || !process_line(data, trimmed))
+	{
+		free(trimmed);
+		clean_gnl(fd);
+		return (0);
+	}
+	free(trimmed);
+	*line = get_next_line(fd);
+	return (1);
+}
 
 int	process_scene(t_data *data, int fd)
 {
 	char	*line;
-	char	*trimmed;
 
 	line = get_next_line(fd);
 	if (!line)
@@ -43,18 +58,8 @@ int	process_scene(t_data *data, int fd)
 	}
 	while (line)
 	{
-		trimmed = ft_strtrim(line, " \t\n");
-		free(line);
-		if (trimmed)
-			replace_tabs(trimmed);
-		if (!trimmed || !process_line(data, trimmed))
-		{
-			free(trimmed);
-			clean_gnl(fd);
+		if (preprocess_line(data, fd, &line) == 0)
 			return (0);
-		}
-		free(trimmed);
-		line = get_next_line(fd);
 	}
 	return (1);
 }
