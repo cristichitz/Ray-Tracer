@@ -73,3 +73,15 @@ int	set_color(cl_float3 *c, char *s)
 	ft_free_split(p);
 	return (1);
 }
+
+/*
+** The optional material keyword sits right after an object line's mandatory
+** tokens (index `base`). Absent -> NULL, which material_named() reads as a
+** static matte surface, so legacy scenes without a keyword still parse.
+*/
+char	*mat_token(char **p, size_t base)
+{
+	if (split_len(p) > base)
+		return (p[base]);
+	return (NULL);
+}

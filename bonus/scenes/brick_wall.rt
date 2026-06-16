@@ -1,0 +1,69 @@
+# Cannonball vs brick wall - bonus physics demo
+# Run: ./miniRT_bonus bonus/scenes/brick_wall.rt   (SPACE fires the ball)
+# Material keyword drives physics: brick = dynamic box, metal = heavy ball,
+# planes have no keyword so they are static colliders (floor + Cornell walls).
+
+C  0,2,-24    0,-0.08,1   55
+A  0.25       150,165,195
+# ceiling quad area light over the wall, material "light"
+qu -6,15.8,10 12,0,0      0,0,12        255,245,225   light
+
+# --- room: static planes act as both scenery and collision surfaces ---
+pl 0,-8,0     0,1,0       200,200,200
+pl 0,16,0     0,-1,0      200,200,200
+pl 0,0,36     0,0,-1      200,200,200
+pl -14,0,0    1,0,0       200,40,40
+pl 14,0,0     -1,0,0      40,180,60
+
+# --- brick wall: 8 x 6 dynamic boxes (2x2x2), checkerboard colours ---
+bx -7.07,-6.98,24   2,2,2   168,69,54   brick
+bx -5.05,-6.98,24   2,2,2   199,184,158   brick
+bx -3.03,-6.98,24   2,2,2   168,69,54   brick
+bx -1.01,-6.98,24   2,2,2   199,184,158   brick
+bx 1.01,-6.98,24   2,2,2   168,69,54   brick
+bx 3.03,-6.98,24   2,2,2   199,184,158   brick
+bx 5.05,-6.98,24   2,2,2   168,69,54   brick
+bx 7.07,-6.98,24   2,2,2   199,184,158   brick
+bx -7.07,-4.96,24   2,2,2   199,184,158   brick
+bx -5.05,-4.96,24   2,2,2   168,69,54   brick
+bx -3.03,-4.96,24   2,2,2   199,184,158   brick
+bx -1.01,-4.96,24   2,2,2   168,69,54   brick
+bx 1.01,-4.96,24   2,2,2   199,184,158   brick
+bx 3.03,-4.96,24   2,2,2   168,69,54   brick
+bx 5.05,-4.96,24   2,2,2   199,184,158   brick
+bx 7.07,-4.96,24   2,2,2   168,69,54   brick
+bx -7.07,-2.94,24   2,2,2   168,69,54   brick
+bx -5.05,-2.94,24   2,2,2   199,184,158   brick
+bx -3.03,-2.94,24   2,2,2   168,69,54   brick
+bx -1.01,-2.94,24   2,2,2   199,184,158   brick
+bx 1.01,-2.94,24   2,2,2   168,69,54   brick
+bx 3.03,-2.94,24   2,2,2   199,184,158   brick
+bx 5.05,-2.94,24   2,2,2   168,69,54   brick
+bx 7.07,-2.94,24   2,2,2   199,184,158   brick
+bx -7.07,-0.92,24   2,2,2   199,184,158   brick
+bx -5.05,-0.92,24   2,2,2   168,69,54   brick
+bx -3.03,-0.92,24   2,2,2   199,184,158   brick
+bx -1.01,-0.92,24   2,2,2   168,69,54   brick
+bx 1.01,-0.92,24   2,2,2   199,184,158   brick
+bx 3.03,-0.92,24   2,2,2   168,69,54   brick
+bx 5.05,-0.92,24   2,2,2   199,184,158   brick
+bx 7.07,-0.92,24   2,2,2   168,69,54   brick
+bx -7.07,1.10,24   2,2,2   168,69,54   brick
+bx -5.05,1.10,24   2,2,2   199,184,158   brick
+bx -3.03,1.10,24   2,2,2   168,69,54   brick
+bx -1.01,1.10,24   2,2,2   199,184,158   brick
+bx 1.01,1.10,24   2,2,2   168,69,54   brick
+bx 3.03,1.10,24   2,2,2   199,184,158   brick
+bx 5.05,1.10,24   2,2,2   168,69,54   brick
+bx 7.07,1.10,24   2,2,2   199,184,158   brick
+bx -7.07,3.12,24   2,2,2   199,184,158   brick
+bx -5.05,3.12,24   2,2,2   168,69,54   brick
+bx -3.03,3.12,24   2,2,2   199,184,158   brick
+bx -1.01,3.12,24   2,2,2   168,69,54   brick
+bx 1.01,3.12,24   2,2,2   199,184,158   brick
+bx 3.03,3.12,24   2,2,2   168,69,54   brick
+bx 5.05,3.12,24   2,2,2   199,184,158   brick
+bx 7.07,3.12,24   2,2,2   168,69,54   brick
+
+# --- the cannonball: heavy metal sphere, fired with SPACE ---
+sp 0,-4.8,-2  6.4   210,210,220   metal
