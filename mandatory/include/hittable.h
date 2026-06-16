@@ -41,6 +41,7 @@ typedef struct s_hittable
 	void					(*resize)(void *object, float scalar);
 	void					(*rotate)(void *object, t_vec3 axis, float angle);
 	void					(*destroy)(void *self);
+	void					(*material)(void *self);
 }							t_hittable;
 
 void						ft_set_face_normal(t_hit_record *self, t_ray r,

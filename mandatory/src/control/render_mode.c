@@ -24,6 +24,21 @@ static void	render_mode(t_data *data)
 	data->wait_frames = 0;
 }
 
+static void	toggle_material(t_data *data)
+{
+	t_hittable	*obj;
+
+	if (data->render_mode != RENDER_PATH_TRACE)
+		return ;
+	obj = (t_hittable *)ft_vec_get(data->world.objects, data->object_i);
+	if (!obj->material)
+		return ;
+	obj->material(obj);
+	data->render_check = true;
+	set_quality(data, LOW);
+	data->wait_frames = 0;
+}
+
 void	object_selector(mlx_key_data_t keydata, void *param)
 {
 	t_data	*data;
@@ -33,6 +48,8 @@ void	object_selector(mlx_key_data_t keydata, void *param)
 		render_mode(data);
 	if (data->world.objects->len == 0)
 		return ;
+	if (keydata.key == MLX_KEY_N && keydata.action == MLX_RELEASE)
+		toggle_material(data);
 	if (keydata.key == MLX_KEY_C && keydata.action == MLX_RELEASE)
 	{
 		data->object_i = (data->object_i + 1) % data->world.objects->len;

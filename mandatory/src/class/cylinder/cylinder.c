@@ -51,6 +51,17 @@ void	rotate_cylinder(void *base, t_vec3 axis, float angle)
 	self->normal = norm(rotate_vec_by_quaternion(q, self->normal));
 }
 
+static void	material_cylinder(void *base)
+{
+	t_cylinder	*self;
+
+	self = (t_cylinder *)base;
+	if (self->mat.type == MAT_LAMBERTIAN)
+		self->mat = init_metal(self->mat.tex.albedo);
+	else if (self->mat.type == MAT_METAL)
+		self->mat = init_lambertian(self->mat.tex.albedo);
+}
+
 t_cylinder	*make_cylinder(t_cylinder cylinder)
 {
 	t_cylinder	*c;
@@ -63,5 +74,6 @@ t_cylinder	*make_cylinder(t_cylinder cylinder)
 	c->base.resize = resize_cylinder;
 	c->base.rotate = rotate_cylinder;
 	c->base.destroy = NULL;
+	c->base.material = material_cylinder;
 	return (c);
 }

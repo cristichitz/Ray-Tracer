@@ -73,6 +73,17 @@ void	resize_sphere(void *base, float scalar)
 		self->radius = 0.01f;
 }
 
+static void	material_sphere(void *base)
+{
+	t_sphere	*self;
+
+	self = (t_sphere *)base;
+	if (self->mat.type == MAT_LAMBERTIAN)
+		self->mat = init_metal(self->mat.tex.albedo);
+	else if (self->mat.type == MAT_METAL)
+		self->mat = init_lambertian(self->mat.tex.albedo);
+}
+
 t_sphere	*make_sphere(t_sphere sphere)
 {
 	t_sphere	*s;
@@ -85,5 +96,6 @@ t_sphere	*make_sphere(t_sphere sphere)
 	s->base.resize = resize_sphere;
 	s->base.rotate = NULL;
 	s->base.destroy = NULL;
+	s->base.material = material_sphere;
 	return (s);
 }

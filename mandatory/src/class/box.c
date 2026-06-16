@@ -76,6 +76,7 @@ static void	assemble_boxi(t_box *boxi, t_vec3 min, t_vec3 max, t_material mat)
 			mat);
 	boxi->base.hit = hit_box;
 	boxi->base.destroy = destroy_box;
+	boxi->base.material = NULL;
 }
 
 t_box	*make_box(t_vec3 a, t_vec3 b, t_material mat)
