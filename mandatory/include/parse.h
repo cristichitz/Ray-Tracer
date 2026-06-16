@@ -37,7 +37,9 @@ int		process_type(t_data *data, char **params);
 
 size_t	split_len(char **split);
 int		split_count(char **params, size_t expected);
+void	replace_tabs(char *str);
 int		force_normalised(t_vec3 *v);
+int		valid_csv(char *str, int expected_commas);
 
 int		get_float(float *num, char *param, float min, float max);
 int		get_int(int *num, char *param, int min, int max);

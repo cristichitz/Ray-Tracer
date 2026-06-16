@@ -71,18 +71,10 @@ int	get_uvec_pt(float *num, char *param)
 
 int	get_normed_float(float *num, char *param, float min, float max)
 {
-	float	fnum;
-	char	*endptr;
+	int	inum;
 
-	endptr = NULL;
-	fnum = ft_strtof(param, &endptr);
-	if (!endptr || *endptr != '\0' || endptr == param)
-		return (return_print_error("Invalid value.", 0));
-	if (fnum > max)
-		return (return_print_error("Value too large.", 0));
-	if (fnum < min)
-		return (return_print_error("Value too low.", 0));
-	fnum = fnum / 255.0f;
-	*num = fnum;
+	if (!get_int(&inum, param, (int)min, (int)max))
+		return (0);
+	*num = (float)inum / 255.0f;
 	return (1);
 }

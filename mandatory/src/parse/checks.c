@@ -43,6 +43,8 @@ int	set_pts(t_vec3 *pt, char *params, int (*f)(float *n, char *p))
 
 	if (!params)
 		return (return_print_error("Missing point parameter.", 0));
+	if (!valid_csv(params, 2))
+		return (0);
 	ok = 1;
 	parts = ft_split(params, ',');
 	if (!parts)

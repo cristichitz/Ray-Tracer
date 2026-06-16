@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 13:11:49 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 13:03:33 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/15 17:52:25 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ static void	clean_gnl(int fd)
 		line = get_next_line(fd);
 	}
 }
+
+
+
+
 
 int	process_scene(t_data *data, int fd)
 {
@@ -41,6 +45,8 @@ int	process_scene(t_data *data, int fd)
 	{
 		trimmed = ft_strtrim(line, " \t\n");
 		free(line);
+		if (trimmed)
+			replace_tabs(trimmed);
 		if (!trimmed || !process_line(data, trimmed))
 		{
 			free(trimmed);

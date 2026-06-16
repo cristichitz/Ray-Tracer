@@ -12,6 +12,16 @@
 
 #include "parse.h"
 
+void	replace_tabs(char *str)
+{
+	while (*str)
+	{
+		if (*str == '\t')
+			*str = ' ';
+		str++;
+	}
+}
+
 size_t	split_len(char **split)
 {
 	size_t	len;
@@ -29,6 +39,25 @@ int	split_count(char **params, size_t expected)
 	if (split_len(params) != expected)
 	{
 		print_error("Invalid number of arguments.");
+		return (0);
+	}
+	return (1);
+}
+
+int	valid_csv(char *str, int expected_commas)
+{
+	int	count;
+
+	count = 0;
+	while (*str)
+	{
+		if (*str == ',')
+			count++;
+		str++;
+	}
+	if (count != expected_commas)
+	{
+		print_error("Invalid comma-separated format.");
 		return (0);
 	}
 	return (1);
