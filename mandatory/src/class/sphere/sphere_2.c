@@ -1,39 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sphere.h                                           :+:      :+:    :+:   */
+/*   sphere_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/06/06 18:07:59 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/16 11:50:57 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/16 11:50:11 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/16 11:50:44 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SPHERE_H
-# define SPHERE_H
+#include "sphere.h"
 
-# include "hittable.h"
-
-typedef struct s_sphere
+void	material_sphere(void *base)
 {
-	t_hittable	base;
-	t_vec3		center;
-	float		radius;
-	t_material	mat;
-}				t_sphere;
+	t_sphere	*self;
 
-typedef struct s_sphere_var
-{
-	float		a;
-	float		h;
-	float		c;
-	float		discriminant;
-	float		sqrtd;
-	float		root;
-}				t_sphere_var;
-
-t_sphere		*make_sphere(t_sphere sphere);
-void			material_sphere(void *base);
-
-#endif
+	self = (t_sphere *)base;
+	if (self->mat.type == MAT_LAMBERTIAN)
+		self->mat = init_metal(self->mat.tex.albedo);
+	else if (self->mat.type == MAT_METAL)
+		self->mat = init_lambertian(self->mat.tex.albedo);
+}

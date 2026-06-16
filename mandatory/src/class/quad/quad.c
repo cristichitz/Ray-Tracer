@@ -82,8 +82,6 @@ void	rotate_quad(void *base, t_vec3 axis, float angle)
 t_quad	*make_quad(t_vec3 q, t_vec3 u, t_vec3 v, t_material mat)
 {
 	t_quad	*quad;
-	t_aabb	bbox_diagonal1;
-	t_aabb	bbox_diagonal2;
 	t_vec3	n;
 
 	quad = malloc(sizeof(t_quad));
@@ -93,9 +91,8 @@ t_quad	*make_quad(t_vec3 q, t_vec3 u, t_vec3 v, t_material mat)
 	quad->u = u;
 	quad->v = v;
 	quad->mat = mat;
-	bbox_diagonal1 = make_aabb(q, add(q, add(u, v)));
-	bbox_diagonal2 = make_aabb(add(q, u), add(q, v));
-	quad->bbox = make_aabb_from_aabbs(bbox_diagonal1, bbox_diagonal2);
+	quad->bbox = make_aabb_from_aabbs(make_aabb(q, add(q, add(u, v))),
+			make_aabb(add(q, u), add(q, v)));
 	quad->base.hit = hit_quad;
 	quad->base.resize = NULL;
 	quad->base.rotate = rotate_quad;
