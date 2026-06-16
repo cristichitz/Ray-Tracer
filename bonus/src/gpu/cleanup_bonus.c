@@ -20,6 +20,8 @@ void	setup_local_cl(void)
 	char	vendors_path[PATH_MAX + 64];
 	char	libs_path[PATH_MAX + 64];
 
+	if (access("/etc/OpenCL/vendors", F_OK) == 0)
+		return ;
 	if (getcwd(cwd, sizeof(cwd)) != NULL)
 	{
 		snprintf(vendors_path, sizeof(vendors_path),
@@ -36,6 +38,8 @@ void	clean_gpu(t_data *data)
 	release_mem_object(&(data->gpu.buffer));
 	release_mem_object(&(data->gpu.object_buffer));
 	release_mem_object(&(data->gpu.accum_buffer));
+	release_mem_object(&(data->gpu.node_buffer));
+	release_mem_object(&(data->gpu.prim_buffer));
 	release_kernel(&(data->gpu.kernel));
 	release_program(&(data->gpu.program));
 	release_cl_queue(&(data->gpu.queue));
@@ -49,5 +53,7 @@ void	cleanup(void *param)
 	data = (t_data *)param;
 	clean_gpu(data);
 	free(data->objects);
+	free(data->bvh.nodes);
+	free(data->bvh.prim);
 	printf("Cleaning up and exiting...\n");
 }

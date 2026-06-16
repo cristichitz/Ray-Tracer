@@ -16,9 +16,20 @@ typedef struct s_ray {
   cl_float3 dir;
 } t_ray;
 
+/*
+** albedo + type are the only fields the render kernel reads (0 = lambertian,
+** 1 = metal, 2 = diffuse_light). The trailing fields are host-only physics
+** properties (the device never touches them); a material therefore dictates
+** both how an object looks AND how it behaves as a rigid body. dynamic = 1
+** turns any object carrying this material into a simulated rigid body.
+*/
 typedef struct  s_material {
   cl_float3 albedo;
   int       type;
+  int       dynamic;
+  float     density;
+  float     restitution;
+  float     friction;
 } t_material;
 
 typedef struct s_hit_record {

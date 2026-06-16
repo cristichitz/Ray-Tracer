@@ -1,0 +1,20 @@
+# Dropping spheres - bonus physics demo
+# Run: ./miniRT_bonus bonus/scenes/physics_drop.rt
+# The spheres fall under gravity and bounce off the static floor plane and each
+# other; rubber is bouncy, metal is heavy and dull. Left-click any sphere to
+# shove it; SPACE launches the one under the screen centre.
+
+C  0,6,-18    0,-0.15,1   60
+A  0.45       160,180,215
+# overhead quad area light, material "light"
+qu -6,22,-2   12,0,0      0,0,12        255,255,255   light
+
+# static floor plane = collision surface
+pl 0,0,0      0,1,0       180,180,185
+
+# dynamic spheres (diameter, colour, material)
+sp -5,8,6     3   230,60,60     rubber
+sp -1,12,6    3   60,230,90     rubber
+sp  3,9,6     3   210,210,230   metal
+sp  6,14,5    2.5 230,200,60    metal
+sp  0,17,7    2   200,120,230   rubber

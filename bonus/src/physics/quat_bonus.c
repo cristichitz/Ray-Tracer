@@ -13,9 +13,8 @@
 #include "rt_bonus.h"
 
 /*
-** Small unit-quaternion toolkit shared by the explode cinematic and the
-** rigid-body physics. A quaternion carries an orientation; rotating a vector
-** by it is q * (0,v) * q^-1.
+** Small unit-quaternion toolkit for the rigid-body physics. A quaternion
+** carries an orientation; rotating a vector by it is q * (0,v) * q^-1.
 */
 
 t_quat	quat_identity(void)

@@ -12,30 +12,6 @@
 
 #include "rt_bonus.h"
 
-static void	make_row(t_data *data, float y0, float y1, t_material mat)
-{
-	make_box(data, make_float3(-2.0f, y0, 15.0f),
-		make_float3(2.0f, y1, 19.0f), mat);
-	make_box(data, make_float3(-6.1f, y0, 15.0f),
-		make_float3(-2.1f, y1, 19.0f), mat);
-	make_box(data, make_float3(-10.2f, y0, 15.0f),
-		make_float3(-6.2f, y1, 19.0f), mat);
-}
-
-void	make_rubick_cube(t_data *data)
-{
-	make_row(data, -2.0f, 2.0f,
-		material_init(make_float3(0.0f, 0.0f, 1.0f), 0));
-	make_row(data, 2.0f, 6.0f,
-		material_init(make_float3(1.0f, 0.0f, 0.0f), 0));
-	make_row(data, -2.0f, -6.0f,
-		material_init(make_float3(0.0f, 0.5f, 0.0f), 0));
-	data->cam_center = make_float3(0, 0, 0);
-	data->cam_dir = make_float3(0, 0, 1);
-	data->cam_fov = 70;
-	data->frame.background = make_float3(0.564f, 0.835f, 1.0f);
-}
-
 static void	cornell_white(t_data *data)
 {
 	t_material	white;
