@@ -32,7 +32,7 @@ __kernel void render_kernel(__global int *img_buffer, __constant t_object *objec
   while (sample < frame.samples_per_pixel)
   {
     t_ray r = get_ray(&frame, x, y, &seed);
-    float3 s = get_ray_color(sc, frame.max_depth, r, frame.background, &seed);
+    float3 s = get_ray_color(sc, r, &frame, &seed);
     // Firefly clamp: a single extreme sample (lucky bounce into a bright
     // emitter) would dominate the running average for hundreds of frames.
     color += fmin(s, (float3)(10.0f));

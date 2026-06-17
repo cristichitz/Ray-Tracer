@@ -43,4 +43,12 @@ typedef struct s_hit_record {
   t_material      mat;
 } t_hit_record;
 
+/* Running state of one traced path, carried through the bounce loop. */
+typedef struct s_path {
+  t_ray      ray;
+  cl_float3  throughput;
+  cl_float3  out;
+  bool       count_emission;
+} t_path;
+
 #endif
