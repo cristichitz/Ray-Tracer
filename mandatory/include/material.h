@@ -43,11 +43,19 @@ typedef bool				(*t_scatter)(t_material *self, t_ray r_in,
 typedef t_vec3				(*t_emitted)(t_material *self, float u, float v,
 					t_vec3 p);
 
+typedef enum e_mat_type
+{
+	MAT_LAMBERTIAN,
+	MAT_METAL,
+	MAT_LIGHT
+}								t_mat_type;
+
 typedef struct s_material
 {
 	t_texture				tex;
 	t_scatter				scatter;
 	t_emitted				emitted;
+	t_mat_type				type;
 }							t_material;
 
 t_material					init_lambertian(t_vec3 col);

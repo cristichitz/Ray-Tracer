@@ -47,5 +47,6 @@ t_material	init_metal(t_vec3 col)
 	new_mat.tex = init_solid_color(col);
 	new_mat.scatter = scatter_metal;
 	new_mat.emitted = emitted_nothing_met;
+	new_mat.type = MAT_METAL;
 	return (new_mat);
 }

@@ -30,7 +30,7 @@ static float	get_cyl_root(t_cylinder *self, t_cyl_var *v, t_interval *t)
 	v->discriminant = v->half_b * v->half_b - v->a * v->c;
 	if (v->discriminant < 0)
 		return (-1);
-	v->sqrtd = sqrt(v->discriminant);
+	v->sqrtd = sqrtf(v->discriminant);
 	v->root = (-v->half_b - v->sqrtd) / v->a;
 	v->m = v->wv + v->root * v->dv;
 	if (!t->surrounds(t, v->root) || v->m < -half_h || v->m > half_h)

@@ -35,8 +35,11 @@ int	set_cam(t_data *data, char **params)
 
 int	set_light(t_data *data, char **params)
 {
-	if (!split_count(params, 4))
-		return (0);
+	size_t	len;
+
+	len = split_len(params);
+	if (len != 3 && len != 4)
+		return (return_print_error("Invalid number of arguments.", 0));
 	if (data->set_light == true)
 	{
 		print_error("Duplicate light entry.");
@@ -46,7 +49,8 @@ int	set_light(t_data *data, char **params)
 		return (0);
 	if (!set_brightness(&data->light.brightness, params[2]))
 		return (0);
-	if (!set_colour(&data->light.colour, params[3]))
+	data->light.colour = make_vec(1.0f, 1.0f, 1.0f);
+	if (len == 4 && !set_colour(&data->light.colour, params[3]))
 		return (0);
 	if (!add_light_quad(data, data->light))
 		return (0);

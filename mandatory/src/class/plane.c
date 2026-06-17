@@ -46,6 +46,17 @@ void	rotate_plane(void *base, t_vec3 axis, float angle)
 	self->normal = norm(rotate_vec_by_quaternion(q, self->normal));
 }
 
+static void	material_plane(void *base)
+{
+	t_plane	*self;
+
+	self = (t_plane *)base;
+	if (self->mat.type == MAT_LAMBERTIAN)
+		self->mat = init_metal(self->mat.tex.albedo);
+	else if (self->mat.type == MAT_METAL)
+		self->mat = init_lambertian(self->mat.tex.albedo);
+}
+
 t_plane	*make_plane(t_plane plane)
 {
 	t_plane	*p;
@@ -58,5 +69,7 @@ t_plane	*make_plane(t_plane plane)
 	p->base.hit = hit_plane;
 	p->base.resize = NULL;
 	p->base.rotate = rotate_plane;
+	p->base.destroy = NULL;
+	p->base.material = material_plane;
 	return (p);
 }

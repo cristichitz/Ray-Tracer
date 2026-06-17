@@ -34,5 +34,6 @@ t_material	init_diffuse_light(t_vec3 col)
 	new_mat.tex = init_solid_color(col);
 	new_mat.scatter = scatter_light;
 	new_mat.emitted = emitted_light;
+	new_mat.type = MAT_LIGHT;
 	return (new_mat);
 }

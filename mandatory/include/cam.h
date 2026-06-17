@@ -23,7 +23,6 @@ typedef struct s_cam
 	float	yaw;
 	float	pitch;
 	int		fov;
-	bool	assigned;
 }			t_cam;
 
 #endif

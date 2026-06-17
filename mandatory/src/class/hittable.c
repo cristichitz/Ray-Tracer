@@ -38,6 +38,8 @@ void	destroy_objects(t_hittable_list *self)
 	while (i < self->objects->len)
 	{
 		obj = ft_vec_get(self->objects, i);
+		if (((t_hittable *)obj)->destroy)
+			((t_hittable *)obj)->destroy(obj);
 		free(obj);
 		i++;
 	}

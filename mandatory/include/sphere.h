@@ -6,7 +6,7 @@
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/06 18:07:59 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/10 16:46:47 by timurray         ###   ########.fr       */
+/*   Updated: 2026/06/16 11:50:57 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,6 @@ typedef struct s_sphere_var
 }				t_sphere_var;
 
 t_sphere		*make_sphere(t_sphere sphere);
+void			material_sphere(void *base);
 
 #endif

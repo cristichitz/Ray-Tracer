@@ -20,7 +20,7 @@ bool	move_cam(t_data *data, float *speed)
 
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
 		mlx_close_window(data->mlx);
-	right = norm(cross(make_vec(0.0f, 1.0f, 0.0f), data->cam_forward));
+	right = safe_right_vec(data->cam_forward);
 	up = norm(cross(data->cam_forward, right));
 	step = make_vec(0.0f, 0.0f, 0.0f);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_W))

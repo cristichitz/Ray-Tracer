@@ -17,6 +17,8 @@ int	set_colour(t_vec3 *colour, char *params)
 	char	**parts;
 	int		ok;
 
+	if (!valid_csv(params, 2))
+		return (0);
 	parts = ft_split(params, ',');
 	if (!parts)
 		return (0);
@@ -46,7 +48,7 @@ int	set_radius(float *num, char *param)
 {
 	float	diameter;
 
-	if (!get_float(&diameter, param, 0.0, FLT_MAX))
+	if (!get_float(&diameter, param, 0.001, FLT_MAX))
 		return (0);
 	*num = diameter / 2.0f;
 	return (1);
@@ -54,7 +56,7 @@ int	set_radius(float *num, char *param)
 
 int	set_height(float *num, char *param)
 {
-	if (!get_float(num, param, 0.0, FLT_MAX))
+	if (!get_float(num, param, 0.001, FLT_MAX))
 		return (0);
 	return (1);
 }

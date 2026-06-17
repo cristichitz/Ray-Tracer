@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+         #
+#    By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/04 16:27:31 by timurray          #+#    #+#              #
-#    Updated: 2026/06/14 14:34:58 by cdohanic         ###   ########.fr        #
+#    Updated: 2026/06/16 11:52:25 by timurray         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,7 +34,8 @@ mandatory/src/control/cam_view.c \
 mandatory/src/class/vec/vec3.c \
 mandatory/src/class/vec/vec3_2.c \
 mandatory/src/class/vec/vec3_3.c \
-mandatory/src/class/sphere.c \
+mandatory/src/class/sphere/sphere.c \
+mandatory/src/class/sphere/sphere_2.c \
 mandatory/src/class/hittable.c \
 mandatory/src/class/ray.c \
 mandatory/src/class/plane.c \
@@ -61,7 +62,8 @@ mandatory/src/parse/set_obj.c \
 mandatory/src/parse/set_obj_2.c \
 mandatory/src/parse/set_params.c \
 mandatory/src/parse/set_params_2.c \
-mandatory/src/render_direct.c
+mandatory/src/render_direct.c \
+mandatory/src/random.c
 
 INCLUDES = -I. -I./MLX42/include -I./libft -I./mandatory/include
 

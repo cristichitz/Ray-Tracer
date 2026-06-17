@@ -1,18 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atof.c                                          :+:      :+:    :+:   */
+/*   sphere_2.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: timurray <timurray@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/06 11:11:47 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/14 17:42:09 by timurray         ###   ########.fr       */
+/*   Created: 2026/06/16 11:50:11 by timurray          #+#    #+#             */
+/*   Updated: 2026/06/16 11:50:44 by timurray         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft.h"
+#include "sphere.h"
 
-float	ft_atof(const char *nptr)
+void	material_sphere(void *base)
 {
-	return (ft_strtof(nptr, NULL));
+	t_sphere	*self;
+
+	self = (t_sphere *)base;
+	if (self->mat.type == MAT_LAMBERTIAN)
+		self->mat = init_metal(self->mat.tex.albedo);
+	else if (self->mat.type == MAT_METAL)
+		self->mat = init_lambertian(self->mat.tex.albedo);
 }
