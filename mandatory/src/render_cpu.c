@@ -12,7 +12,6 @@
 
 #include "rt_cpu.h"
 
-// TODO: too many vars
 t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 {
 	t_hit_record	hit_record;
