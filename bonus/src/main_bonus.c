@@ -37,7 +37,6 @@ void	game_loop(void *param)
 	data = (t_data *)param;
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
 	{
-		cleanup(data);
 		mlx_close_window(data->mlx);
 		return ;
 	}
@@ -80,10 +79,10 @@ int	main(int argc, char **argv)
 	memset(&data, 0, sizeof(data));
 	data.render_mode = render_mode_on(argc, argv);
 	if (!load_scene(&data, argc, argv))
-		return (EXIT_FAILURE);
+		return (free(data.objects), EXIT_FAILURE);
 	initialize(&data);
 	if (!init_window(&data))
-		return (EXIT_FAILURE);
+		return (free(data.objects), EXIT_FAILURE);
 	init_gpu(&data);
 	if (data.render_mode)
 		mlx_loop_hook(data.mlx, render_loop, &data);

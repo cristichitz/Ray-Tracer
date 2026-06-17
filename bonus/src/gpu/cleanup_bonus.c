@@ -46,6 +46,24 @@ void	clean_gpu(t_data *data)
 	release_cl_context(&(data->gpu.context));
 }
 
+void	resize_gpu_buffers(t_data *data)
+{
+	cl_int	clerror;
+
+	release_mem_object(&data->gpu.buffer);
+	release_mem_object(&data->gpu.accum_buffer);
+	data->gpu.buffer = create_device_buffer(data->gpu.context,
+			data->frame.width * data->frame.height * sizeof(int));
+	data->gpu.accum_buffer = create_device_buffer(data->gpu.context,
+			data->frame.width * data->frame.height * sizeof(cl_float4));
+	clerror = clSetKernelArg(data->gpu.kernel, 0, sizeof(cl_mem),
+			&data->gpu.buffer);
+	check_ocl_err("clSetKernelArg", clerror);
+	clerror = clSetKernelArg(data->gpu.kernel, 4, sizeof(cl_mem),
+			&data->gpu.accum_buffer);
+	check_ocl_err("clSetKernelArg", clerror);
+}
+
 void	cleanup(void *param)
 {
 	t_data	*data;
@@ -53,7 +71,10 @@ void	cleanup(void *param)
 	data = (t_data *)param;
 	clean_gpu(data);
 	free(data->objects);
+	data->objects = NULL;
 	free(data->bvh.nodes);
+	data->bvh.nodes = NULL;
 	free(data->bvh.prim);
+	data->bvh.prim = NULL;
 	printf("Cleaning up and exiting...\n");
 }

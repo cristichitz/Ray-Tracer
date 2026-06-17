@@ -41,6 +41,7 @@ void					game_loop(void *param);
 void					clean_gpu(t_data *data);
 void					cleanup(void *param);
 cl_int					init_objects(t_data *data);
+void					resize_gpu_buffers(t_data *data);
 
 // Camera key controls (controls_bonus.c)
 int						handle_rotation(t_data *data);

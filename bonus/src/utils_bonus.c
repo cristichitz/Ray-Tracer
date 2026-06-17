@@ -38,6 +38,7 @@ void	resize_hook(int32_t width, int32_t height, void *param)
 	data->frame.viewport_width = data->frame.aspect_ratio
 		* data->frame.viewport_height;
 	mlx_resize_image(data->img, (uint32_t)width, (uint32_t)height);
+	resize_gpu_buffers(data);
 	data->frame_index = 0;
 	update_view(data);
 }
