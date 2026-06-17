@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 17:05:20 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/17 17:40:59 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 18:54:35 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ bool	is_interior(float a, float b, t_hit_record *rec)
 	return (true);
 }
 
-bool	quad_intersection(t_object *self, float3 intersection,
+bool	quad_intersection(__constant t_object *self, float3 intersection,
 		t_hit_record *rec)
 {
 	float3	p;
@@ -41,22 +41,23 @@ bool	quad_intersection(t_object *self, float3 intersection,
 	return (true);
 }
 
-bool	hit_quad(t_object self, t_ray ray, t_interval ray_t, t_hit_record *rec)
+bool	hit_quad(__constant t_object *self, t_ray ray, t_interval ray_t,
+		t_hit_record *rec)
 {
 	float	denom;
 	float	t;
 	float3	intersection;
 
-	denom = dot(self.normal, ray.dir);
+	denom = dot(self->normal, ray.dir);
 	if (fabs(denom) < 1e-8f)
 		return (false);
-	t = (self.d - dot(self.normal, ray.origin)) / denom;
+	t = (self->d - dot(self->normal, ray.origin)) / denom;
 	if (!interval_contains(&ray_t, t))
 		return (false);
 	intersection = ray_at(&ray, t);
-	if (!quad_intersection(&self, intersection, rec))
+	if (!quad_intersection(self, intersection, rec))
 		return (false);
 	rec->t = t;
-	ft_set_face_normal(rec, ray, self.normal);
+	ft_set_face_normal(rec, ray, self->normal);
 	return (true);
 }

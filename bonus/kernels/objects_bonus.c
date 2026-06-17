@@ -6,21 +6,21 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/17 17:01:32 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/17 17:01:47 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 18:46:24 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "init_kernel.h"
 
-static bool	hit_one(t_object obj, t_ray ray, t_interval span, t_hit_record *rec)
+static bool	hit_one(__constant t_object *obj, t_ray ray, t_interval span, t_hit_record *rec)
 {
-	if (obj.type == OBJ_SPHERE)
+	if (obj->type == OBJ_SPHERE)
 		return (hit_sphere(obj, ray, span, rec));
-	if (obj.type == OBJ_PLANE)
+	if (obj->type == OBJ_PLANE)
 		return (hit_plane(obj, ray, span, rec));
-	if (obj.type == OBJ_CYLINDER)
+	if (obj->type == OBJ_CYLINDER)
 		return (hit_cylinder(obj, ray, span, rec));
-	if (obj.type == OBJ_QUAD)
+	if (obj->type == OBJ_QUAD)
 		return (hit_quad(obj, ray, span, rec));
 	return (false);
 }
@@ -60,16 +60,16 @@ static bool	hit_range(t_scene sc, int first, int count, t_ray ray, float tmin,
 	t_hit_record	temp;
 	bool			hit_anything;
 	int				i;
-	t_object		obj;
+	__constant t_object	*obj;
 
 	hit_anything = false;
 	i = 0;
 	while (i < count)
 	{
-		obj = sc.objs[sc.prim[first + i]];
+		obj = &sc.objs[sc.prim[first + i]];
 		if (hit_one(obj, ray, interval_init(tmin, *closest), &temp))
 		{
-			temp.obj_type = obj.type;
+			temp.obj_type = obj->type;
 			hit_anything = true;
 			*closest = temp.t;
 			*rec = temp;

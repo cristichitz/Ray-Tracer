@@ -25,28 +25,28 @@ int	is_nee_light(__constant t_object *o)
 ** sampled over its whole surface (back-facing samples are simply shadowed by
 ** the sphere itself), a quad over its parallelogram.
 */
-float	sample_light(t_object light, uint *seed, float3 *q, float3 *nl)
+float	sample_light(__constant t_object *light, uint *seed, float3 *q,
+		float3 *nl)
 {
 	float3	dir;
 
-	if (light.type == OBJ_SPHERE)
+	if (light->type == OBJ_SPHERE)
 	{
 		dir = random_unit_vector(seed);
-		*q = light.center + dir * light.radius;
+		*q = light->center + dir * light->radius;
 		*nl = dir;
-		return (4.0f * NEE_PI * light.radius * light.radius);
+		return (4.0f * NEE_PI * light->radius * light->radius);
 	}
-	*q = light.center + light.u * random_float(0.0f, 1.0f, seed) + light.v
+	*q = light->center + light->u * random_float(0.0f, 1.0f, seed) + light->v
 		* random_float(0.0f, 1.0f, seed);
-	*nl = light.normal;
-	return (length(cross(light.u, light.v)));
+	*nl = light->normal;
+	return (length(cross(light->u, light->v)));
 }
 
 float3	direct_light(t_scene sc, t_hit_record rec, uint *seed)
 {
 	int				n;
 	int				idx;
-	t_object		light;
 	float3			q;
 	float3			nl;
 	float3			to_l;
@@ -60,6 +60,7 @@ float3	direct_light(t_scene sc, t_hit_record rec, uint *seed)
 	t_hit_record	tmp;
 	int				i;
 
+	__constant t_object *light;
 	n = 0;
 	idx = -1;
 	i = 0;
@@ -75,7 +76,7 @@ float3	direct_light(t_scene sc, t_hit_record rec, uint *seed)
 	}
 	if (idx < 0)
 		return ((float3)(0.0f));
-	light = sc.objs[idx];
+	light = &sc.objs[idx];
 	area = sample_light(light, seed, &q, &nl);
 	to_l = q - rec.p;
 	dist2 = dot(to_l, to_l);
@@ -90,6 +91,6 @@ float3	direct_light(t_scene sc, t_hit_record rec, uint *seed)
 		return ((float3)(0.0f));
 	// Clamp the inverse-square falloff: points nearly touching the light make
 	// 1/dist2 explode into firefly pixels that linger in the accumulation.
-	return (light.material.albedo * (cos_surf * cos_light * area * (float)n
+	return (light->material.albedo * (cos_surf * cos_light * area * (float)n
 			/ (NEE_PI * fmax(dist2, 0.25f))));
 }
