@@ -6,21 +6,12 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/14 16:00:00 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/14 16:00:00 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:41:40 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
 
-/*
-** Modular way to poke the simulation. apply_impulse is the low-level primitive
-** (a kick at a world point); ray_from_screen + pick_body turn a screen
-** position into the body under it. Wiring a mouse click to "shove the sphere I
-** clicked" is therefore just pick_body(ray_from_screen(...)) + apply_impulse,
-** with no change to the rest of the engine.
-*/
-
-/* Add an impulse at a world point: changes linear and angular velocity. */
 void	apply_impulse(t_rbody *b, cl_float3 imp, cl_float3 point)
 {
 	if (b->inv_mass == 0.0f)
@@ -31,7 +22,6 @@ void	apply_impulse(t_rbody *b, cl_float3 imp, cl_float3 point)
 	b->sleeping = 0;
 }
 
-/* Nearest positive root of |origin + t*dir - c| = r (dir assumed unit). */
 static float	ray_sphere(t_ray ray, cl_float3 c, float r)
 {
 	cl_float3	oc;
@@ -46,7 +36,6 @@ static float	ray_sphere(t_ray ray, cl_float3 c, float r)
 	return (-h - sqrtf(disc));
 }
 
-/* Index of the dynamic body the ray hits first, or -1 (uses bounding sphere). */
 int	pick_body(t_data *data, t_ray ray)
 {
 	float	best;
@@ -71,7 +60,6 @@ int	pick_body(t_data *data, t_ray ray)
 	return (hit);
 }
 
-/* World-space ray through pixel (sx, sy), from the camera origin. */
 t_ray	ray_from_screen(t_data *data, float sx, float sy)
 {
 	t_ray		ray;
@@ -84,7 +72,6 @@ t_ray	ray_from_screen(t_data *data, float sx, float sy)
 	return (ray);
 }
 
-/* SPACE: launch the body under the screen center along the view direction. */
 void	shove_forward(t_data *data)
 {
 	t_ray	ray;

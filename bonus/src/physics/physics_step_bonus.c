@@ -6,13 +6,12 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:52:49 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/12 18:52:49 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:41:50 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
 
-/* Semi-implicit Euler step for one dynamic body. */
 static void	integrate(t_rbody *b, float dt)
 {
 	if (b->inv_mass == 0.0f || b->sleeping)
@@ -24,7 +23,6 @@ static void	integrate(t_rbody *b, float dt)
 	b->orient = quat_integrate(b->orient, b->omega, dt);
 }
 
-/* One sub-iteration: integrate, resolve the static world, then every pair. */
 static void	substep(t_physics *ph, float dt)
 {
 	int	i;
@@ -48,7 +46,6 @@ static void	substep(t_physics *ph, float dt)
 	}
 }
 
-/* Largest linear+angular speed among the dynamic bodies (sleep detection). */
 static float	peak_motion(t_physics *ph)
 {
 	float	m;
@@ -71,7 +68,6 @@ static float	peak_motion(t_physics *ph)
 	return (sqrtf(m));
 }
 
-/* Advance the simulation one rendered frame and push poses into the geometry. */
 void	physics_step(t_data *data)
 {
 	t_physics	*ph;

@@ -6,82 +6,12 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:51:25 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/14 14:40:28 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:37:22 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
 
-void	resize_hook(int32_t width, int32_t height, void *param)
-{
-	t_data	*data;
-
-	data = (t_data *)param;
-	if (width <= 0 || height <= 0)
-		return ;
-	data->frame.width = width;
-	data->frame.height = height;
-	data->frame.aspect_ratio = (float)data->frame.width
-		/ (float)data->frame.height;
-	data->frame.viewport_height = 2.0f
-		* tanf(degrees_to_radians(data->cam_fov) / 2.0f);
-	data->frame.viewport_width = data->frame.aspect_ratio
-		* data->frame.viewport_height;
-	mlx_resize_image(data->img, (uint32_t)width, (uint32_t)height);
-	data->frame_index = 0;
-	update_view(data);
-}
-
-/*
-** SPACE shoves whatever dynamic body the camera is looking at along the view
-** direction (the generic "launch"). Edge-triggered so one press = one shove.
-** This is the only key hook the physics needs; a mouse-click impulse would be
-** wired the same way (see physics_input_bonus.c).
-*/
-void	key_hook(mlx_key_data_t key, void *param)
-{
-	t_data	*data;
-
-	data = (t_data *)param;
-	if (key.action != MLX_PRESS || data->render_mode)
-		return ;
-	if (key.key == MLX_KEY_SPACE)
-		shove_forward(data);
-}
-
-/*
-** Left click shoves the body under the cursor straight ahead (along the view
-** direction). Picking + impulse reuse the modular physics_input helpers, so
-** this hook is the whole feature; aim, click, watch it fly.
-*/
-void	mouse_hook(mouse_key_t button, action_t action,
-		modifier_key_t mods, void *param)
-{
-	t_data	*data;
-	t_ray	ray;
-	int		x;
-	int		y;
-	int		i;
-
-	(void)mods;
-	data = (t_data *)param;
-	if (button != MLX_MOUSE_BUTTON_LEFT || action != MLX_PRESS)
-		return ;
-	mlx_get_mouse_pos(data->mlx, &x, &y);
-	ray = ray_from_screen(data, (float)x, (float)y);
-	i = pick_body(data, ray);
-	if (i < 0)
-		return ;
-	apply_impulse(&data->phys.bodies[i],
-		scale(data->cam_dir, PHYS_CLICK_IMPULSE), data->phys.bodies[i].pos);
-	data->phys.running = 1;
-	data->phys.settle = 0;
-}
-
-/*
-** Camera moved or the simulation is live: restart path-tracing accumulation
-** and flag the scene dirty so the moved geometry re-uploads to the GPU.
-*/
 static void	update_camera(t_data *data, cl_float3 step, int moved)
 {
 	int	animating;

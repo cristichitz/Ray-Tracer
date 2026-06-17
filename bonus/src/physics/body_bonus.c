@@ -6,21 +6,13 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/14 16:00:00 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/14 16:00:00 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:41:12 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
 #include <string.h>
 
-/*
-** Rigid bodies are registered straight from the object builders: whenever a
-** sphere or a box is created with a dynamic material, add_body() turns the
-** object (or the box's BOX_FACES quads) into one simulated body. Nothing here
-** knows about any particular scene, so every .rt file gets the same physics.
-*/
-
-/* Combined AABB of a body's objects (parse-time: indexes objects directly). */
 static void	body_bounds(t_data *data, int first, int count, cl_float3 box[2])
 {
 	cl_float3	mn;
@@ -40,7 +32,6 @@ static void	body_bounds(t_data *data, int first, int count, cl_float3 box[2])
 	}
 }
 
-/* Cache each quad's geometry relative to the body center so it can be re-posed. */
 static void	capture_box(t_rbody *b, t_object *objs)
 {
 	int	f;
@@ -55,7 +46,6 @@ static void	capture_box(t_rbody *b, t_object *objs)
 	}
 }
 
-/* Locate the body (center + half-extent) from its objects; cache box faces. */
 static void	body_shape(t_data *data, t_rbody *b)
 {
 	cl_float3	box[2];
@@ -72,7 +62,6 @@ static void	body_shape(t_data *data, t_rbody *b)
 	capture_box(b, data->objects);
 }
 
-/* Mass and (isotropic) inverse inertia from density and the body's size. */
 static void	body_mass(t_rbody *b, float density)
 {
 	float	mass;
@@ -90,7 +79,6 @@ static void	body_mass(t_rbody *b, float density)
 		b->inv_i = 1.5f * b->inv_mass / (b->half * b->half);
 }
 
-/* Register a rigid body over objects [first, first + count) from a material. */
 void	add_body(t_data *data, int first, int count, t_material mat)
 {
 	t_rbody	*b;

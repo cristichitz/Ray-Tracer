@@ -6,29 +6,13 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:52:02 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/12 18:52:03 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:36:45 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
 #include <string.h>
 #include <sys/stat.h>
-
-/*
-** Offline render-to-disk mode (run the bonus with --render).
-**
-** Interactive playback is driven by the keyboard (R) and the GPU has to keep
-** up in real time, so quality is capped. For a final render we instead want
-** to trade time for quality: play the whole cinematic automatically,
-** accumulate many samples per frame, and write every frame to disk as a
-** numbered image. A C program can't practically mux an MP4, but writing a
-** frame sequence is trivial; assemble it afterwards with, e.g.:
-**
-**   ffmpeg -framerate 60 -i frames/frame_%05d.ppm -pix_fmt yuv420p out.mp4
-**
-** PPM (P6) is used because it needs no library (MLX42's bundled lodepng ships
-** without its encoder). Files are big but ffmpeg compresses them away.
-*/
 
 /* True if --render appears anywhere on the command line. */
 int	render_mode_on(int argc, char **argv)
@@ -92,12 +76,6 @@ static void	accumulate(t_data *data)
 	}
 }
 
-/*
-** One offline frame: advance the animation a single step, accumulate
-** RENDER_SPP samples into a converged image, and write it out. The window
-** still mirrors each frame as a live preview. Exits once the animation
-** finishes.
-*/
 void	render_loop(void *param)
 {
 	t_data	*data;

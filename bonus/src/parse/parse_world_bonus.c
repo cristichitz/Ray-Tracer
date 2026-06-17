@@ -6,12 +6,12 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:53:14 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/14 18:10:55 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:40:50 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "rt_bonus.h"
 #include "libft.h"
+#include "rt_bonus.h"
 
 /* C  x,y,z  nx,ny,nz  fov */
 int	set_cam(t_data *data, char **p)
@@ -40,11 +40,7 @@ int	set_ambient(t_data *data, char **p)
 	return (1);
 }
 
-/*
-** L  x,y,z  brightness  r,g,b
-** A point light has no area, so we spawn a small emissive sphere the path
-** tracer can actually sample. Size/strength are tunable via LIGHT_* macros.
-*/
+// L  x,y,z  brightness  r,g,b
 int	set_light(t_data *data, char **p)
 {
 	cl_float3	center;
@@ -58,6 +54,6 @@ int	set_light(t_data *data, char **p)
 		return (0);
 	brightness = ft_strtof(p[2], NULL);
 	emit = material_init(scale(color, brightness * LIGHT_GAIN), 2);
-	// return (add_object(data, make_obj_sphere(center, LIGHT_RADIUS, emit)));
-	return (add_object(data, make_obj_quad(center, make_float3(5.0f, 0.0f, 0.0f), make_float3(0.0f, 0.0f, 5.0f), emit)));
+	return (add_object(data, make_obj_quad(center, make_float3(5.0f, 0.0f,
+					0.0f), make_float3(0.0f, 0.0f, 5.0f), emit)));
 }

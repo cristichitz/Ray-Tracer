@@ -6,20 +6,12 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:52:54 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/12 18:52:55 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:41:28 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
 
-/*
-** The simulation is built entirely from the parsed scene: dynamic-material
-** objects became rigid bodies as they were parsed (add_body), and here every
-** static plane becomes an immovable collision half-space. The .rt file alone
-** therefore defines both what moves and what it collides against.
-*/
-
-/* Harvest one static plane as a collider; its normal points toward the bodies. */
 static void	add_collider(t_physics *ph, t_object *o)
 {
 	t_collider	*c;
@@ -34,13 +26,6 @@ static void	add_collider(t_physics *ph, t_object *o)
 	ph->collider_count++;
 }
 
-/*
-** Scan the scene for static planes -> colliders, then leave the simulation
-** PAUSED. A paused scene renders its bodies at their parsed poses and the path
-** tracer converges to a clean image; SPACE (fire / start) or a left click
-** (shove) wakes it. The step loop re-pauses once everything settles again, so
-** the picture is only ever noisy while something is actually moving.
-*/
 void	physics_init(t_data *data)
 {
 	t_physics	*ph;
