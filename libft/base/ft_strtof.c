@@ -26,7 +26,7 @@ static inline int	handle_sign(const char **nptr)
 	return (sign);
 }
 
-static inline void	handle_scale(const char **nptr, double *num)
+static inline void	handle_scale(const char **nptr, double *num, int *has_digit)
 {
 	double	scale;
 
@@ -39,6 +39,7 @@ static inline void	handle_scale(const char **nptr, double *num)
 			*num = *num * 10.0 + (**nptr - '0');
 			scale *= 10.0;
 			(*nptr)++;
+			*has_digit = 1;
 		}
 	}
 	*num /= scale;
@@ -72,20 +73,27 @@ static inline void	handle_exp(const char **nptr, double *num)
 
 float	ft_strtof(const char *nptr, char **endptr)
 {
-	int		sign;
-	double	num;
+	const char	*start;
+	int			sign;
+	double		num;
+	int			has_digit;
 
+	start = nptr;
 	while (ft_isspace(*nptr))
 		nptr++;
 	sign = handle_sign(&nptr);
 	num = 0.0;
+	has_digit = 0;
 	while (ft_isdigit(*nptr))
 	{
 		num = num * 10.0 + (*nptr - '0');
 		nptr++;
+		has_digit = 1;
 	}
-	handle_scale(&nptr, &num);
+	handle_scale(&nptr, &num, &has_digit);
 	handle_exp(&nptr, &num);
+	if (!has_digit)
+		nptr = start;
 	if (endptr)
 		*endptr = (char *)nptr;
 	return ((float)(sign * num));

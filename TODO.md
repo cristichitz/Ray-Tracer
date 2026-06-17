@@ -5,12 +5,5 @@
 
 
 
-- TODO: valgrind and sanitizers.
-
-
-## Nice to have
-
-- TODO: material switching.
-
 # Bonus
 - TODO: Parsing converter for bonus types.
