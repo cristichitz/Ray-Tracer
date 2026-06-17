@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hit_cylinder_bonus.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/06/17 17:05:27 by cdohanic          #+#    #+#             */
+/*   Updated: 2026/06/17 17:05:27 by cdohanic         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "init_kernel.h"
 
 bool  hit_cap(t_object self, float3 center, float3 normal, t_ray ray,

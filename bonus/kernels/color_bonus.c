@@ -32,28 +32,27 @@ static bool	roulette(t_path *pt, uint *seed)
 */
 static bool	shade_hit(t_scene sc, t_hit_record *rec, t_path *pt, uint *seed)
 {
-	float3	attenuation;
-	t_ray	scattered;
+	t_scat	scat;
 
 	if (pt->count_emission || rec->mat.type != 2 || (rec->obj_type != OBJ_QUAD
 			&& rec->obj_type != OBJ_SPHERE))
 		pt->out += pt->throughput * emitted(&rec->mat);
 	if (rec->mat.type == 1)
 	{
-		scatter_metal(&rec->mat, pt->ray, *rec, &attenuation, &scattered);
+		scatter_metal(&rec->mat, pt->ray, *rec, &scat);
 		pt->count_emission = true;
 	}
 	else if (rec->mat.type == 0)
 	{
 		pt->out += pt->throughput * rec->mat.albedo
 			* direct_light(sc, *rec, seed);
-		scatter_lambertian(&rec->mat, *rec, &attenuation, &scattered, seed);
+		scatter_lambertian(&rec->mat, *rec, &scat, seed);
 		pt->count_emission = false;
 	}
 	else
 		return (false);
-	pt->throughput *= attenuation;
-	pt->ray = scattered;
+	pt->throughput *= scat.attenuation;
+	pt->ray = scat.scattered;
 	return (true);
 }
 

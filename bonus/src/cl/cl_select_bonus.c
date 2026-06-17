@@ -65,53 +65,18 @@ int	print_opencl_info(void)
 	return ((int)num);
 }
 
-static cl_platform_id	ask_platform(void)
-{
-	cl_uint			num;
-	cl_int			clerror;
-	int				idx;
-	cl_platform_id	*platforms;
-	cl_platform_id	chosen;
-
-	clerror = clGetPlatformIDs(0, NULL, &num);
-	check_ocl_err("clGetPlatformIDs", clerror);
-	platforms = (cl_platform_id *)malloc(num * sizeof(cl_platform_id));
-	check_null(platforms);
-	clerror = clGetPlatformIDs(num, platforms, NULL);
-	check_ocl_err("clGetPlatformIDs", clerror);
-	printf("\n\nSelect platform to use [%d-%d]:", 1, num);
-	scanf("%d", &idx);
-	chosen = platforms[idx - 1];
-	free(platforms);
-	return (chosen);
-}
-
-static cl_device_id	ask_device(cl_platform_id platform)
-{
-	cl_uint			num;
-	cl_int			clerror;
-	int				idx;
-	cl_device_id	*devices;
-	cl_device_id	chosen;
-
-	clerror = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, 0, NULL, &num);
-	check_ocl_err("clGetDeviceIDs", clerror);
-	devices = (cl_device_id *)malloc(num * sizeof(cl_device_id));
-	check_null(devices);
-	clerror = clGetDeviceIDs(platform, CL_DEVICE_TYPE_ALL, num,
-			devices, NULL);
-	check_ocl_err("clGetDeviceIDs", clerror);
-	printf("Select device to use [%d-%d]:", 1, num);
-	scanf("%d", &idx);
-	chosen = devices[idx - 1];
-	free(devices);
-	return (chosen);
-}
-
+/* Auto-pick the first platform and its first GPU (any device as fallback). */
 void	select_platform_device(cl_platform_id *platform, cl_device_id *device)
 {
+	cl_int	clerror;
+
 	check_null(platform);
 	check_null(device);
-	*platform = ask_platform();
-	*device = ask_device(*platform);
+	clerror = clGetPlatformIDs(1, platform, NULL);
+	check_ocl_err("clGetPlatformIDs", clerror);
+	clerror = clGetDeviceIDs(*platform, CL_DEVICE_TYPE_GPU, 1, device, NULL);
+	if (clerror != CL_SUCCESS)
+		clerror = clGetDeviceIDs(*platform, CL_DEVICE_TYPE_ALL, 1,
+				device, NULL);
+	check_ocl_err("clGetDeviceIDs", clerror);
 }
