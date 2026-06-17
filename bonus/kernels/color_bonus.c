@@ -12,7 +12,6 @@
 
 #include "init_kernel.h"
 
-/* Russian-roulette path termination once a path is dim; returns 1 to stop. */
 static bool	roulette(t_path *pt, uint *seed)
 {
 	float	q;

@@ -12,7 +12,7 @@
 
 #include "rt_bonus.h"
 
-#define KERNEL_COUNT 14
+#define KERNEL_COUNT 15
 
 /*
 ** Uploads the already-assembled scene (filled by load_scene) as one buffer.
@@ -63,23 +63,34 @@ static cl_int	init_bvh_buffers(t_data *data)
 	return (clSetKernelArg(data->gpu.kernel, 10, sizeof(cl_int), &meta[2]));
 }
 
+static const char	*g_kernel_files[] = {
+	"bonus/kernels/interval_bonus.c",
+	"bonus/kernels/ray_bonus.c",
+	"bonus/kernels/random_bonus.c",
+	"bonus/kernels/hit_sphere_bonus.c",
+	"bonus/kernels/hit_plane_bonus.c",
+	"bonus/kernels/hit_quad_bonus.c",
+	"bonus/kernels/hit_cyl_caps_bonus.c",
+	"bonus/kernels/hit_cylinder_bonus.c",
+	"bonus/kernels/math_bonus.c",
+	"bonus/kernels/objects_bonus.c",
+	"bonus/kernels/nee_bonus.c",
+	"bonus/kernels/scatter_bonus.c",
+	"bonus/kernels/camera_bonus.c",
+	"bonus/kernels/color_bonus.c",
+	"bonus/kernels/render_bonus.c"
+};
+
 static void	build_kernels(t_data *data)
 {
-	static const char	*files[] = {"bonus/kernels/interval_bonus.c",
-		"bonus/kernels/ray_bonus.c", "bonus/kernels/random_bonus.c",
-		"bonus/kernels/hit_sphere_bonus.c", "bonus/kernels/hit_plane_bonus.c",
-		"bonus/kernels/hit_quad_bonus.c", "bonus/kernels/hit_cyl_caps_bonus.c", "bonus/kernels/hit_cylinder_bonus.c",
-		"bonus/kernels/objects_bonus.c", "bonus/kernels/nee_bonus.c",
-		"bonus/kernels/scatter_bonus.c", "bonus/kernels/camera_bonus.c",
-		"bonus/kernels/color_bonus.c", "bonus/kernels/render_bonus.c"};
-	char				*src[KERNEL_COUNT];
-	size_t				len[KERNEL_COUNT];
-	int					i;
+	char	*src[KERNEL_COUNT];
+	size_t	len[KERNEL_COUNT];
+	int		i;
 
 	i = 0;
 	while (i < KERNEL_COUNT)
 	{
-		src[i] = load_cl_source(files[i], &len[i]);
+		src[i] = load_cl_source(g_kernel_files[i], &len[i]);
 		i++;
 	}
 	data->gpu.program = create_build_program(data->gpu.context,

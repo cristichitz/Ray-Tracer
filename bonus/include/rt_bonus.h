@@ -79,10 +79,10 @@ int						render_mode_on(int argc, char **argv);
 void					render_loop(void *param);
 
 // Mlx hooks (utils_bonus.c)
-void	resize_hook(int32_t width, int32_t height, void *param);
-void	key_hook(mlx_key_data_t key, void *param);
-void	mouse_hook(mouse_key_t button, action_t action,
-		modifier_key_t mods, void *param);
+void					resize_hook(int32_t width, int32_t height, void *param);
+void					key_hook(mlx_key_data_t key, void *param);
+void					mouse_hook(mouse_key_t button, action_t action,
+							modifier_key_t mods, void *param);
 
 // Parsing (parse_*_bonus.c)
 int						load_scene(t_data *data, int argc, char **argv);

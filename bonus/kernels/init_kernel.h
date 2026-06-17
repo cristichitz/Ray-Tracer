@@ -25,11 +25,11 @@
 typedef struct s_object
 {
 	int			type;
-	cl_float3	center;
-	cl_float3	normal;
-	cl_float3	u;
-	cl_float3	v;
-	cl_float3	w;
+	t_cl_float3	center;
+	t_cl_float3	normal;
+	t_cl_float3	u;
+	t_cl_float3	v;
+	t_cl_float3	w;
 	float		radius;
 	float		height;
 	float		d;
@@ -39,8 +39,8 @@ typedef struct s_object
 
 typedef struct s_bvh_node
 {
-	cl_float3	bmin;
-	cl_float3	bmax;
+	t_cl_float3	bmin;
+	t_cl_float3	bmax;
 	int			left;
 	int			right;
 	int			count;
@@ -59,7 +59,7 @@ typedef struct s_sphere_var
 
 typedef struct s_cyl_var
 {
-	cl_float3	w;
+	t_cl_float3	w;
 	float		a;
 	float		half_b;
 	float		c;
@@ -73,8 +73,8 @@ typedef struct s_cyl_var
 
 typedef struct s_cap
 {
-	cl_float3	center;
-	cl_float3	normal;
+	t_cl_float3	center;
+	t_cl_float3	normal;
 	float		radius;
 	t_material	mat;
 }				t_cap;
@@ -89,19 +89,19 @@ typedef struct s_image
 	float		viewport_width;
 	float		focal_length;
 
-	cl_float3	horizontal;
-	cl_float3	vertical;
+	t_cl_float3	horizontal;
+	t_cl_float3	vertical;
 
 	int			samples_per_pixel;
 	float		pixel_samples_scale;
 	int			max_depth;
 
-	cl_float3	origin;
-	cl_float3	pixel00_loc;
-	cl_float3	pixel_delta_u;
-	cl_float3	pixel_delta_v;
+	t_cl_float3	origin;
+	t_cl_float3	pixel00_loc;
+	t_cl_float3	pixel_delta_u;
+	t_cl_float3	pixel_delta_v;
 
-	cl_float3	background;
+	t_cl_float3	background;
 }				t_image;
 
 # ifdef __OPENCL_VERSION__

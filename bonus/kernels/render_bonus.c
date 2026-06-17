@@ -12,7 +12,6 @@
 
 #include "init_kernel.h"
 
-/* This work-item's flat pixel index, or -1 when it falls outside the image. */
 static int	pixel_id(t_image *f)
 {
 	int	x;
@@ -25,11 +24,6 @@ static int	pixel_id(t_image *f)
 	return (y * f->width + x);
 }
 
-/*
-** Average samples_per_pixel paths through this pixel. The fmin is a firefly
-** clamp: a single extreme sample (a lucky bounce into a bright emitter) would
-** otherwise dominate the running average for hundreds of frames.
-*/
 static float3	render_pixel(t_scene sc, t_image *f, int id, uint *seed)
 {
 	float3	color;
@@ -47,10 +41,6 @@ static float3	render_pixel(t_scene sc, t_image *f, int id, uint *seed)
 	return (color * f->pixel_samples_scale);
 }
 
-/*
-** Progressive accumulation: frame 0 overwrites, later frames add. The stored
-** buffer holds the running sum; the caller divides by the frame count.
-*/
 static float3	accumulate(__global float4 *accum, int id, float3 color,
 		int frame_index)
 {
