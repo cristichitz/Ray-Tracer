@@ -26,7 +26,7 @@ static t_vec3	move_step(t_data *data, float *speed)
 	t_vec3	up;
 	t_vec3	step;
 
-	right = norm(cross(make_vec(0.0f, 1.0f, 0.0f), data->cam_forward));
+	right = safe_right_vec(data->cam_forward);
 	up = norm(cross(data->cam_forward, right));
 	step = make_vec(0.0f, 0.0f, 0.0f);
 	if (key_down2(data, MLX_KEY_KP_6, MLX_KEY_H))

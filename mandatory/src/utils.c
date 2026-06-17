@@ -33,3 +33,13 @@ float	clampf(float val, float min, float max)
 		return (max);
 	return (val);
 }
+
+t_vec3	safe_right_vec(t_vec3 forward)
+{
+	t_vec3	right;
+
+	right = cross(make_vec(0.0f, 1.0f, 0.0f), forward);
+	if (length_squared(right) < 1e-8f)
+		right = make_vec(1.0f, 0.0f, 0.0f);
+	return (norm(right));
+}

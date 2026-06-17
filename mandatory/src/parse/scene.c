@@ -68,8 +68,8 @@ int	valid_scene(t_data *data)
 {
 	if (!data->set_cam)
 		return (return_print_error("Missing camera (C).", 0));
-	if (!data->set_ambient_light && !data->set_light)
-		return (return_print_error("Missing light source (A or L).", 0));
+	if (!data->set_light)
+		return (return_print_error("Missing light (L).", 0));
 	return (1);
 }
 
@@ -79,6 +79,8 @@ int	add_to_world(t_data *data, void *object)
 		return (return_print_error("Failed to allocate object.", 0));
 	if (data->world.add(&data->world, object) != EXIT_SUCCESS)
 	{
+		if (((t_hittable *)object)->destroy)
+			((t_hittable *)object)->destroy(object);
 		free(object);
 		return (return_print_error("Failed to add object to world.", 0));
 	}

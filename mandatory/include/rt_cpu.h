@@ -127,6 +127,7 @@ bool							rotate_object(t_data *data,
 bool							is_emissive(t_hit_record *rec);
 t_vec3							sample_square(void);
 float							clampf(float val, float min, float max);
+t_vec3							safe_right_vec(t_vec3 forward);
 void							set_quality(t_data *data, t_quality quality);
 
 void							print_error(char *msg);

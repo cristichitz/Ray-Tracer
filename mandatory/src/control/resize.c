@@ -22,7 +22,8 @@ void	resize_hook(int32_t width, int32_t height, void *param)
 	data->width = (uint32_t)width;
 	data->height = (uint32_t)height;
 	data->aspect_ratio = (float)data->width / (float)data->height;
-	data->viewport_h = 2.0f * tanf(deg_to_rad((float)data->cam.fov) / 2.0f);
+	data->viewport_h = 2.0f * tanf(deg_to_rad(clampf((float)data->cam.fov,
+					1.0f, 179.0f)) / 2.0f);
 	data->viewport_w = data->aspect_ratio * data->viewport_h;
 	mlx_resize_image(data->img, data->width, data->height);
 	set_quality(data, LOW);

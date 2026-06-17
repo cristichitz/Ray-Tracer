@@ -86,6 +86,7 @@ t_box	*make_box(t_vec3 a, t_vec3 b, t_material mat)
 	t_box	*boxi;
 	t_vec3	min;
 	t_vec3	max;
+	int		i;
 
 	boxi = malloc(sizeof(t_box));
 	if (!boxi)
@@ -93,5 +94,16 @@ t_box	*make_box(t_vec3 a, t_vec3 b, t_material mat)
 	min = make_vec(fmin(a.x, b.x), fmin(a.y, b.y), fmin(a.z, b.z));
 	max = make_vec(fmax(a.x, b.x), fmax(a.y, b.y), fmax(a.z, b.z));
 	assemble_boxi(boxi, min, max, mat);
+	i = 0;
+	while (i < 6)
+	{
+		if (!boxi->sides[i])
+		{
+			destroy_box(boxi);
+			free(boxi);
+			return (NULL);
+		}
+		i++;
+	}
 	return (boxi);
 }
