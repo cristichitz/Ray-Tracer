@@ -1,8 +1,8 @@
 # Portal playground - bonus
 # Run: ./miniRT_bonus bonus/scenes/portal_playground.rt
 #
-# A closed room you can riddle with portals. Every wall and the floor is a
-# plane, so each one is BOTH a collision surface and a valid portal target.
+# A wide, open-topped room you can riddle with portals. Every wall and the floor
+# is a plane, so each one is BOTH a collision surface and a valid portal target.
 #
 # Controls:
 #   left click a wall/floor  -> drop a portal (two max; 3rd recycles the oldest)
@@ -13,26 +13,48 @@
 #
 # Fun test: portal on the floor under the ledge + portal on the far wall, then
 # knock a cube off the ledge and watch it shoot out across the room.
+#
+# Number formats per element are described above each line below.
 
+# C  position(x,y,z)  view_direction(x,y,z)  field_of_view(degrees)
 C  0,8,-26    0,-0.12,1   60
 
-# No explicit light: a bright ambient sky lights the open-topped room from
-# above (escaped rays return this colour). With no emitter to sample, the path
-# tracer skips next-event estimation entirely, so frames are fast and clean.
-A  1.0        235,240,250
+# A  ambient_ratio(0..1)  sky_colour(r,g,b 0..255) -> fills shadows / escaped rays
+A  0.25       160,175,205
 
-# --- room: planes double as colliders and portal targets ---
+# qu  Q=corner(x,y,z)  u=first_edge_vector  v=second_edge_vector  colour(r,g,b)  [material]
+# Here the material keyword "light" turns this quad into an area light; the quad
+# spans the parallelogram Q, Q+u, Q+v, Q+u+v. Big + high = soft, even lighting.
+qu -24,72,-28 30,0,0      0,0,30        180,176,168  light
+
+# pl  point_on_plane(x,y,z)  normal(x,y,z)  colour(r,g,b)  [material]
+# Planes are infinite. No material keyword -> static, so each is a collider too.
+# floor
 pl 0,0,0      0,1,0       195,195,200
-pl 0,0,17     0,0,-1      175,180,205
-pl -15,0,0    1,0,0       205,70,70
-pl 15,0,0     -1,0,0      70,160,205
-pl 0,0,-30    0,0,1       175,180,205
+# back wall (normal points toward the camera, -z)
+pl 0,0,24     0,0,-1      175,180,205
+# left wall (red), normal points right (+x)
+pl -28,0,0    1,0,0       205,70,70
+# right wall (blue), normal points left (-x)
+pl 28,0,0     -1,0,0      70,160,205
+# front wall behind the camera, normal points forward (+z)
+pl 0,0,-32    0,0,1       175,180,205
 
-# --- static ledge to drop props off (wood keyword = static, immovable) ---
-bx -9,3,11    6,6,6       150,120,80    wood
+# bx  centre(x,y,z)  size(width_x,height_y,depth_z)  colour(r,g,b)  [material]
+# "wood" = static/immovable scenery (great flat faces to slap portals on).
+# static ledge to drop props off (6x6x6, sits on the floor)
+# bx -9,3,11    6,6,6       150,120,80    wood
+# tall standing pillar (5 wide, 18 tall, 5 deep) - a vertical face for portals
+bx 12,9,2     5,18,5      165,168,175   wood
 
-# --- dynamic props: grab, throw and drop these through the portals ---
+# bx (dynamic): "brick"/"rubber" are dynamic rigid bodies (fall, tumble, collide)
+# brick cube resting on the ledge (3x3x3)
 bx -9,7.5,11  3,3,3       225,120,55    brick
+# bouncy rubber cube on the floor (3x3x3)
 bx 5,2,5      3,3,3       120,205,120   rubber
+# small brick cube on the floor (2.5x2.5x2.5)
 bx 9,2.5,9    2.5,2.5,2.5 210,205,90    brick
-sp 0,3,3      3           220,220,235   metal
+
+# sp  centre(x,y,z)  diameter  colour(r,g,b)  [material]
+# heavy metal sphere - left-click to shove it
+# sp 0,3,3      3           220,220,235   metal

@@ -19,6 +19,25 @@
 ** therefore defines both what moves and what it collides against.
 */
 
+/* Height of the highest up-facing collider (the floor), or 0 if there is none. */
+static float	world_floor(t_physics *ph)
+{
+	float	h;
+	int		i;
+
+	h = -1e9f;
+	i = 0;
+	while (i < ph->collider_count)
+	{
+		if (ph->colliders[i].n.y > 0.9f && ph->colliders[i].d > h)
+			h = ph->colliders[i].d;
+		i++;
+	}
+	if (h < -1e8f)
+		return (0.0f);
+	return (h);
+}
+
 /* Harvest one static plane as a collider; its normal points toward the bodies. */
 static void	add_collider(t_physics *ph, t_object *o)
 {
@@ -56,10 +75,11 @@ void	physics_init(t_data *data)
 			add_collider(ph, &data->objects[i]);
 		i++;
 	}
-	ph->floor_y = 0.0f;
+	ph->floor_y = world_floor(ph);
 	ph->settle = 0;
-	ph->autostart = 0;
-	ph->running = 0;
+	ph->autostart = 1;
+	ph->running = 1;
 	ph->held = -1;
 	ph->hold_dist = 0.0f;
+	ph->character = -1;
 }

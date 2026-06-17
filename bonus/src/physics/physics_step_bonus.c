@@ -103,16 +103,21 @@ static float	peak_motion(t_physics *ph)
 */
 static void	hold_aim(t_data *data)
 {
-	t_ray	ray;
-	int		x;
-	int		y;
+	cl_float3	t;
+	t_ray		ray;
+	float		floor;
+	int			x;
+	int			y;
 
 	if (data->phys.held < 0)
 		return ;
 	mlx_get_mouse_pos(data->mlx, &x, &y);
 	ray = ray_from_screen(data, (float)x, (float)y);
-	data->phys.hold_target = add(ray.origin,
-			scale(ray.dir, data->phys.hold_dist));
+	t = add(ray.origin, scale(ray.dir, data->phys.hold_dist));
+	floor = data->phys.floor_y + data->phys.bodies[data->phys.held].half;
+	if (t.y < floor)
+		t.y = floor;
+	data->phys.hold_target = t;
 }
 
 /* Advance the simulation one rendered frame and push poses into the geometry. */

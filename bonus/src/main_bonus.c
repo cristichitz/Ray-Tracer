@@ -33,10 +33,10 @@ void	resize_hook(int32_t width, int32_t height, void *param)
 }
 
 /*
-** SPACE shoves whatever dynamic body the camera is looking at along the view
-** direction (the generic "launch"). Edge-triggered so one press = one shove.
-** This is the only key hook the physics needs; a mouse-click impulse would be
-** wired the same way (see physics_input_bonus.c).
+** M toggles first-person character mode (only once a player body exists). In
+** free-fly mode SPACE shoves whatever body the camera looks at; in character
+** mode SPACE is the jump (handled each frame in game_loop), so it is gated off
+** here. Edge-triggered so one press = one action.
 */
 void	key_hook(mlx_key_data_t key, void *param)
 {
@@ -45,7 +45,9 @@ void	key_hook(mlx_key_data_t key, void *param)
 	data = (t_data *)param;
 	if (key.action != MLX_PRESS || data->render_mode)
 		return ;
-	if (key.key == MLX_KEY_SPACE)
+	if (key.key == MLX_KEY_M && data->phys.character >= 0)
+		data->char_mode = !data->char_mode;
+	if (key.key == MLX_KEY_SPACE && !data->char_mode)
 		shove_forward(data);
 }
 
@@ -140,6 +142,25 @@ void	mouse_hook(mouse_key_t button, action_t action,
 }
 
 /*
+** Scroll wheel reels the held cube along the cursor ray: wheel up pushes it
+** further away, wheel down pulls it closer, so it is easy to aim and drop.
+*/
+void	scroll_hook(double xdelta, double ydelta, void *param)
+{
+	t_data	*data;
+
+	(void)xdelta;
+	data = (t_data *)param;
+	if (data->phys.held < 0 || data->render_mode)
+		return ;
+	data->phys.hold_dist += (float)ydelta * 2.0f;
+	if (data->phys.hold_dist < 3.0f)
+		data->phys.hold_dist = 3.0f;
+	if (data->phys.hold_dist > 200.0f)
+		data->phys.hold_dist = 200.0f;
+}
+
+/*
 ** Camera moved or the simulation is live: restart path-tracing accumulation
 ** and flag the scene dirty so the moved geometry re-uploads to the GPU.
 */
@@ -166,6 +187,7 @@ void	game_loop(void *param)
 	int			moved;
 
 	data = (t_data *)param;
+	step = make_float3(0.0f, 0.0f, 0.0f);
 	if (mlx_is_key_down(data->mlx, MLX_KEY_ESCAPE))
 	{
 		cleanup(data);
@@ -173,10 +195,14 @@ void	game_loop(void *param)
 		return ;
 	}
 	moved = handle_rotation(data);
-	if (handle_movement(data, &step))
+	if (data->char_mode)
+		character_input(data);
+	else if (handle_movement(data, &step))
 		moved = 1;
 	update_camera(data, step, moved);
 	physics_step(data);
+	if (data->char_mode)
+		character_camera(data);
 	if (data->frame_index >= ACCUM_MAX)
 		return ;
 	render_frame(data);
@@ -213,6 +239,7 @@ int	main(int argc, char **argv)
 	if (!load_scene(&data, argc, argv))
 		return (EXIT_FAILURE);
 	reserve_portals(&data);
+	spawn_character(&data);
 	initialize(&data);
 	if (!init_window(&data))
 		return (EXIT_FAILURE);
@@ -223,6 +250,7 @@ int	main(int argc, char **argv)
 		mlx_loop_hook(data.mlx, game_loop, &data);
 	mlx_key_hook(data.mlx, key_hook, &data);
 	mlx_mouse_hook(data.mlx, mouse_hook, &data);
+	mlx_scroll_hook(data.mlx, scroll_hook, &data);
 	mlx_resize_hook(data.mlx, resize_hook, &data);
 	mlx_close_hook(data.mlx, cleanup, &data);
 	mlx_loop(data.mlx);

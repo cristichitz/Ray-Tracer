@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 20:14:55 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/14 19:24:27 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/16 14:53:59 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 // Samples taken per rendered frame. Kept low because frames accumulate when
 // the camera is still (progressive refinement); this is also the quality used
 // while moving.
-#define BONUS_SPP 2
+#define BONUS_SPP 1
 #define BONUS_MAX_DEPTH 2
 // Stop re-rendering once this many frames have accumulated (converged -> idle).
 #define ACCUM_MAX 512
@@ -140,6 +140,16 @@ typedef struct s_bvh {
 # define PORTAL_COOLDOWN 8     // frames a body ignores portals after teleport
 # define HOLD_MAX_SPEED 90.0f  // cap on the carry velocity (avoids tunneling)
 
+// --- Character controller (press M to toggle) ------------------------------
+// The player is just another rigid body driven by input instead of by being
+// dropped: WASD set its horizontal velocity, SPACE jumps, gravity and the world
+// collision do the rest, and it travels through portals exactly like a thrown
+// cube. The camera rides at eye height above the body, so it has a real height.
+# define CHAR_SIZE 2.5f        // character cube edge (world units)
+# define CHAR_SPEED 22.0f      // walking speed (world units / second)
+# define CHAR_JUMP 30.0f       // upward velocity of a jump
+# define EYE_HEIGHT 0.8f       // camera height above the top of the body
+
 // Unit quaternion (w + xi + yj + zk); carries a rigid body's orientation.
 typedef struct s_quat {
   float  w;
@@ -199,6 +209,7 @@ typedef struct s_physics {
   float      floor_y;     // fallback ground height when no plane collider exists
   int        held;        // index of the body carried by the cursor, or -1
   float      hold_dist;   // distance in front of the camera to carry it at
+  int        character;   // body index of the player avatar, or -1
   cl_float3  hold_target; // world point the carried body is driven toward
   // Active portal "holes": where a static collider is treated as open so a
   // body over the ellipse falls through instead of landing on the surface.
@@ -250,6 +261,9 @@ typedef struct s_data {
     int       portal_obj[2];
     int       portal_active[2];
     int       portal_next;
+
+    // 1 = first-person character mode (WASD walk + jump), 0 = free-fly camera.
+    int       char_mode;
 } t_data;
 
 // GPU setup / teardown (init_gpu_bonus.c, cleanup_bonus.c)
@@ -350,6 +364,11 @@ cl_float3  portal_point(t_object *src, t_object *dst, cl_float3 p);
 cl_float3  portal_vec(t_object *src, t_object *dst, cl_float3 raw);
 void       portals_teleport(t_data *data);
 void       portal_sync_holes(t_data *data);
+
+// First-person character (character_bonus.c): a player-driven rigid body.
+void       spawn_character(t_data *data);
+void       character_input(t_data *data);
+void       character_camera(t_data *data);
 
 // Offline render-to-disk (render_out_bonus.c)
 int        render_mode_on(int argc, char **argv);

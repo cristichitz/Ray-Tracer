@@ -101,6 +101,7 @@ bonus/src/physics/body_place_bonus.c \
 bonus/src/physics/physics_bonus.c \
 bonus/src/physics/physics_step_bonus.c \
 bonus/src/physics/physics_input_bonus.c \
+bonus/src/physics/character_bonus.c \
 bonus/src/physics/collide_bonus.c \
 bonus/src/physics/collide_box_bonus.c \
 bonus/src/physics/collide_sat_bonus.c \

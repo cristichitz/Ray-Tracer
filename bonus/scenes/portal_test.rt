@@ -6,10 +6,10 @@
 # drop it. Drop it through one portal to have it come out the other.
 
 C  0,5,-15    0,-0.12,1   60
+A  0.25       160,175,205
 
-# No explicit light: a bright ambient sky lights the scene (escaped rays return
-# this colour), so there is no emitter to sample and frames stay fast.
-A  1.0        235,240,250
+# high, wide area light so the floor + wall + cube are clearly and softly lit
+qu -6,18,-3   12,0,0      0,0,12        255,255,255   light
 
 # flat floor plane (static -> collision surface + portal target)
 pl 0,0,0      0,1,0       180,180,185
