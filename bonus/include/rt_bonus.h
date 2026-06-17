@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 20:14:55 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/17 16:38:44 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:45:52 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ t_material				material_named(const char *name, cl_float3 color);
 int						render_mode_on(int argc, char **argv);
 void					render_loop(void *param);
 
-// Mlx hooks (ulti_bonus.c)
+// Mlx hooks (utils_bonus.c)
 void	resize_hook(int32_t width, int32_t height, void *param);
 void	key_hook(mlx_key_data_t key, void *param);
 void	mouse_hook(mouse_key_t button, action_t action,

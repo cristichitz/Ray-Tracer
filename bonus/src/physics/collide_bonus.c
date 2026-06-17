@@ -6,29 +6,18 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 18:53:03 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/12 18:53:04 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/17 16:43:02 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
-#include <string.h>
 
-/*
-** Impulse resolution for the rigid bodies. Contacts are resolved with
-** sequential impulses (normal bounce + Coulomb friction) plus Baumgarte
-** positional correction so stacks don't sink. Inertia is isotropic, so inv_i
-** is a single scalar. Restitution and friction are combined from the two
-** bodies in contact, so the result is dictated by their materials.
-*/
-
-/* Add velocity + angular velocity from an impulse applied at offset r. */
 static void	body_apply(t_rbody *b, cl_float3 imp, cl_float3 r)
 {
 	b->vel = add(b->vel, scale(imp, b->inv_mass));
 	b->omega = add(b->omega, scale(cross(r, imp), b->inv_i));
 }
 
-/* Clamped Coulomb friction along the tangent of the residual velocity. */
 static void	friction_impulse(t_rbody *a, t_rbody *b, t_contact *c)
 {
 	cl_float3	relv;
@@ -51,10 +40,6 @@ static void	friction_impulse(t_rbody *a, t_rbody *b, t_contact *c)
 	body_apply(b, scale(t, jt), c->rb);
 }
 
-/*
-** Resolve one contact point cp with normal n (pointing from a to b): a
-** normal impulse (restitution) followed by a clamped friction impulse.
-*/
 void	contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp)
 {
 	t_contact	c;
@@ -79,39 +64,6 @@ void	contact_impulse(t_rbody *a, t_rbody *b, cl_float3 n, cl_float3 cp)
 	body_apply(a, scale(n, -c.jn), c.ra);
 	body_apply(b, scale(n, c.jn), c.rb);
 	friction_impulse(a, b, &c);
-}
-
-/* The ground is an immovable plane; each sunk corner is a contact. */
-void	collide_ground(t_rbody *b, float floor_y)
-{
-	t_rbody		ground;
-	cl_float3	corner;
-	float		maxpen;
-	int			i;
-
-	if (b->shape == 1)
-	{
-		collide_ball_ground(b, floor_y);
-		return ;
-	}
-	memset(&ground, 0, sizeof(ground));
-	ground.restitution = b->restitution;
-	ground.friction = b->friction;
-	maxpen = 0.0f;
-	i = -1;
-	while (++i < 8)
-	{
-		corner = box_vertex(b, i);
-		if (corner.y < floor_y)
-		{
-			ground.pos = make_float3(corner.x, floor_y, corner.z);
-			contact_impulse(&ground, b, make_float3(0.0f, 1.0f, 0.0f), corner);
-			if (floor_y - corner.y > maxpen)
-				maxpen = floor_y - corner.y;
-		}
-	}
-	if (maxpen > PHYS_SLOP)
-		b->pos.y += (maxpen - PHYS_SLOP) * PHYS_BAUMGARTE;
 }
 
 void	collide_pair(t_rbody *a, t_rbody *b)
