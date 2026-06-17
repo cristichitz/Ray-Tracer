@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "movable.h"
+#include "box.h"
 #include "rt_cpu.h"
 
 static bool	key_down2(t_data *data, int key1, int key2)
@@ -43,16 +44,31 @@ static t_vec3	move_step(t_data *data, float *speed)
 	return (step);
 }
 
+static void	move_box(t_box *box, t_vec3 step)
+{
+	int	i;
+
+	i = 0;
+	while (i < 6)
+	{
+		box->sides[i]->q = add(box->sides[i]->q, step);
+		i++;
+	}
+}
+
 bool	move_object(t_data *data, float *speed)
 {
-	t_movable	*object;
+	t_hittable	*base;
 	t_vec3		step;
 
 	step = move_step(data, speed);
 	if (step.x == 0.0f && step.y == 0.0f && step.z == 0.0f)
 		return (false);
-	object = (t_movable *)ft_vec_get(data->world.objects, data->object_i);
-	object->center = add(object->center, step);
+	base = (t_hittable *)ft_vec_get(data->world.objects, data->object_i);
+	if (base->hit == hit_box)
+		move_box((t_box *)base, step);
+	else
+		((t_movable *)base)->center = add(((t_movable *)base)->center, step);
 	if (data->object_i == data->light_i)
 		data->light.center = add(data->light.center, step);
 	return (true);
