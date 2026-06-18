@@ -13,7 +13,9 @@
 #ifndef RT_TYPES_BONUS_H
 # define RT_TYPES_BONUS_H
 
-# include "CL/cl.h"
+# ifndef METAL_GPU
+#  include "CL/cl.h"
+# endif
 # include "MLX42/MLX42.h"
 # include "init_kernel.h"
 
@@ -33,6 +35,15 @@
 # define PHYS_LAUNCH_SPEED 80.0f
 # define PHYS_CLICK_IMPULSE 6000.0f
 
+# ifdef METAL_GPU
+
+typedef struct s_gpu
+{
+	void				*metal_state;
+}						t_gpu;
+
+# else
+
 typedef struct s_gpu
 {
 	cl_context			context;
@@ -45,6 +56,8 @@ typedef struct s_gpu
 	cl_mem				node_buffer;
 	cl_mem				prim_buffer;
 }						t_gpu;
+
+# endif
 
 typedef struct s_bvh
 {
@@ -129,7 +142,7 @@ typedef struct s_data
 	float				cam_pitch;
 	float				cam_fov;
 	t_gpu				gpu;
-	cl_int				err;
+	int					err;
 	t_image				frame;
 	t_object			*objects;
 	uint32_t			obj_count;

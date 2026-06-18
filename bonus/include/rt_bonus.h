@@ -34,7 +34,17 @@
 # define RENDER_MAX_FRAMES 3000
 # define RENDER_DT 0.008f
 
-// GPU setup / teardown (init_gpu_bonus.c, cleanup_bonus.c)
+// GPU setup / teardown
+# ifdef METAL_GPU
+#  include "metal_bonus_bridge.h"
+int						init_gpu(t_data *data);
+void					render_frame(t_data *data);
+void					game_loop(void *param);
+void					clean_gpu(t_data *data);
+void					cleanup(void *param);
+int						init_objects(t_data *data);
+void					resize_gpu_buffers(t_data *data);
+# else
 cl_int					init_gpu(t_data *data);
 void					render_frame(t_data *data);
 void					game_loop(void *param);
@@ -42,10 +52,15 @@ void					clean_gpu(t_data *data);
 void					cleanup(void *param);
 cl_int					init_objects(t_data *data);
 void					resize_gpu_buffers(t_data *data);
+# endif
 
 // Camera key controls (controls_bonus.c)
 int						handle_rotation(t_data *data);
+# ifdef METAL_GPU
 int						handle_movement(t_data *data, cl_float3 *step);
+# else
+int						handle_movement(t_data *data, cl_float3 *step);
+# endif
 
 // Camera / view (view_bonus.c)
 void					initialize(t_data *data);

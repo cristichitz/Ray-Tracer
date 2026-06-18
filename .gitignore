@@ -3,15 +3,18 @@
 libft/*
 obj/*
 obj_mac/*
+obj_mac_bonus/*
 MLX42/*  
 
 MLX42
 miniRT
 miniRT_mac
+miniRT_mac_bonus
 miniRT_bonus
 
 cp3a/*
 rubick_solver/*
 
 *.pdf
-.gitignore
+.gitignore*.air
+*.metallib

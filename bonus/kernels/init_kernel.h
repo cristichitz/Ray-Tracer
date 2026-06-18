@@ -15,7 +15,9 @@
 
 # include "internals.h"
 
-# define RAND_MAX 2147483647
+# ifdef __OPENCL_VERSION__
+#  define RAND_MAX 2147483647
+# endif
 
 # define OBJ_SPHERE 0
 # define OBJ_PLANE 1

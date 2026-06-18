@@ -17,14 +17,19 @@
 # include <stdio.h>
 # include <string.h>
 
-# ifdef __APPLE__
-#  include <OpenCL/opencl.h>
-# else
-#  include <CL/cl.h>
-# endif
+# ifdef METAL_GPU
+
+#  include "cl_compat_bonus.h"
+
+# else /* OpenCL path */
+
+#  ifdef __APPLE__
+#   include <OpenCL/opencl.h>
+#  else
+#   include <CL/cl.h>
+#  endif
 
 void				check_ocl_err(const char *function_name, cl_int err);
-void				check_null(const void *ptr);
 int					print_opencl_info(void);
 void				print_platform_name(cl_platform_id platform);
 void				print_device_name(cl_device_id device);
@@ -47,5 +52,10 @@ void				release_kernel(cl_kernel *kernel);
 void				release_cl_queue(cl_command_queue *queue);
 void				release_cl_context(cl_context *context);
 void				setup_local_cl(void);
+
+# endif /* METAL_GPU */
+
+/* Available for both Metal and OpenCL paths */
+void				check_null(const void *ptr);
 
 #endif

@@ -17,6 +17,11 @@
 
 typedef float3		t_cl_float3;
 
+# elif defined(METAL_GPU)
+
+#  include "cl_compat_bonus.h"
+typedef cl_float3	t_cl_float3;
+
 # else
 
 typedef cl_float3	t_cl_float3;

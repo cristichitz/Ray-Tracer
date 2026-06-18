@@ -75,8 +75,10 @@ int	main(int argc, char **argv)
 {
 	t_data	data;
 
-	setup_local_cl();
 	memset(&data, 0, sizeof(data));
+#ifndef METAL_GPU
+	setup_local_cl();
+#endif
 	data.render_mode = render_mode_on(argc, argv);
 	if (!load_scene(&data, argc, argv))
 		return (free(data.objects), EXIT_FAILURE);

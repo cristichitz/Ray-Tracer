@@ -212,6 +212,75 @@ $(METAL_OBJ): mandatory/metal/metal_bridge.m $(METAL_LIB) \
 	@mkdir -p $(@D)
 	$(CC) -Wall -Wextra $(INCLUDES) -I./mandatory/metal -ObjC -fobjc-arc \
 	      -c mandatory/metal/metal_bridge.m -o $(METAL_OBJ)
+
+# ── Mac Bonus (Metal GPU) ──────────────────────────────────────────────────
+NAME_MAC_BONUS = miniRT_mac_bonus
+MAC_BONUS_OBJ_DIR = obj_mac_bonus
+
+# Bonus sources MINUS OpenCL/GPU host code (replaced by Metal bridge)
+MAC_BONUS_SRCS = \
+bonus/src/main_bonus.c \
+bonus/src/utils_bonus.c \
+bonus/src/control/controls_bonus.c \
+bonus/src/control/view_bonus.c \
+bonus/src/scene/scene_bonus.c \
+bonus/src/scene/scene_build_bonus.c \
+bonus/src/parse/parse_bonus.c \
+bonus/src/parse/parse_utils_bonus.c \
+bonus/src/parse/parse_obj_bonus.c \
+bonus/src/parse/parse_world_bonus.c \
+bonus/src/class/vec3_bonus.c \
+bonus/src/class/vec3_2_bonus.c \
+bonus/src/class/vec3_3_bonus.c \
+bonus/src/class/sphere_bonus.c \
+bonus/src/class/material_bonus.c \
+bonus/src/class/material_preset_bonus.c \
+bonus/src/class/plane_bonus.c \
+bonus/src/class/cylinder_bonus.c \
+bonus/src/physics/quat_bonus.c \
+bonus/src/physics/quat_2_bonus.c \
+bonus/src/physics/body_bonus.c \
+bonus/src/physics/body_place_bonus.c \
+bonus/src/physics/physics_bonus.c \
+bonus/src/physics/physics_step_bonus.c \
+bonus/src/physics/physics_input_bonus.c \
+bonus/src/physics/collide_bonus.c \
+bonus/src/physics/collide_ground_bonus.c \
+bonus/src/physics/collide_box_bonus.c \
+bonus/src/physics/collide_sat_bonus.c \
+bonus/src/physics/collide_ball_bonus.c \
+bonus/src/physics/collide_sphere_bonus.c \
+bonus/src/physics/collide_room_bonus.c \
+bonus/src/bvh/bvh_bounds_bonus.c \
+bonus/src/bvh/bvh_build_bonus.c \
+bonus/src/render_out_bonus.c
+
+MAC_BONUS_OBJS = $(MAC_BONUS_SRCS:%.c=$(MAC_BONUS_OBJ_DIR)/%.o)
+
+# Metal bonus shader paths
+BONUS_METAL_SRC = bonus/metal/render_bonus.metal
+BONUS_METAL_AIR = bonus/metal/render_bonus.air
+BONUS_METAL_LIB = bonus/metal/render_bonus.metallib
+BONUS_METAL_OBJ = $(OBJ_DIR)/bonus/metal/metal_bonus_bridge.o
+
+mac_bonus: $(NAME_MAC_BONUS)
+
+$(NAME_MAC_BONUS): $(MLX42_BUILD) $(LIBFT) $(MAC_BONUS_OBJS) $(BONUS_METAL_OBJ) $(BONUS_METAL_LIB)
+	$(CC) $(CFLAGS) $(MAC_BONUS_OBJS) $(BONUS_METAL_OBJ) $(MLX42_BUILD) $(LIBFT) $(MLX_FLAGS) -framework Metal -framework Foundation -o $(NAME_MAC_BONUS)
+
+$(MAC_BONUS_OBJ_DIR)/bonus/%.o: bonus/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -DMETAL_GPU $(BONUS_INCLUDES) -c $< -o $@
+
+$(BONUS_METAL_LIB): $(BONUS_METAL_SRC)
+	@mkdir -p $(@D)
+	$(METAL_CC) -c $(BONUS_METAL_SRC) -o $(BONUS_METAL_AIR)
+	$(METALLIB) $(BONUS_METAL_AIR) -o $(BONUS_METAL_LIB)
+
+$(BONUS_METAL_OBJ): bonus/metal/metal_bonus_bridge.m $(BONUS_METAL_LIB)
+	@mkdir -p $(@D)
+	$(CC) -Wall -Wextra $(BONUS_INCLUDES) -I./bonus/metal -ObjC -fobjc-arc \
+	      -DMETAL_GPU -c bonus/metal/metal_bonus_bridge.m -o $(BONUS_METAL_OBJ)
 # ───────────────────────────────────────────────────────────────────────────
 
 $(LIBFT):
@@ -227,13 +296,15 @@ $(MLX42_BUILD): | $(MLX42_DIR)
 clean:
 	rm -rf $(OBJ_DIR)
 	rm -rf $(MAC_OBJ_DIR)
+	rm -rf $(MAC_BONUS_OBJ_DIR)
 	rm -rf $(MLX42_DIR)/build
 	rm -f $(METAL_AIR)
+	rm -f $(BONUS_METAL_AIR)
 	make clean -C $(LIBFT_DIR)
 
 fclean: clean
-	rm -f $(NAME) $(NAME_MAC) $(NAME_BONUS)
-	rm -f $(METAL_LIB)
+	rm -f $(NAME) $(NAME_MAC) $(NAME_BONUS) $(NAME_MAC_BONUS)
+	rm -f $(METAL_LIB) $(BONUS_METAL_LIB)
 	rm -rf $(MLX42_DIR)
 	make fclean -C $(LIBFT_DIR)
 
@@ -246,4 +317,4 @@ asm:
 		$(INCLUDES) -S $(ASM_SRC)
 	@echo "wrote render_cpu2.s vec3.s"
 
-.PHONY: all mac bonus clean fclean re asm
+.PHONY: all mac mac_bonus bonus clean fclean re asm
