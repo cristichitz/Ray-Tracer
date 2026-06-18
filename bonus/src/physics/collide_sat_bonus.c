@@ -31,10 +31,12 @@ static int	sat_axis(t_rbody *a, t_rbody *b, cl_float3 l, float *mp)
 		return (1);
 	l = norm(l);
 	d = sub(b->pos, a->pos);
-	proj[0] = a->half * (fabsf(dot(box_axis(a, 0), l))
-			+ fabsf(dot(box_axis(a, 1), l)) + fabsf(dot(box_axis(a, 2), l)));
-	proj[1] = b->half * (fabsf(dot(box_axis(b, 0), l))
-			+ fabsf(dot(box_axis(b, 1), l)) + fabsf(dot(box_axis(b, 2), l)));
+	proj[0] = a->half.x * fabsf(dot(box_axis(a, 0), l))
+		+ a->half.y * fabsf(dot(box_axis(a, 1), l))
+		+ a->half.z * fabsf(dot(box_axis(a, 2), l));
+	proj[1] = b->half.x * fabsf(dot(box_axis(b, 0), l))
+		+ b->half.y * fabsf(dot(box_axis(b, 1), l))
+		+ b->half.z * fabsf(dot(box_axis(b, 2), l));
 	proj[2] = proj[0] + proj[1] - fabsf(dot(d, l));
 	if (proj[2] < 0.0f)
 		return (0);

@@ -75,7 +75,7 @@ typedef struct s_rbody
 	cl_float3			omega;
 	float				inv_mass;
 	float				inv_i;
-	float				half;
+	cl_float3			half;
 	float				restitution;
 	float				friction;
 	int					sleeping;

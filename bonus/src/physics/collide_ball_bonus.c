@@ -31,9 +31,9 @@ static cl_float3	closest_on_box(t_rbody *box, cl_float3 p)
 	cl_float3	l;
 
 	l = quat_unapply(box->orient, sub(p, box->pos));
-	l.x = fmaxf(-box->half, fminf(box->half, l.x));
-	l.y = fmaxf(-box->half, fminf(box->half, l.y));
-	l.z = fmaxf(-box->half, fminf(box->half, l.z));
+	l.x = fmaxf(-box->half.x, fminf(box->half.x, l.x));
+	l.y = fmaxf(-box->half.y, fminf(box->half.y, l.y));
+	l.z = fmaxf(-box->half.z, fminf(box->half.z, l.z));
 	return (add(box->pos, quat_apply(box->orient, l)));
 }
 
@@ -53,12 +53,12 @@ static void	ball_box(t_rbody *ball, t_rbody *box)
 	cp = closest_on_box(box, ball->pos);
 	n = sub(ball->pos, cp);
 	dist = sqrtf(dot(n, n));
-	if (dist >= ball->half || dist < 1e-6f)
+	if (dist >= ball->half.x || dist < 1e-6f)
 		return ;
 	n = divide(n, dist);
 	contact_impulse(box, ball, n, cp);
 	ti = ball->inv_mass + box->inv_mass;
-	corr = fmaxf(0.0f, (ball->half - dist) - PHYS_SLOP) * PHYS_BAUMGARTE;
+	corr = fmaxf(0.0f, (ball->half.x - dist) - PHYS_SLOP) * PHYS_BAUMGARTE;
 	if (ti > 0.0f)
 	{
 		ball->pos = add(ball->pos, scale(n, corr * ball->inv_mass / ti));
@@ -84,7 +84,7 @@ void	collide_ball_ground(t_rbody *b, float floor_y)
 	cl_float3	cp;
 	float		pen;
 
-	pen = floor_y - (b->pos.y - b->half);
+	pen = floor_y - (b->pos.y - b->half.x);
 	if (pen <= 0.0f)
 		return ;
 	memset(&ground, 0, sizeof(ground));

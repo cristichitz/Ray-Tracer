@@ -26,13 +26,13 @@ static void	plane_ball(t_rbody *b, t_collider c)
 	t_rbody	wall;
 	float	pen;
 
-	pen = c.d - (dot(b->pos, c.n) - b->half);
+	pen = c.d - (dot(b->pos, c.n) - b->half.x);
 	if (pen <= 0.0f)
 		return ;
 	memset(&wall, 0, sizeof(wall));
 	wall.restitution = c.restitution;
 	wall.friction = c.friction;
-	wall.pos = sub(b->pos, scale(c.n, b->half));
+	wall.pos = sub(b->pos, scale(c.n, b->half.x));
 	contact_impulse(&wall, b, c.n, wall.pos);
 	if (pen > PHYS_SLOP)
 		b->pos = add(b->pos, scale(c.n, (pen - PHYS_SLOP) * PHYS_BAUMGARTE));

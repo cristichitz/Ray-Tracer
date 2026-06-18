@@ -69,24 +69,23 @@ int	set_cylinder(t_data *data, char **p)
 				material_named(mat_token(p, 6), color))));
 }
 
-/* bx  cx,cy,cz  sx,sy,sz  r,g,b  [material] */
+/* bx  ax,ay,az  bx,by,bz  r,g,b  [material]  (a and b are opposite corners) */
 int	set_box(t_data *data, char **p)
 {
-	cl_float3	center;
-	cl_float3	size;
+	cl_float3	corner_a;
+	cl_float3	corner_b;
 	cl_float3	color;
 	t_material	mat;
 	int			base;
 
 	if (split_len(p) != 4 && split_len(p) != 5)
-		return (parse_err("bx: expected 'bx center size colour [mat]'."));
-	if (!set_vec3(&center, p[1]) || !set_vec3(&size, p[2]) || !set_color(&color,
-			p[3]))
+		return (parse_err("bx: expected 'bx corner_a corner_b colour [mat]'."));
+	if (!set_vec3(&corner_a, p[1]) || !set_vec3(&corner_b, p[2])
+		|| !set_color(&color, p[3]))
 		return (0);
 	mat = material_named(mat_token(p, 4), color);
 	base = (int)data->obj_count;
-	if (!make_box(data, sub(center, scale(size, 0.5f)), add(center, scale(size,
-					0.5f)), mat))
+	if (!make_box(data, corner_a, corner_b, mat))
 		return (0);
 	if (mat.dynamic)
 		add_body(data, base, BOX_FACES, mat);

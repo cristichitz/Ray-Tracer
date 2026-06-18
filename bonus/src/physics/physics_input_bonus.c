@@ -49,7 +49,7 @@ int	pick_body(t_data *data, t_ray ray)
 	while (i < data->phys.count)
 	{
 		t = ray_sphere(ray, data->phys.bodies[i].pos,
-				data->phys.bodies[i].half * 1.74f);
+				sqrtf(length_squared(data->phys.bodies[i].half)));
 		if (t > 0.0f && t < best)
 		{
 			best = t;

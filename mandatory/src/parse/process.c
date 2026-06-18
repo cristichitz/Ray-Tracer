@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/11 13:10:56 by timurray          #+#    #+#             */
-/*   Updated: 2026/06/13 19:35:55 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/18 10:42:04 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	process_type(t_data *data, char **params)
 		return (set_cylinder(data, params));
 	if (ft_strcmp(params[0], "qu") == 0)
 		return (set_quad(data, params));
-	if (ft_strcmp(params[0], "bo") == 0)
+	if (ft_strcmp(params[0], "bx") == 0)
 		return (set_box(data, params));
 	print_error("type not found");
 	return (0);

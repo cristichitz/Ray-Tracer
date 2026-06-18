@@ -39,8 +39,8 @@ cl_float3	box_vertex(t_rbody *b, int i)
 {
 	cl_float3	local;
 
-	local = make_float3(half_sign(b->half, i & 1),
-			half_sign(b->half, i & 2), half_sign(b->half, i & 4));
+	local = make_float3(half_sign(b->half.x, i & 1),
+			half_sign(b->half.y, i & 2), half_sign(b->half.z, i & 4));
 	return (add(b->pos, quat_apply(b->orient, local)));
 }
 
@@ -48,16 +48,15 @@ static int	point_in_box(t_rbody *b, cl_float3 p)
 {
 	t_quat		conj;
 	cl_float3	local;
-	float		e;
 
 	conj.w = b->orient.w;
 	conj.x = -b->orient.x;
 	conj.y = -b->orient.y;
 	conj.z = -b->orient.z;
 	local = quat_apply(conj, sub(p, b->pos));
-	e = b->half + 1e-4f;
-	return (fabsf(local.x) <= e && fabsf(local.y) <= e
-		&& fabsf(local.z) <= e);
+	return (fabsf(local.x) <= b->half.x + 1e-4f
+		&& fabsf(local.y) <= b->half.y + 1e-4f
+		&& fabsf(local.z) <= b->half.z + 1e-4f);
 }
 
 /* Approximate the contact as the centroid of mutually-contained corners. */

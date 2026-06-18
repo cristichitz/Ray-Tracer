@@ -40,7 +40,7 @@ int	set_ambient(t_data *data, char **p)
 	return (1);
 }
 
-// L  x,y,z  brightness  r,g,b
+// L  x,y,z  brightness  r,g,b   (panel half-size = LIGHT_RADIUS)
 int	set_light(t_data *data, char **p)
 {
 	cl_float3	center;
@@ -54,6 +54,8 @@ int	set_light(t_data *data, char **p)
 		return (0);
 	brightness = ft_strtof(p[2], NULL);
 	emit = material_init(scale(color, brightness * LIGHT_GAIN), 2);
-	return (add_object(data, make_obj_quad(center, make_float3(5.0f, 0.0f,
-					0.0f), make_float3(0.0f, 0.0f, 5.0f), emit)));
+	center = sub(center, make_float3(LIGHT_RADIUS, 0.0f, LIGHT_RADIUS));
+	return (add_object(data, make_obj_quad(center,
+				make_float3(2.0f * LIGHT_RADIUS, 0.0f, 0.0f),
+				make_float3(0.0f, 0.0f, 2.0f * LIGHT_RADIUS), emit)));
 }

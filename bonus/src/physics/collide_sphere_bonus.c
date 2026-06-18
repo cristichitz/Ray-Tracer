@@ -27,12 +27,13 @@ void	ball_ball(t_rbody *a, t_rbody *b)
 
 	n = sub(b->pos, a->pos);
 	dist = sqrtf(dot(n, n));
-	if (dist >= a->half + b->half || dist < 1e-6f)
+	if (dist >= a->half.x + b->half.x || dist < 1e-6f)
 		return ;
 	n = divide(n, dist);
-	contact_impulse(a, b, n, add(a->pos, scale(n, a->half)));
+	contact_impulse(a, b, n, add(a->pos, scale(n, a->half.x)));
 	ti = a->inv_mass + b->inv_mass;
-	corr = fmaxf(0.0f, (a->half + b->half - dist) - PHYS_SLOP) * PHYS_BAUMGARTE;
+	corr = fmaxf(0.0f, (a->half.x + b->half.x - dist) - PHYS_SLOP)
+		* PHYS_BAUMGARTE;
 	if (ti > 0.0f)
 	{
 		a->pos = sub(a->pos, scale(n, corr * a->inv_mass / ti));

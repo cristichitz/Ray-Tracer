@@ -6,7 +6,7 @@
 /*   By: cdohanic <cdohanic@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/12 20:14:55 by cdohanic          #+#    #+#             */
-/*   Updated: 2026/06/17 16:45:52 by cdohanic         ###   ########.fr       */
+/*   Updated: 2026/06/18 11:56:56 by cdohanic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,14 @@
 # define BONUS_SPP 2
 # define BONUS_MAX_DEPTH 2
 # define ACCUM_MAX 512
-# define LIGHT_RADIUS 5.0f
-# define LIGHT_GAIN 20.0f
+# define LIGHT_RADIUS 2.5f
+# define LIGHT_GAIN 10.0f
 # define RENDER_SPP 1
 # define RENDER_MAX_FRAMES 3000
 # define RENDER_DT 0.008f
+// Camera
+# define MOVE_SPEED 0.3f
+# define ROT_SPEED 0.05f
 
 // GPU setup / teardown (init_gpu_bonus.c, cleanup_bonus.c)
 cl_int					init_gpu(t_data *data);

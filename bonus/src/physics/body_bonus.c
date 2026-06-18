@@ -49,16 +49,18 @@ static void	capture_box(t_rbody *b, t_object *objs)
 static void	body_shape(t_data *data, t_rbody *b)
 {
 	cl_float3	box[2];
+	float		r;
 
 	if (b->shape == 1)
 	{
 		b->pos = data->objects[b->obj_first].center;
-		b->half = data->objects[b->obj_first].radius;
+		r = data->objects[b->obj_first].radius;
+		b->half = make_float3(r, r, r);
 		return ;
 	}
 	body_bounds(data, b->obj_first, b->obj_count, box);
 	b->pos = scale(add(box[0], box[1]), 0.5f);
-	b->half = (box[1].x - box[0].x) * 0.5f;
+	b->half = scale(sub(box[1], box[0]), 0.5f);
 	capture_box(b, data->objects);
 }
 
@@ -66,17 +68,20 @@ static void	body_mass(t_rbody *b, float density)
 {
 	float	mass;
 	float	vol;
+	float	h2;
 
 	if (b->shape == 1)
-		vol = 4.18879f * b->half * b->half * b->half;
+		vol = 4.18879f * b->half.x * b->half.x * b->half.x;
 	else
-		vol = 8.0f * b->half * b->half * b->half;
+		vol = 8.0f * b->half.x * b->half.y * b->half.z;
 	mass = fmaxf(1e-6f, density * vol);
 	b->inv_mass = 1.0f / mass;
+	h2 = (b->half.x * b->half.x + b->half.y * b->half.y
+			+ b->half.z * b->half.z) / 3.0f;
 	if (b->shape == 1)
-		b->inv_i = 2.5f * b->inv_mass / (b->half * b->half);
+		b->inv_i = 2.5f * b->inv_mass / (b->half.x * b->half.x);
 	else
-		b->inv_i = 1.5f * b->inv_mass / (b->half * b->half);
+		b->inv_i = 1.5f * b->inv_mass / h2;
 }
 
 void	add_body(t_data *data, int first, int count, t_material mat)
