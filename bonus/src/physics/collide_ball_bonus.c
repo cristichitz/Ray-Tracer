@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
-#include <string.h>
 
 /* Rotate v by the inverse of unit quaternion q (the conjugate). */
 static cl_float3	quat_unapply(t_quat q, cl_float3 v)

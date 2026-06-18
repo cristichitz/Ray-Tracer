@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
-#include <string.h>
 
 static void	body_bounds(t_data *data, int first, int count, cl_float3 box[2])
 {

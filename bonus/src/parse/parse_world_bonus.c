@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "rt_bonus.h"
+#include "libft.h"
 
 /* C  x,y,z  nx,ny,nz  fov */
 int	set_cam(t_data *data, char **p)

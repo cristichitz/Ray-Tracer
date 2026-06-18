@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
-#include <string.h>
 
 /*
 ** Static collision planes harvested from the scene. A collider is the

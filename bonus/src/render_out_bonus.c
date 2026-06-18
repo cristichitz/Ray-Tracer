@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
-#include <string.h>
+#include "libft.h"
 #include <sys/stat.h>
 
 /* True if --render appears anywhere on the command line. */
@@ -22,7 +22,7 @@ int	render_mode_on(int argc, char **argv)
 	i = 1;
 	while (i < argc)
 	{
-		if (!strcmp(argv[i], "--render"))
+		if (!ft_strcmp(argv[i], "--render"))
 			return (1);
 		i++;
 	}

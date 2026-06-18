@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "rt_bonus.h"
-#include <string.h>
 
 /* Resolve every box corner below the floor; returns deepest penetration. */
 static float	ground_contacts(t_rbody *ground, t_rbody *b, float floor_y)

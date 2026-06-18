@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "rt_bonus.h"
+#include "libft.h"
 
 /* sp  x,y,z  diameter  r,g,b  [material] */
 int	set_sphere(t_data *data, char **p)
