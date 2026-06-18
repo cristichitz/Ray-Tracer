@@ -2,10 +2,12 @@
 
 libft/*
 obj/*
+obj_mac/*
 MLX42/*  
 
 MLX42
 miniRT
+miniRT_mac
 miniRT_bonus
 
 cp3a/*
