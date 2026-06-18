@@ -181,7 +181,7 @@ $(NAME_MAC): $(MLX42_BUILD) $(LIBFT) $(MAC_OBJS) $(METAL_OBJ) $(METAL_LIB)
 
 $(MAC_OBJ_DIR)/mandatory/%.o: mandatory/%.c
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -D__APPLE__ $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) -DMETAL_GPU $(INCLUDES) -c $< -o $@
 # ───────────────────────────────────────────────────────────────────────────
 
 bonus: $(NAME_BONUS)

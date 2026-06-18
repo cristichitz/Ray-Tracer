@@ -271,13 +271,13 @@ static uint32_t	pack_objects(t_metal_obj *objs, const t_data *data)
 		{
 			t_plane *p = (t_plane *)h;
 			o->type   = MOBJ_PLANE;
-			o->center = mf3(p->Q);
+			o->center = mf3(p->q);
 			o->normal = mf3(p->normal);
-			o->D      = p->D;
+			o->D      = p->d;
 			o->albedo = mf3(p->mat.tex.albedo);
 			if (p->mat.emitted)
 			{
-				em = p->mat.emitted(&p->mat, 0.0f, 0.0f, p->Q);
+				em = p->mat.emitted(&p->mat, 0.0f, 0.0f, p->q);
 				if (em.x > 0.0f || em.y > 0.0f || em.z > 0.0f)
 				{
 					o->is_emissive = 1;
@@ -289,16 +289,16 @@ static uint32_t	pack_objects(t_metal_obj *objs, const t_data *data)
 		{
 			t_quad *q = (t_quad *)h;
 			o->type   = MOBJ_QUAD;
-			o->center = mf3(q->Q);
+			o->center = mf3(q->q);
 			o->normal = mf3(q->normal);
 			o->u      = mf3(q->u);
 			o->v      = mf3(q->v);
 			o->w      = mf3(q->w);
-			o->D      = q->D;
+			o->D      = q->d;
 			o->albedo = mf3(q->mat.tex.albedo);
 			if (q->mat.emitted)
 			{
-				em = q->mat.emitted(&q->mat, 0.0f, 0.0f, q->Q);
+				em = q->mat.emitted(&q->mat, 0.0f, 0.0f, q->q);
 				if (em.x > 0.0f || em.y > 0.0f || em.z > 0.0f)
 				{
 					o->is_emissive = 1;

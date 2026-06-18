@@ -15,7 +15,7 @@
 
 static void	render_mode(t_data *data)
 {
-#ifdef __APPLE__
+#ifdef METAL_GPU
 	if (data->render_mode == RENDER_DIRECT)
 		data->render_mode = RENDER_PATH_TRACE;
 	else if (data->render_mode == RENDER_PATH_TRACE)
