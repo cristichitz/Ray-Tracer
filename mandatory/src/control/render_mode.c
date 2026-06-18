@@ -15,10 +15,19 @@
 
 static void	render_mode(t_data *data)
 {
+#ifdef __APPLE__
+	if (data->render_mode == RENDER_DIRECT)
+		data->render_mode = RENDER_PATH_TRACE;
+	else if (data->render_mode == RENDER_PATH_TRACE)
+		data->render_mode = RENDER_METAL;
+	else
+		data->render_mode = RENDER_DIRECT;
+#else
 	if (data->render_mode == RENDER_PATH_TRACE)
 		data->render_mode = RENDER_DIRECT;
 	else
 		data->render_mode = RENDER_PATH_TRACE;
+#endif
 	data->render_check = true;
 	set_quality(data, LOW);
 	data->wait_frames = 0;

@@ -13,6 +13,9 @@
 #include "movable.h"
 #include "parse.h"
 #include "rt_cpu.h"
+#ifdef __APPLE__
+# include "metal_bridge.h"
+#endif
 
 static void	render_scene(bool *scene_changed, t_data *data)
 {
@@ -30,8 +33,13 @@ static void	render_scene(bool *scene_changed, t_data *data)
 	if (*scene_changed || data->render_check)
 	{
 		update_viewport(data);
+		data->frame_count++;
 		if (data->render_mode == RENDER_DIRECT)
 			render_frame_direct(data);
+#ifdef __APPLE__
+		else if (data->render_mode == RENDER_METAL)
+			render_frame_metal(data);
+#endif
 		else
 			render_frame(data);
 		data->render_check = false;
@@ -107,7 +115,15 @@ int	main(int ac, char **av)
 	mlx_loop_hook(data.mlx, game_loop, &data);
 	mlx_key_hook(data.mlx, &object_selector, &data);
 	mlx_resize_hook(data.mlx, resize_hook, &data);
+#ifdef __APPLE__
+	if (!metal_init())
+		ft_printfd(2, "[Metal] GPU unavailable — N key will fall back to CPU.\n");
+#endif
 	mlx_loop(data.mlx);
+	/* Cleanup */
+#ifdef __APPLE__
+	metal_cleanup();
+#endif
 	mlx_terminate(data.mlx);
 	data.world.destroy(&data.world);
 	return (EXIT_SUCCESS);

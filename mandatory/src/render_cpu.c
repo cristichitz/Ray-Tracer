@@ -11,6 +11,10 @@
 /* ************************************************************************** */
 
 #include "rt_cpu.h"
+#ifdef __APPLE__
+# include <mach/mach_time.h>
+# include <stdio.h>
+#endif
 
 t_vec3	get_ray_color(t_hittable_list *world, int depth, t_ray ray)
 {
@@ -92,6 +96,9 @@ int	render_frame(t_data *data)
 	uint32_t	y;
 	uint32_t	x;
 
+#ifdef __APPLE__
+	uint64_t t0 = mach_absolute_time();
+#endif
 	y = 0;
 	while (y < data->height)
 	{
@@ -104,5 +111,18 @@ int	render_frame(t_data *data)
 		}
 		y++;
 	}
+#ifdef __APPLE__
+	{
+		uint64_t t1 = mach_absolute_time();
+		static mach_timebase_info_data_t tb = {0, 0};
+		if (tb.denom == 0)
+			mach_timebase_info(&tb);
+		double ms = (double)(t1 - t0) * tb.numer / tb.denom / 1e6;
+		fprintf(stderr, "[CPU]   %ux%u  %u spp  depth %u  %.1f ms\n",
+			data->width, data->height,
+			data->samples_per_pixel, data->max_depth, ms);
+	}
+#endif
 	return (0);
 }
+

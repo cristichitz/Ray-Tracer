@@ -16,8 +16,8 @@ void	set_quality(t_data *data, t_quality quality)
 {
 	if (quality == HIGH)
 	{
-		data->samples_per_pixel = 30;
-		data->max_depth = 5;
+		data->samples_per_pixel = 50;
+		data->max_depth = 15;
 		data->pixel_samples_scale = 1.0f / data->samples_per_pixel;
 		data->render_check = true;
 		return ;

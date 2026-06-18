@@ -11,6 +11,7 @@
 # **************************************************************************** #
 
 NAME = miniRT
+NAME_MAC = miniRT_mac
 NAME_BONUS = miniRT_bonus
 
 CC = cc
@@ -139,6 +140,19 @@ ifeq ($(UNAME_S),Darwin)
 	MLX_FLAGS += $(MACOS_GLFW_FLAGS)
 endif
 
+# ── Metal GPU compute (macOS / Apple Silicon only) ──────────────────────────
+# These variables are only used by the 'mac' target.
+DEVELOPER_DIR = /Applications/Xcode.app/Contents/Developer
+METAL_CC   = DEVELOPER_DIR=$(DEVELOPER_DIR) xcrun -sdk macosx metal
+METALLIB   = DEVELOPER_DIR=$(DEVELOPER_DIR) xcrun -sdk macosx metallib
+METAL_SRC  = mandatory/metal/render.metal
+METAL_AIR  = mandatory/metal/render.air
+METAL_LIB  = mandatory/metal/render.metallib
+METAL_OBJ  = obj/mandatory/metal/metal_bridge.o
+MAC_MLX_FLAGS = $(MLX_FLAGS) -framework Metal -framework Foundation
+MAC_OBJ_DIR = obj_mac
+MAC_OBJS = $(SRCS:%.c=$(MAC_OBJ_DIR)/%.o)
+
 debug ?= 0
 ifeq ($(debug), 1)
 	CFLAGS += $(VFLAGS)
@@ -159,6 +173,17 @@ all: $(NAME)
 $(NAME): $(MLX42_BUILD) $(LIBFT) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(MLX42_BUILD) $(LIBFT) $(MLX_FLAGS) -o $(NAME)
 
+# ── Mac GPU target ──────────────────────────────────────────────────────────
+mac: $(NAME_MAC)
+
+$(NAME_MAC): $(MLX42_BUILD) $(LIBFT) $(MAC_OBJS) $(METAL_OBJ) $(METAL_LIB)
+	$(CC) $(CFLAGS) $(MAC_OBJS) $(METAL_OBJ) $(MLX42_BUILD) $(LIBFT) $(MAC_MLX_FLAGS) -o $(NAME_MAC)
+
+$(MAC_OBJ_DIR)/mandatory/%.o: mandatory/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -D__APPLE__ $(INCLUDES) -c $< -o $@
+# ───────────────────────────────────────────────────────────────────────────
+
 bonus: $(NAME_BONUS)
 
 $(NAME_BONUS): $(MLX42_BUILD) $(LIBFT) $(BONUS_OBJS)
@@ -172,6 +197,23 @@ $(OBJ_DIR)/bonus/%.o: bonus/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(BONUS_CFLAGS) $(BONUS_INCLUDES) -c $< -o $@
 
+# ── Metal GPU compute (Darwin only) ────────────────────────────────────────
+# Step 1: compile .metal → .air (intermediate bytecode)
+# Step 2: link .air → .metallib (binary shader library loaded at runtime)
+$(METAL_LIB): $(METAL_SRC)
+	@mkdir -p $(@D)
+	$(METAL_CC) -c $(METAL_SRC) -o $(METAL_AIR)
+	$(METALLIB) $(METAL_AIR) -o $(METAL_LIB)
+
+# Compile the Objective-C bridge separately (ObjC, ARC, no -Werror)
+# Includes mandatory/metal/ so metal_types.h is visible.
+$(METAL_OBJ): mandatory/metal/metal_bridge.m $(METAL_LIB) \
+              mandatory/include/metal_bridge.h mandatory/metal/metal_types.h
+	@mkdir -p $(@D)
+	$(CC) -Wall -Wextra $(INCLUDES) -I./mandatory/metal -ObjC -fobjc-arc \
+	      -c mandatory/metal/metal_bridge.m -o $(METAL_OBJ)
+# ───────────────────────────────────────────────────────────────────────────
+
 $(LIBFT):
 	make -C $(LIBFT_DIR)
 
@@ -184,11 +226,14 @@ $(MLX42_BUILD): | $(MLX42_DIR)
 
 clean:
 	rm -rf $(OBJ_DIR)
+	rm -rf $(MAC_OBJ_DIR)
 	rm -rf $(MLX42_DIR)/build
+	rm -f $(METAL_AIR)
 	make clean -C $(LIBFT_DIR)
 
 fclean: clean
-	rm -f $(NAME) $(NAME_BONUS)
+	rm -f $(NAME) $(NAME_MAC) $(NAME_BONUS)
+	rm -f $(METAL_LIB)
 	rm -rf $(MLX42_DIR)
 	make fclean -C $(LIBFT_DIR)
 
@@ -201,4 +246,4 @@ asm:
 		$(INCLUDES) -S $(ASM_SRC)
 	@echo "wrote render_cpu2.s vec3.s"
 
-.PHONY: all bonus clean fclean re asm
+.PHONY: all mac bonus clean fclean re asm

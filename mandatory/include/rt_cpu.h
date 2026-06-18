@@ -34,7 +34,8 @@ typedef enum e_quality
 typedef enum e_render_mode
 {
 	RENDER_DIRECT,
-	RENDER_PATH_TRACE
+	RENDER_PATH_TRACE,
+	RENDER_METAL         /* Apple Metal GPU compute path tracer */
 }								t_render_mode;
 
 typedef t_vec					t_list;
@@ -97,6 +98,7 @@ typedef struct s_data
 	unsigned int				object_i;
 	unsigned int				light_i;
 	uint32_t					wait_frames;
+	uint32_t					frame_count;  /* bumped each game_loop tick — seeds Metal RNG */
 	bool						render_check;
 	t_render_mode				render_mode;
 }								t_data;
