@@ -29,7 +29,8 @@
 # define BONUS_MAX_DEPTH 2
 # define ACCUM_MAX 512
 # define LIGHT_RADIUS 5.0f
-# define LIGHT_GAIN 20.0f
+// # define LIGHT_GAIN 200.0f
+# define LIGHT_GAIN 200.0f
 # define RENDER_SPP 1
 # define RENDER_MAX_FRAMES 3000
 # define RENDER_DT 0.008f
